@@ -1,0 +1,6 @@
+# Core (reference model, tests)
+numpy>=2.0
+# Optional: run the canonical circuits with Qiskit (quantum/qiskit_run.py, TestQiskit)
+# qiskit>=2.0,<3
+# Optional: local noisy Qiskit run with the same illustrative channel (quantum/qiskit_run.py --noise)
+# qiskit-aer
