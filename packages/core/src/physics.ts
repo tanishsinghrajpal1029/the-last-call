@@ -97,7 +97,20 @@ function scaleAdd(a: M, ka: number, b: M, kb: number): M {
   return a.map((row, i) => row.map((x, j) => [ka * x[0] + kb * b[i]![j]![0], ka * x[1] + kb * b[i]![j]![1]] as C));
 }
 
+const memo = new Map<string, Record<string, number>>();
+
+/** Exact outcome probabilities (memoised; the game uses a small fixed set of settings). */
 export function simulate(alpha: number, theta: number, phi: number, trace: boolean, noise: Noise | null): Record<string, number> {
+  const key = [alpha, theta, phi, trace, noise ? [noise.p1, noise.p2, noise.readout].join() : "-"].join("|");
+  const hit = memo.get(key);
+  if (hit) return { ...hit };
+  if (memo.size > 4096) memo.clear();
+  const out = simulateUncached(alpha, theta, phi, trace, noise);
+  memo.set(key, out);
+  return { ...out };
+}
+
+function simulateUncached(alpha: number, theta: number, phi: number, trace: boolean, noise: Noise | null): Record<string, number> {
   const n = trace ? 2 : 1, d = 1 << n;
   let rho = zeros(d);
   rho[0]![0] = [1, 0];

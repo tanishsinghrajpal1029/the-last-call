@@ -175,7 +175,7 @@ export class Renderer {
   }
 
   private buildLabels(): void {
-    const glyphs = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "A", "B", "C", "D", "E", "F", "G", "H", "?", "!", "≈"];
+    const glyphs = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "A", "B", "C", "D", "E", "F", "G", "H", "S", "?", "!", "≈"];
     const cell = 64;
     const cols = 8;
     const rows = Math.ceil(glyphs.length / cols);
