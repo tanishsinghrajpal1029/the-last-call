@@ -1,0 +1,21 @@
+{
+  "name": "the-last-call",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A quantum horror game: one call, two doors. Listening lets the door channels interfere; tracing finds the door but destroys the interference.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "npm run build && node --test tests/core/*.test.mjs && python3 -m unittest discover -s tests/quantum",
+    "test:core": "node --test tests/core/*.test.mjs",
+    "test:quantum": "python3 -m unittest discover -s tests/quantum -v",
+    "reference": "python3 quantum/generate_reference.py",
+    "strategy": "node scripts/strategy.mjs",
+    "package:qollab": "python3 scripts/package_qollab.py",
+    "serve": "node scripts/serve.mjs"
+  },
+  "devDependencies": {},
+  "engines": { "node": ">=20" },
+  "comment": "No npm dependencies. TypeScript (tsc >= 5) must be on PATH."
+}

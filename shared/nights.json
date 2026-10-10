@@ -1,0 +1,53 @@
+{
+  "version": "last-call-nights-v1",
+  "dialSteps": 8,
+  "sisterPhaseDeg": 0,
+  "noise": {
+    "label": "illustrative depolarizing channel (ours, not IonQ calibration)",
+    "p1": 0.002,
+    "p2": 0.012,
+    "readout": 0.01
+  },
+  "nights": [
+    {
+      "id": 1,
+      "title": "The first call",
+      "budget": 8,
+      "alphaChoicesDeg": [90],
+      "mimicPhaseDeg": 180,
+      "identity": "sister",
+      "tutorial": true,
+      "intel": "It's Mira. Tonight she stands evenly between both doors, so either door is right if it's really her."
+    },
+    {
+      "id": 2,
+      "title": "Same voice",
+      "budget": 6,
+      "alphaChoicesDeg": [90],
+      "mimicPhaseDeg": 180,
+      "identity": "random",
+      "tutorial": false,
+      "intel": "Balanced between both doors again. If it isn't Mira, its line runs half a turn (180°) out of step with hers."
+    },
+    {
+      "id": 3,
+      "title": "Porch light",
+      "budget": 8,
+      "alphaChoicesDeg": [60, 120],
+      "mimicPhaseDeg": 90,
+      "identity": "random",
+      "tutorial": false,
+      "intel": "The call leans toward one door: open the wrong one and you let the cold in. If it isn't Mira, its line runs a quarter turn (90°) out of step."
+    },
+    {
+      "id": 4,
+      "title": "The last call",
+      "budget": 12,
+      "alphaChoicesDeg": [60, 120],
+      "mimicPhaseDeg": 45,
+      "identity": "random",
+      "tutorial": false,
+      "intel": "It leans toward one door. If it isn't Mira, its line is only an eighth of a turn (45°) out of step. Listen carefully."
+    }
+  ]
+}

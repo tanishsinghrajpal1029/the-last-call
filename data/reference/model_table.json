@@ -1,0 +1,4433 @@
+{
+ "schemaVersion": 1,
+ "sourceMode": "local_reference_model",
+ "description": "ideal = closed-form formula; idealDensityMatrix and noisy = NumPy density-matrix simulation (noisy uses the illustrative channel in shared/nights.json, not IonQ)",
+ "circuitVersion": "last-call-call-v1",
+ "outcomeMappingVersion": "last-call-outcomes-v1",
+ "nightsVersion": "last-call-nights-v1",
+ "noise": {
+  "label": "illustrative depolarizing channel (ours, not IonQ calibration)",
+  "p1": 0.002,
+  "p2": 0.012,
+  "readout": 0.01
+ },
+ "generatedAt": "2026-10-10T15:14:18+00:00",
+ "rows": [
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 0,
+   "trace": false,
+   "ideal": {
+    "clear": 1.0,
+    "static": 0.0
+   },
+   "idealDensityMatrix": {
+    "clear": 0.9999999999999997,
+    "static": -1.6258839764163445e-17
+   },
+   "noisy": {
+    "clear": 0.9860917443278397,
+    "static": 0.01390825567215999
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 0,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 1,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8535533905932737,
+    "static": 0.14644660940672627
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8535533905932735,
+    "static": 0.14644660940672616
+   },
+   "noisy": {
+    "clear": 0.843718768693013,
+    "static": 0.1562812313069868
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 1,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 2,
+   "trace": false,
+   "ideal": {
+    "clear": 0.5,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.4999999999999999,
+    "static": 0.4999999999999999
+   },
+   "noisy": {
+    "clear": 0.4999999999999999,
+    "static": 0.4999999999999999
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 2,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 3,
+   "trace": false,
+   "ideal": {
+    "clear": 0.14644660940672627,
+    "static": 0.8535533905932737
+   },
+   "idealDensityMatrix": {
+    "clear": 0.14644660940672624,
+    "static": 0.8535533905932735
+   },
+   "noisy": {
+    "clear": 0.15628123130698682,
+    "static": 0.8437187686930129
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 3,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 4,
+   "trace": false,
+   "ideal": {
+    "clear": 0.0,
+    "static": 1.0
+   },
+   "idealDensityMatrix": {
+    "clear": -1.6258839764163445e-17,
+    "static": 0.9999999999999997
+   },
+   "noisy": {
+    "clear": 0.01390825567215999,
+    "static": 0.9860917443278397
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 4,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 5,
+   "trace": false,
+   "ideal": {
+    "clear": 0.14644660940672616,
+    "static": 0.8535533905932738
+   },
+   "idealDensityMatrix": {
+    "clear": 0.14644660940672616,
+    "static": 0.8535533905932737
+   },
+   "noisy": {
+    "clear": 0.15628123130698676,
+    "static": 0.8437187686930131
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 5,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 6,
+   "trace": false,
+   "ideal": {
+    "clear": 0.4999999999999999,
+    "static": 0.5000000000000001
+   },
+   "idealDensityMatrix": {
+    "clear": 0.4999999999999998,
+    "static": 0.5
+   },
+   "noisy": {
+    "clear": 0.4999999999999998,
+    "static": 0.5
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 6,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 7,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8535533905932737,
+    "static": 0.14644660940672627
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8535533905932735,
+    "static": 0.14644660940672627
+   },
+   "noisy": {
+    "clear": 0.8437187686930129,
+    "static": 0.1562812313069869
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 7,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 0,
+   "trace": false,
+   "ideal": {
+    "clear": 0.0,
+    "static": 1.0
+   },
+   "idealDensityMatrix": {
+    "clear": -1.6258839764163445e-17,
+    "static": 0.9999999999999997
+   },
+   "noisy": {
+    "clear": 0.01390825567215999,
+    "static": 0.9860917443278397
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 0,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 1,
+   "trace": false,
+   "ideal": {
+    "clear": 0.14644660940672627,
+    "static": 0.8535533905932737
+   },
+   "idealDensityMatrix": {
+    "clear": 0.14644660940672624,
+    "static": 0.8535533905932735
+   },
+   "noisy": {
+    "clear": 0.15628123130698682,
+    "static": 0.8437187686930129
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 1,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 2,
+   "trace": false,
+   "ideal": {
+    "clear": 0.5,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.4999999999999999,
+    "static": 0.4999999999999999
+   },
+   "noisy": {
+    "clear": 0.4999999999999999,
+    "static": 0.4999999999999999
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 2,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 3,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8535533905932737,
+    "static": 0.14644660940672627
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8535533905932735,
+    "static": 0.14644660940672616
+   },
+   "noisy": {
+    "clear": 0.843718768693013,
+    "static": 0.1562812313069868
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 3,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 4,
+   "trace": false,
+   "ideal": {
+    "clear": 1.0,
+    "static": 0.0
+   },
+   "idealDensityMatrix": {
+    "clear": 0.9999999999999997,
+    "static": -1.6258839764163445e-17
+   },
+   "noisy": {
+    "clear": 0.9860917443278397,
+    "static": 0.01390825567215999
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 4,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 5,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8535533905932737,
+    "static": 0.14644660940672627
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8535533905932736,
+    "static": 0.1464466094067262
+   },
+   "noisy": {
+    "clear": 0.8437187686930131,
+    "static": 0.15628123130698685
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 5,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 6,
+   "trace": false,
+   "ideal": {
+    "clear": 0.5,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.4999999999999999,
+    "static": 0.4999999999999999
+   },
+   "noisy": {
+    "clear": 0.4999999999999999,
+    "static": 0.4999999999999999
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 6,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 7,
+   "trace": false,
+   "ideal": {
+    "clear": 0.14644660940672627,
+    "static": 0.8535533905932737
+   },
+   "idealDensityMatrix": {
+    "clear": 0.14644660940672624,
+    "static": 0.8535533905932735
+   },
+   "noisy": {
+    "clear": 0.15628123130698682,
+    "static": 0.8437187686930129
+   }
+  },
+  {
+   "night": 1,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 7,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 0,
+   "trace": false,
+   "ideal": {
+    "clear": 1.0,
+    "static": 0.0
+   },
+   "idealDensityMatrix": {
+    "clear": 0.9999999999999997,
+    "static": -1.6258839764163445e-17
+   },
+   "noisy": {
+    "clear": 0.9860917443278397,
+    "static": 0.01390825567215999
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 0,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 1,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8535533905932737,
+    "static": 0.14644660940672627
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8535533905932735,
+    "static": 0.14644660940672616
+   },
+   "noisy": {
+    "clear": 0.843718768693013,
+    "static": 0.1562812313069868
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 1,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 2,
+   "trace": false,
+   "ideal": {
+    "clear": 0.5,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.4999999999999999,
+    "static": 0.4999999999999999
+   },
+   "noisy": {
+    "clear": 0.4999999999999999,
+    "static": 0.4999999999999999
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 2,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 3,
+   "trace": false,
+   "ideal": {
+    "clear": 0.14644660940672627,
+    "static": 0.8535533905932737
+   },
+   "idealDensityMatrix": {
+    "clear": 0.14644660940672624,
+    "static": 0.8535533905932735
+   },
+   "noisy": {
+    "clear": 0.15628123130698682,
+    "static": 0.8437187686930129
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 3,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 4,
+   "trace": false,
+   "ideal": {
+    "clear": 0.0,
+    "static": 1.0
+   },
+   "idealDensityMatrix": {
+    "clear": -1.6258839764163445e-17,
+    "static": 0.9999999999999997
+   },
+   "noisy": {
+    "clear": 0.01390825567215999,
+    "static": 0.9860917443278397
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 4,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 5,
+   "trace": false,
+   "ideal": {
+    "clear": 0.14644660940672616,
+    "static": 0.8535533905932738
+   },
+   "idealDensityMatrix": {
+    "clear": 0.14644660940672616,
+    "static": 0.8535533905932737
+   },
+   "noisy": {
+    "clear": 0.15628123130698676,
+    "static": 0.8437187686930131
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 5,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 6,
+   "trace": false,
+   "ideal": {
+    "clear": 0.4999999999999999,
+    "static": 0.5000000000000001
+   },
+   "idealDensityMatrix": {
+    "clear": 0.4999999999999998,
+    "static": 0.5
+   },
+   "noisy": {
+    "clear": 0.4999999999999998,
+    "static": 0.5
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 6,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 7,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8535533905932737,
+    "static": 0.14644660940672627
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8535533905932735,
+    "static": 0.14644660940672627
+   },
+   "noisy": {
+    "clear": 0.8437187686930129,
+    "static": 0.1562812313069869
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 7,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 0,
+   "trace": false,
+   "ideal": {
+    "clear": 0.0,
+    "static": 1.0
+   },
+   "idealDensityMatrix": {
+    "clear": -1.6258839764163445e-17,
+    "static": 0.9999999999999997
+   },
+   "noisy": {
+    "clear": 0.01390825567215999,
+    "static": 0.9860917443278397
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 0,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 1,
+   "trace": false,
+   "ideal": {
+    "clear": 0.14644660940672627,
+    "static": 0.8535533905932737
+   },
+   "idealDensityMatrix": {
+    "clear": 0.14644660940672624,
+    "static": 0.8535533905932735
+   },
+   "noisy": {
+    "clear": 0.15628123130698682,
+    "static": 0.8437187686930129
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 1,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 2,
+   "trace": false,
+   "ideal": {
+    "clear": 0.5,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.4999999999999999,
+    "static": 0.4999999999999999
+   },
+   "noisy": {
+    "clear": 0.4999999999999999,
+    "static": 0.4999999999999999
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 2,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 3,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8535533905932737,
+    "static": 0.14644660940672627
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8535533905932735,
+    "static": 0.14644660940672616
+   },
+   "noisy": {
+    "clear": 0.843718768693013,
+    "static": 0.1562812313069868
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 3,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 4,
+   "trace": false,
+   "ideal": {
+    "clear": 1.0,
+    "static": 0.0
+   },
+   "idealDensityMatrix": {
+    "clear": 0.9999999999999997,
+    "static": -1.6258839764163445e-17
+   },
+   "noisy": {
+    "clear": 0.9860917443278397,
+    "static": 0.01390825567215999
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 4,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 5,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8535533905932737,
+    "static": 0.14644660940672627
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8535533905932736,
+    "static": 0.1464466094067262
+   },
+   "noisy": {
+    "clear": 0.8437187686930131,
+    "static": 0.15628123130698685
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 5,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 6,
+   "trace": false,
+   "ideal": {
+    "clear": 0.5,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.4999999999999999,
+    "static": 0.4999999999999999
+   },
+   "noisy": {
+    "clear": 0.4999999999999999,
+    "static": 0.4999999999999999
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 6,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 7,
+   "trace": false,
+   "ideal": {
+    "clear": 0.14644660940672627,
+    "static": 0.8535533905932737
+   },
+   "idealDensityMatrix": {
+    "clear": 0.14644660940672624,
+    "static": 0.8535533905932735
+   },
+   "noisy": {
+    "clear": 0.15628123130698682,
+    "static": 0.8437187686930129
+   }
+  },
+  {
+   "night": 2,
+   "alphaDeg": 90,
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 7,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.25000000000000006,
+    "front|static": 0.25000000000000006,
+    "side|clear": 0.24999999999999994,
+    "side|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.24999999999999992,
+    "side|static": 0.24999999999999992
+   },
+   "noisy": {
+    "front|clear": 0.25,
+    "front|static": 0.25,
+    "side|clear": 0.2499999999999999,
+    "side|static": 0.2499999999999999
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 0,
+   "trace": false,
+   "ideal": {
+    "clear": 0.9330127018922193,
+    "static": 0.0669872981077807
+   },
+   "idealDensityMatrix": {
+    "clear": 0.9330127018922192,
+    "static": 0.06698729810778074
+   },
+   "noisy": {
+    "clear": 0.9209677991577996,
+    "static": 0.07903220084220018
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 0,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 1,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8061862178478973,
+    "static": 0.19381378215210265
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8061862178478972,
+    "static": 0.19381378215210274
+   },
+   "noisy": {
+    "clear": 0.7976691854456565,
+    "static": 0.20233081455434304
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 1,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 2,
+   "trace": false,
+   "ideal": {
+    "clear": 0.5,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.49999999999999994,
+    "static": 0.49999999999999994
+   },
+   "noisy": {
+    "clear": 0.49999999999999983,
+    "static": 0.4999999999999998
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 2,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 3,
+   "trace": false,
+   "ideal": {
+    "clear": 0.19381378215210276,
+    "static": 0.8061862178478972
+   },
+   "idealDensityMatrix": {
+    "clear": 0.19381378215210276,
+    "static": 0.8061862178478971
+   },
+   "noisy": {
+    "clear": 0.20233081455434312,
+    "static": 0.7976691854456565
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 3,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 4,
+   "trace": false,
+   "ideal": {
+    "clear": 0.0669872981077807,
+    "static": 0.9330127018922193
+   },
+   "idealDensityMatrix": {
+    "clear": 0.06698729810778074,
+    "static": 0.9330127018922192
+   },
+   "noisy": {
+    "clear": 0.07903220084220018,
+    "static": 0.9209677991577996
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 4,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 5,
+   "trace": false,
+   "ideal": {
+    "clear": 0.1938137821521027,
+    "static": 0.8061862178478973
+   },
+   "idealDensityMatrix": {
+    "clear": 0.1938137821521028,
+    "static": 0.8061862178478972
+   },
+   "noisy": {
+    "clear": 0.20233081455434307,
+    "static": 0.7976691854456565
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 5,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999997,
+    "side|static": 0.12499999999999997
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823997,
+    "side|static": 0.12969472860823994
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 6,
+   "trace": false,
+   "ideal": {
+    "clear": 0.49999999999999994,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.4999999999999999,
+    "static": 0.5000000000000001
+   },
+   "noisy": {
+    "clear": 0.4999999999999997,
+    "static": 0.49999999999999994
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 6,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 7,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8061862178478971,
+    "static": 0.19381378215210288
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8061862178478971,
+    "static": 0.19381378215210282
+   },
+   "noisy": {
+    "clear": 0.7976691854456565,
+    "static": 0.20233081455434315
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 7,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 0,
+   "trace": false,
+   "ideal": {
+    "clear": 0.5,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.49999999999999994,
+    "static": 0.49999999999999994
+   },
+   "noisy": {
+    "clear": 0.49999999999999983,
+    "static": 0.4999999999999998
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 0,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 1,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8061862178478973,
+    "static": 0.19381378215210265
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8061862178478971,
+    "static": 0.19381378215210276
+   },
+   "noisy": {
+    "clear": 0.7976691854456565,
+    "static": 0.20233081455434312
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 1,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 2,
+   "trace": false,
+   "ideal": {
+    "clear": 0.9330127018922193,
+    "static": 0.0669872981077807
+   },
+   "idealDensityMatrix": {
+    "clear": 0.9330127018922192,
+    "static": 0.06698729810778074
+   },
+   "noisy": {
+    "clear": 0.9209677991577996,
+    "static": 0.07903220084220018
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 2,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 3,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8061862178478973,
+    "static": 0.19381378215210265
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8061862178478972,
+    "static": 0.19381378215210274
+   },
+   "noisy": {
+    "clear": 0.7976691854456565,
+    "static": 0.20233081455434304
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 3,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 4,
+   "trace": false,
+   "ideal": {
+    "clear": 0.5,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.49999999999999994,
+    "static": 0.49999999999999994
+   },
+   "noisy": {
+    "clear": 0.49999999999999983,
+    "static": 0.4999999999999998
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 4,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 5,
+   "trace": false,
+   "ideal": {
+    "clear": 0.19381378215210276,
+    "static": 0.8061862178478972
+   },
+   "idealDensityMatrix": {
+    "clear": 0.1938137821521028,
+    "static": 0.8061862178478971
+   },
+   "noisy": {
+    "clear": 0.20233081455434315,
+    "static": 0.7976691854456565
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 5,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999997,
+    "side|static": 0.12499999999999997
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823997,
+    "side|static": 0.12969472860823994
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 6,
+   "trace": false,
+   "ideal": {
+    "clear": 0.0669872981077807,
+    "static": 0.9330127018922193
+   },
+   "idealDensityMatrix": {
+    "clear": 0.06698729810778074,
+    "static": 0.9330127018922192
+   },
+   "noisy": {
+    "clear": 0.07903220084220018,
+    "static": 0.9209677991577996
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 6,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 7,
+   "trace": false,
+   "ideal": {
+    "clear": 0.1938137821521027,
+    "static": 0.8061862178478973
+   },
+   "idealDensityMatrix": {
+    "clear": 0.19381378215210274,
+    "static": 0.8061862178478972
+   },
+   "noisy": {
+    "clear": 0.20233081455434304,
+    "static": 0.7976691854456565
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 7,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 0,
+   "trace": false,
+   "ideal": {
+    "clear": 0.9330127018922194,
+    "static": 0.06698729810778059
+   },
+   "idealDensityMatrix": {
+    "clear": 0.9330127018922193,
+    "static": 0.06698729810778059
+   },
+   "noisy": {
+    "clear": 0.9209677991577997,
+    "static": 0.07903220084220013
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 0,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 1,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8061862178478973,
+    "static": 0.19381378215210265
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8061862178478971,
+    "static": 0.19381378215210257
+   },
+   "noisy": {
+    "clear": 0.7976691854456566,
+    "static": 0.202330814554343
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 1,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.3703052713917598,
+    "side|static": 0.3703052713917598
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 2,
+   "trace": false,
+   "ideal": {
+    "clear": 0.5,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.4999999999999999,
+    "static": 0.4999999999999999
+   },
+   "noisy": {
+    "clear": 0.49999999999999994,
+    "static": 0.4999999999999999
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 2,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 3,
+   "trace": false,
+   "ideal": {
+    "clear": 0.19381378215210276,
+    "static": 0.8061862178478972
+   },
+   "idealDensityMatrix": {
+    "clear": 0.1938137821521027,
+    "static": 0.8061862178478971
+   },
+   "noisy": {
+    "clear": 0.2023308145543431,
+    "static": 0.7976691854456566
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 3,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.3703052713917598,
+    "side|static": 0.3703052713917598
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 4,
+   "trace": false,
+   "ideal": {
+    "clear": 0.06698729810778065,
+    "static": 0.9330127018922194
+   },
+   "idealDensityMatrix": {
+    "clear": 0.06698729810778059,
+    "static": 0.9330127018922193
+   },
+   "noisy": {
+    "clear": 0.07903220084220013,
+    "static": 0.9209677991577997
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 4,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 5,
+   "trace": false,
+   "ideal": {
+    "clear": 0.19381378215210265,
+    "static": 0.8061862178478973
+   },
+   "idealDensityMatrix": {
+    "clear": 0.19381378215210265,
+    "static": 0.8061862178478973
+   },
+   "noisy": {
+    "clear": 0.20233081455434304,
+    "static": 0.7976691854456568
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 5,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 6,
+   "trace": false,
+   "ideal": {
+    "clear": 0.49999999999999994,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.49999999999999983,
+    "static": 0.5
+   },
+   "noisy": {
+    "clear": 0.4999999999999998,
+    "static": 0.49999999999999994
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 6,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 7,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8061862178478972,
+    "static": 0.19381378215210276
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8061862178478971,
+    "static": 0.19381378215210274
+   },
+   "noisy": {
+    "clear": 0.7976691854456565,
+    "static": 0.20233081455434318
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 7,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.3703052713917598,
+    "side|static": 0.3703052713917598
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 0,
+   "trace": false,
+   "ideal": {
+    "clear": 0.5,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.4999999999999999,
+    "static": 0.4999999999999999
+   },
+   "noisy": {
+    "clear": 0.49999999999999994,
+    "static": 0.4999999999999999
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 0,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 1,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8061862178478973,
+    "static": 0.19381378215210265
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8061862178478971,
+    "static": 0.19381378215210263
+   },
+   "noisy": {
+    "clear": 0.7976691854456566,
+    "static": 0.20233081455434307
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 1,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.3703052713917598,
+    "side|static": 0.3703052713917598
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 2,
+   "trace": false,
+   "ideal": {
+    "clear": 0.9330127018922194,
+    "static": 0.06698729810778059
+   },
+   "idealDensityMatrix": {
+    "clear": 0.9330127018922193,
+    "static": 0.06698729810778059
+   },
+   "noisy": {
+    "clear": 0.9209677991577997,
+    "static": 0.07903220084220013
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 2,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 3,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8061862178478973,
+    "static": 0.19381378215210265
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8061862178478971,
+    "static": 0.19381378215210263
+   },
+   "noisy": {
+    "clear": 0.7976691854456567,
+    "static": 0.20233081455434304
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 3,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.3703052713917598,
+    "side|static": 0.3703052713917598
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 4,
+   "trace": false,
+   "ideal": {
+    "clear": 0.5,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.4999999999999999,
+    "static": 0.4999999999999999
+   },
+   "noisy": {
+    "clear": 0.49999999999999994,
+    "static": 0.4999999999999999
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 4,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 5,
+   "trace": false,
+   "ideal": {
+    "clear": 0.19381378215210276,
+    "static": 0.8061862178478972
+   },
+   "idealDensityMatrix": {
+    "clear": 0.19381378215210274,
+    "static": 0.8061862178478972
+   },
+   "noisy": {
+    "clear": 0.20233081455434318,
+    "static": 0.7976691854456566
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 5,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 6,
+   "trace": false,
+   "ideal": {
+    "clear": 0.06698729810778065,
+    "static": 0.9330127018922194
+   },
+   "idealDensityMatrix": {
+    "clear": 0.06698729810778059,
+    "static": 0.9330127018922193
+   },
+   "noisy": {
+    "clear": 0.07903220084220013,
+    "static": 0.9209677991577997
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 6,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 7,
+   "trace": false,
+   "ideal": {
+    "clear": 0.19381378215210265,
+    "static": 0.8061862178478973
+   },
+   "idealDensityMatrix": {
+    "clear": 0.19381378215210257,
+    "static": 0.8061862178478973
+   },
+   "noisy": {
+    "clear": 0.202330814554343,
+    "static": 0.7976691854456567
+   }
+  },
+  {
+   "night": 3,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 90,
+   "dial": 7,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.3703052713917598,
+    "side|static": 0.3703052713917598
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 0,
+   "trace": false,
+   "ideal": {
+    "clear": 0.9330127018922193,
+    "static": 0.0669872981077807
+   },
+   "idealDensityMatrix": {
+    "clear": 0.9330127018922192,
+    "static": 0.06698729810778074
+   },
+   "noisy": {
+    "clear": 0.9209677991577996,
+    "static": 0.07903220084220018
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 0,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 1,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8061862178478973,
+    "static": 0.19381378215210265
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8061862178478972,
+    "static": 0.19381378215210274
+   },
+   "noisy": {
+    "clear": 0.7976691854456565,
+    "static": 0.20233081455434304
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 1,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 2,
+   "trace": false,
+   "ideal": {
+    "clear": 0.5,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.49999999999999994,
+    "static": 0.49999999999999994
+   },
+   "noisy": {
+    "clear": 0.49999999999999983,
+    "static": 0.4999999999999998
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 2,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 3,
+   "trace": false,
+   "ideal": {
+    "clear": 0.19381378215210276,
+    "static": 0.8061862178478972
+   },
+   "idealDensityMatrix": {
+    "clear": 0.19381378215210276,
+    "static": 0.8061862178478971
+   },
+   "noisy": {
+    "clear": 0.20233081455434312,
+    "static": 0.7976691854456565
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 3,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 4,
+   "trace": false,
+   "ideal": {
+    "clear": 0.0669872981077807,
+    "static": 0.9330127018922193
+   },
+   "idealDensityMatrix": {
+    "clear": 0.06698729810778074,
+    "static": 0.9330127018922192
+   },
+   "noisy": {
+    "clear": 0.07903220084220018,
+    "static": 0.9209677991577996
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 4,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 5,
+   "trace": false,
+   "ideal": {
+    "clear": 0.1938137821521027,
+    "static": 0.8061862178478973
+   },
+   "idealDensityMatrix": {
+    "clear": 0.1938137821521028,
+    "static": 0.8061862178478972
+   },
+   "noisy": {
+    "clear": 0.20233081455434307,
+    "static": 0.7976691854456565
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 5,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999997,
+    "side|static": 0.12499999999999997
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823997,
+    "side|static": 0.12969472860823994
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 6,
+   "trace": false,
+   "ideal": {
+    "clear": 0.49999999999999994,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.4999999999999999,
+    "static": 0.5000000000000001
+   },
+   "noisy": {
+    "clear": 0.4999999999999997,
+    "static": 0.49999999999999994
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 6,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 7,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8061862178478971,
+    "static": 0.19381378215210288
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8061862178478971,
+    "static": 0.19381378215210282
+   },
+   "noisy": {
+    "clear": 0.7976691854456565,
+    "static": 0.20233081455434315
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 7,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 0,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8061862178478973,
+    "static": 0.19381378215210265
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8061862178478972,
+    "static": 0.19381378215210274
+   },
+   "noisy": {
+    "clear": 0.7976691854456565,
+    "static": 0.20233081455434304
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 0,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 1,
+   "trace": false,
+   "ideal": {
+    "clear": 0.9330127018922193,
+    "static": 0.0669872981077807
+   },
+   "idealDensityMatrix": {
+    "clear": 0.9330127018922192,
+    "static": 0.06698729810778074
+   },
+   "noisy": {
+    "clear": 0.9209677991577996,
+    "static": 0.07903220084220018
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 1,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 2,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8061862178478973,
+    "static": 0.19381378215210265
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8061862178478971,
+    "static": 0.19381378215210276
+   },
+   "noisy": {
+    "clear": 0.7976691854456565,
+    "static": 0.20233081455434312
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 2,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 3,
+   "trace": false,
+   "ideal": {
+    "clear": 0.5,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.49999999999999994,
+    "static": 0.49999999999999994
+   },
+   "noisy": {
+    "clear": 0.4999999999999998,
+    "static": 0.49999999999999983
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 3,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 4,
+   "trace": false,
+   "ideal": {
+    "clear": 0.19381378215210276,
+    "static": 0.8061862178478972
+   },
+   "idealDensityMatrix": {
+    "clear": 0.19381378215210276,
+    "static": 0.8061862178478971
+   },
+   "noisy": {
+    "clear": 0.20233081455434312,
+    "static": 0.7976691854456565
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 4,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 5,
+   "trace": false,
+   "ideal": {
+    "clear": 0.0669872981077807,
+    "static": 0.9330127018922193
+   },
+   "idealDensityMatrix": {
+    "clear": 0.06698729810778072,
+    "static": 0.9330127018922192
+   },
+   "noisy": {
+    "clear": 0.07903220084220013,
+    "static": 0.9209677991577996
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 5,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999997,
+    "side|static": 0.12499999999999997
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823997,
+    "side|static": 0.12969472860823994
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 6,
+   "trace": false,
+   "ideal": {
+    "clear": 0.1938137821521027,
+    "static": 0.8061862178478973
+   },
+   "idealDensityMatrix": {
+    "clear": 0.19381378215210274,
+    "static": 0.8061862178478972
+   },
+   "noisy": {
+    "clear": 0.20233081455434304,
+    "static": 0.7976691854456565
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 6,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 7,
+   "trace": false,
+   "ideal": {
+    "clear": 0.49999999999999994,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.49999999999999994,
+    "static": 0.5
+   },
+   "noisy": {
+    "clear": 0.4999999999999998,
+    "static": 0.49999999999999983
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 60,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 7,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.37500000000000006,
+    "front|static": 0.37500000000000006,
+    "side|clear": 0.12499999999999994,
+    "side|static": 0.12499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.375,
+    "front|static": 0.375,
+    "side|clear": 0.12499999999999996,
+    "side|static": 0.12499999999999996
+   },
+   "noisy": {
+    "front|clear": 0.37030527139175984,
+    "front|static": 0.37030527139175984,
+    "side|clear": 0.12969472860823994,
+    "side|static": 0.1296947286082399
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 0,
+   "trace": false,
+   "ideal": {
+    "clear": 0.9330127018922194,
+    "static": 0.06698729810778059
+   },
+   "idealDensityMatrix": {
+    "clear": 0.9330127018922193,
+    "static": 0.06698729810778059
+   },
+   "noisy": {
+    "clear": 0.9209677991577997,
+    "static": 0.07903220084220013
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 0,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 1,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8061862178478973,
+    "static": 0.19381378215210265
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8061862178478971,
+    "static": 0.19381378215210257
+   },
+   "noisy": {
+    "clear": 0.7976691854456566,
+    "static": 0.202330814554343
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 1,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.3703052713917598,
+    "side|static": 0.3703052713917598
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 2,
+   "trace": false,
+   "ideal": {
+    "clear": 0.5,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.4999999999999999,
+    "static": 0.4999999999999999
+   },
+   "noisy": {
+    "clear": 0.49999999999999994,
+    "static": 0.4999999999999999
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 2,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 3,
+   "trace": false,
+   "ideal": {
+    "clear": 0.19381378215210276,
+    "static": 0.8061862178478972
+   },
+   "idealDensityMatrix": {
+    "clear": 0.1938137821521027,
+    "static": 0.8061862178478971
+   },
+   "noisy": {
+    "clear": 0.2023308145543431,
+    "static": 0.7976691854456566
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 3,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.3703052713917598,
+    "side|static": 0.3703052713917598
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 4,
+   "trace": false,
+   "ideal": {
+    "clear": 0.06698729810778065,
+    "static": 0.9330127018922194
+   },
+   "idealDensityMatrix": {
+    "clear": 0.06698729810778059,
+    "static": 0.9330127018922193
+   },
+   "noisy": {
+    "clear": 0.07903220084220013,
+    "static": 0.9209677991577997
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 4,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 5,
+   "trace": false,
+   "ideal": {
+    "clear": 0.19381378215210265,
+    "static": 0.8061862178478973
+   },
+   "idealDensityMatrix": {
+    "clear": 0.19381378215210265,
+    "static": 0.8061862178478973
+   },
+   "noisy": {
+    "clear": 0.20233081455434304,
+    "static": 0.7976691854456568
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 5,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 6,
+   "trace": false,
+   "ideal": {
+    "clear": 0.49999999999999994,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.49999999999999983,
+    "static": 0.5
+   },
+   "noisy": {
+    "clear": 0.4999999999999998,
+    "static": 0.49999999999999994
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 6,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 7,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8061862178478972,
+    "static": 0.19381378215210276
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8061862178478971,
+    "static": 0.19381378215210274
+   },
+   "noisy": {
+    "clear": 0.7976691854456565,
+    "static": 0.20233081455434318
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 7,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.3703052713917598,
+    "side|static": 0.3703052713917598
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 0,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8061862178478973,
+    "static": 0.19381378215210265
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8061862178478971,
+    "static": 0.19381378215210257
+   },
+   "noisy": {
+    "clear": 0.7976691854456567,
+    "static": 0.202330814554343
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 0,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 1,
+   "trace": false,
+   "ideal": {
+    "clear": 0.9330127018922194,
+    "static": 0.06698729810778059
+   },
+   "idealDensityMatrix": {
+    "clear": 0.9330127018922192,
+    "static": 0.06698729810778054
+   },
+   "noisy": {
+    "clear": 0.9209677991577997,
+    "static": 0.07903220084220003
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 1,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 2,
+   "trace": false,
+   "ideal": {
+    "clear": 0.8061862178478973,
+    "static": 0.19381378215210265
+   },
+   "idealDensityMatrix": {
+    "clear": 0.8061862178478971,
+    "static": 0.19381378215210263
+   },
+   "noisy": {
+    "clear": 0.7976691854456567,
+    "static": 0.20233081455434304
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 2,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 3,
+   "trace": false,
+   "ideal": {
+    "clear": 0.5,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.4999999999999999,
+    "static": 0.4999999999999999
+   },
+   "noisy": {
+    "clear": 0.4999999999999999,
+    "static": 0.4999999999999999
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 3,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 4,
+   "trace": false,
+   "ideal": {
+    "clear": 0.19381378215210276,
+    "static": 0.8061862178478972
+   },
+   "idealDensityMatrix": {
+    "clear": 0.19381378215210263,
+    "static": 0.8061862178478971
+   },
+   "noisy": {
+    "clear": 0.20233081455434304,
+    "static": 0.7976691854456567
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 4,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 5,
+   "trace": false,
+   "ideal": {
+    "clear": 0.06698729810778065,
+    "static": 0.9330127018922194
+   },
+   "idealDensityMatrix": {
+    "clear": 0.06698729810778059,
+    "static": 0.9330127018922193
+   },
+   "noisy": {
+    "clear": 0.07903220084220007,
+    "static": 0.9209677991577999
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 5,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 6,
+   "trace": false,
+   "ideal": {
+    "clear": 0.19381378215210265,
+    "static": 0.8061862178478973
+   },
+   "idealDensityMatrix": {
+    "clear": 0.19381378215210257,
+    "static": 0.8061862178478971
+   },
+   "noisy": {
+    "clear": 0.202330814554343,
+    "static": 0.7976691854456567
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 6,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 7,
+   "trace": false,
+   "ideal": {
+    "clear": 0.49999999999999994,
+    "static": 0.5
+   },
+   "idealDensityMatrix": {
+    "clear": 0.4999999999999998,
+    "static": 0.49999999999999994
+   },
+   "noisy": {
+    "clear": 0.49999999999999983,
+    "static": 0.49999999999999994
+   }
+  },
+  {
+   "night": 4,
+   "alphaDeg": 120,
+   "caller": "mimic",
+   "thetaDeg": 45,
+   "dial": 7,
+   "trace": true,
+   "ideal": {
+    "front|clear": 0.12500000000000006,
+    "front|static": 0.12500000000000006,
+    "side|clear": 0.37499999999999994,
+    "side|static": 0.37499999999999994
+   },
+   "idealDensityMatrix": {
+    "front|clear": 0.12500000000000003,
+    "front|static": 0.12500000000000003,
+    "side|clear": 0.37499999999999983,
+    "side|static": 0.37499999999999983
+   },
+   "noisy": {
+    "front|clear": 0.12969472860824,
+    "front|static": 0.12969472860824,
+    "side|clear": 0.37030527139175984,
+    "side|static": 0.37030527139175984
+   }
+  }
+ ]
+}
