@@ -1,0 +1,27 @@
+<header class="lc-header">
+  <p class="kicker">A quantum horror game</p>
+  <h1>The Last Call</h1>
+  <p class="pitch">Your sister calls and asks you to let her in. The intercom shows her at both doors at once: one call, two entrances. Listen to both doors together and the interference pattern tells you <strong>who</strong> is calling. Trace the call and you learn <strong>where</strong> she is, but tracing destroys the interference.</p>
+  <p class="attribution">This effort is supported by Qollab &amp; IonQ</p>
+</header>
+
+<section class="lc-card" aria-labelledby="run-h">
+  <h2 id="run-h">Fresh quantum run</h2>
+  <p id="run-status" role="status" aria-live="polite">Starting…</p>
+  <p class="fine">Pressing Run submits one batched job to the backend chosen in “Select QPU”: 4 calls × 8 dial settings × (listen, trace) = 64 small circuits. Every in-game call then uses one of those measured shots, once.</p>
+  <details id="raw-details" hidden><summary>Measured data for this run (spoilers: shows who is calling)</summary><div id="raw"></div></details>
+  <details><summary>The circuits</summary><pre id="circuit" class="circuit"></pre></details>
+</section>
+
+<section class="lc-card lc-game" aria-labelledby="game-h">
+  <h2 id="game-h">Play</h2>
+  <p id="ar-link" class="fine"></p>
+  <div id="game"></div>
+</section>
+
+<section class="lc-card" aria-labelledby="about-h">
+  <h2 id="about-h">What the circuit does</h2>
+  <p>q0 holds the call. Its two states are the two doors. Ry(α) splits the call between the doors, P(θ) is the caller's hidden phase (Mira: 0, the mimic: a known offset), P(−φ) is your dial, and H recombines the doors at the handset. Measuring q0 gives a clear line (0) or static (1), with P(clear) = ½(1 + sin α cos(θ − φ)).</p>
+  <p>Trace adds a CNOT that copies “which door” onto q1 before recombining. You learn the door; the line becomes a coin flip at every dial, for Mira and the mimic alike.</p>
+  <p class="fine">Edit <code>config.py</code> to change shots. The doors, figures and voices are fiction: the circuit never processes audio. A classical computer can simulate this small circuit; the game is about the rule it teaches.</p>
+</section>

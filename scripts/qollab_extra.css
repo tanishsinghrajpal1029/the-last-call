@@ -1,0 +1,9 @@
+/* Qollab page wrapper (prepended to the app stylesheet by package_qollab.py) */
+.lc-header { max-width: 1100px; margin: 0 auto; padding: 20px 12px 0; }
+.lc-header h1 { font: 700 clamp(2.2rem, 7vw, 3.4rem)/1.05 Georgia, serif; margin: 0.15em 0 0.3em; }
+.lc-card { max-width: 1100px; margin: 12px auto; padding: 12px 16px; border: 1px solid #27393b; border-radius: 12px; background: #0b0f10; }
+.lc-card h2 { margin: 0.2em 0 0.4em; }
+.lc-game { padding: 12px 4px; }
+.lc-game .ui { padding: 0 6px; }
+.attribution { color: #a9b6b3; }
+.raw-table { font-size: 0.85rem; display: block; overflow-x: auto; }
