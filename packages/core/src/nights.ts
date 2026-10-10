@@ -40,6 +40,9 @@ export function validateNights(f: NightsFile): string[] {
     if (!(n.budget >= 1)) e.push("budget " + n.id);
     if (!n.alphaChoicesDeg.length || n.alphaChoicesDeg.some((a) => !(a > 0 && a < 180))) e.push("alpha " + n.id);
     if (!["sister", "mimic", "random"].includes(n.identity)) e.push("identity " + n.id);
+    // the meter and chart use |sin(alpha)|; every choice in a night must share it, or the curves would reveal the lean
+    const vis = n.alphaChoicesDeg.map((a) => Math.abs(Math.sin((a * Math.PI) / 180)));
+    if (vis.some((v) => Math.abs(v - vis[0]!) > 1e-9)) e.push("alpha choices must share |sin(alpha)| " + n.id);
   }
   for (const k of ["p1", "p2", "readout"] as const) {
     const v = f.noise[k];

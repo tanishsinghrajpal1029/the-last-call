@@ -30,6 +30,8 @@ export const bagKey = (nightId: number, dial: number, trace: boolean) => `${nigh
 
 export interface ShotBags {
   backendName: string;
+  /** true when the backend returned probabilities and shots were sampled from them */
+  sampledFromProbabilities?: boolean;
   /** bagKey -> list of decoded outcome keys, one per measured shot */
   bags: Record<string, string[]>;
 }
@@ -37,7 +39,9 @@ export interface ShotBags {
 export function shotBagProvider(data: ShotBags, rng: Rng): Provider & { remaining: (k: string) => number } {
   const queues = new Map<string, string[]>();
   for (const [k, v] of Object.entries(data.bags)) queues.set(k, shuffled(v, rng));
-  const source = "measured shot from " + data.backendName;
+  const source = data.sampledFromProbabilities
+    ? "shot sampled from " + data.backendName + "'s returned probabilities"
+    : "measured shot from " + data.backendName;
   const p = ((req: CallRequest): CallOutcome => {
     const q = queues.get(bagKey(req.nightId, req.dial, req.trace));
     if (!q || !q.length) throw new Error("no measured shots left for this setting; press Run again on Qollab");

@@ -74,12 +74,12 @@ async function main() {
       const t = v.totals;
       bags[k] = expandCounts(k.endsWith("trace") ? t : { clear: t.clear, static: t.static });
     }
-    provider = shotBagProvider({ backendName: run.backendName, bags }, rngFromSeed("shots:" + seed));
-    label = `fresh shots measured on “${run.backendName}” in this Qollab run` + (run.jobId ? ` (job ${run.jobId})` : "") +
+    provider = shotBagProvider({ backendName: run.backendName, bags, sampledFromProbabilities: run.sampledFromProbabilities }, rngFromSeed("shots:" + seed));
+    label = `fresh shots from “${run.backendName}” in this Qollab run` + (run.jobId ? ` (job ${run.jobId})` : "") +
       (run.sampledFromProbabilities ? "; this backend returned probabilities, so shots were sampled from them in Python" : "");
     $("run-status").textContent = `Done in ${run.seconds} s on “${run.backendName}”: ${run.circuits} circuits × ${run.shots} shots` +
       (run.jobId ? `, job ${run.jobId}` : "") + (run.sampledFromProbabilities ? " (probabilities returned; shots sampled from them)" : "") + ". The game below plays on these measured shots.";
-    $("raw").innerHTML = `<table class="score-table raw-table"><thead><tr><th scope="col">Call</th>${Array.from({ length: nights.dialSteps }, (_, k) => `<th scope="col">Listen, dial ${k}</th>`).join("")}<th scope="col">Trace (all dials)</th></tr></thead><tbody>${rawTable(nights, plan, run)}</tbody></table>`;
+    $("raw").innerHTML = `<table class="score-table raw-table"><caption class="fine">Clear-line rate per dial for each call in this run${run.sampledFromProbabilities ? " (shots sampled from the backend's probabilities)" : ""}, with the ideal model for comparison.</caption><thead><tr><th scope="col">Call</th>${Array.from({ length: nights.dialSteps }, (_, k) => `<th scope="col">Listen, dial ${k}</th>`).join("")}<th scope="col">Trace (all dials)</th></tr></thead><tbody>${rawTable(nights, plan, run)}</tbody></table>`;
     $("raw-details").hidden = false;
   } else {
     provider = modelProvider(null, rngFromSeed("fallback:" + seed), nights.dialSteps);

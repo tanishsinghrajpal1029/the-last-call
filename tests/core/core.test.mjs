@@ -40,6 +40,9 @@ test("nights file is valid and run plans are deterministic and fixed", () => {
   const callers = new Set();
   for (let i = 0; i < 200; i++) for (const p of N.planRun(nights, "x" + i).slice(1)) callers.add(p.caller);
   assert.deepEqual([...callers].sort(), ["mimic", "sister"]);
+  const bad = JSON.parse(JSON.stringify(nights));
+  bad.nights[2].alphaChoicesDeg = [60, 150];
+  assert.ok(N.validateNights(bad).some((e) => /share/.test(e)), "asymmetric lean choices would leak through the meter");
   assert.equal(N.correctDoor({ alphaDeg: 90 }), "either");
   assert.equal(N.correctDoor({ alphaDeg: 60 }), "front");
   assert.equal(N.correctDoor({ alphaDeg: 120 }), "side");
@@ -160,6 +163,8 @@ test("shot-bag provider uses each measured shot at most once", () => {
   assert.throws(() => prov(req), /no measured shots/);
   assert.deepEqual(prov({ ...req, trace: true }), { line: "static", door: "side", source: "measured shot from test backend" });
   assert.throws(() => V.expandCounts({ clear: 1.5 }));
+  const sampled = V.shotBagProvider({ backendName: "ionq", sampledFromProbabilities: true, bags: { [V.bagKey(1, 0, false)]: ["clear"] } }, R.rngFromSeed("c"));
+  assert.match(sampled(req).source, /sampled from ionq's returned probabilities/);
 });
 
 test("evidence: listening moves the meter, tracing never does", () => {

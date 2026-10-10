@@ -81,6 +81,12 @@ export class XrView {
       domOverlay: { root: this.overlay },
     });
     const sess = this.xrSession;
+    if (this.ended) {
+      // Exit was tapped while the session was starting: end it rather than orphan it
+      this.xrSession = null;
+      await sess.end().catch(() => undefined);
+      return;
+    }
     sess.addEventListener("end", this.onEnd); // registered first so an early end always cleans up
     try {
       await this.initSession(sess);
@@ -198,7 +204,8 @@ export class XrView {
     this.lastViewer = { pos: [vt.x, vt.y, vt.z] };
     if (this.placing && this.hitSource) {
       const hits = frame.getHitTestResults(this.hitSource);
-      this.reticle = hits.length ? new Float32Array(hits[0].getPose(this.refSpace).transform.matrix) : null;
+      const hp = hits.length ? hits[0].getPose(this.refSpace) : null;
+      this.reticle = hp ? new Float32Array(hp.transform.matrix) : null;
     }
     if (!this.placing && this.anchor) {
       const ap = frame.getPose(this.anchor.anchorSpace, this.refSpace);

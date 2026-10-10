@@ -1,0 +1,60 @@
+== 2026-10-10 full run
+# tests 20
+# pass 20
+# fail 0
+Ran 20 tests in 0.310s
+
+OK (skipped=2)
+PASS start screen renders
+PASS attribution line present
+PASS WebXR button disabled when unsupported (desktop Chromium)
+PASS night 1 intro sheet shown
+PASS tutorial coach asks to listen at dial 0
+PASS listen button highlighted
+PASS first listen logged as clear (ideal, Mira, balanced, dial 0) — Listen dial 0 → clear “It's me. Open the door.”
+PASS calls left decremented
+PASS meter moved toward Mira — Is it Mira? 99% (from your listens; traces don't move it)
+PASS dial at 4
+PASS dial turning is free
+PASS listen at dial 4 is static (destructive interference) — Listen dial 4 → static “—pen th— —oor—”
+PASS coach now asks for a trace
+PASS trace asks for confirmation and explains the cost
+PASS trace logged with a door — Trace dial 4 → static · side door “—s me— —ssshh—”
+PASS caption announces traced door
+PASS keyboard L listens and arrows turn the dial
+PASS one arrow key moves the focused dial one step
+PASS modifier and auto-repeat keys don't make calls
+PASS night 1 result: Mira saved through either door — You chose right
+PASS closing Settings restores the result sheet underneath
+PASS night 2 intro
+PASS night 2: no tutorial coach
+PASS night 3 intro
+PASS night 3: no tutorial coach
+PASS night 4 intro
+PASS night 4: no tutorial coach
+PASS ending sheet with score table and data source
+PASS how-it-works explains trace vs listen
+PASS exit returns to start
+PASS seed URL parameter cannot inject HTML
+PASS phone layout has no horizontal scroll
+PASS no page errors
+PASS marker button enabled on localhost with a camera
+PASS marker tracked in the fake camera stream
+PASS no lost-marker status while tracking
+PASS 3D house rendered over the camera — 31638
+PASS listen works from the AR overlay
+PASS three exit/enter cycles leave exactly one view
+PASS no page errors
+PASS run status names backend, 64 circuits and job — Done in 0.005 s on “built-in simulator (test double)”: 64 circuits × 16 shots, job fake-job-1. The game below plays on these measured shots.
+PASS circuit drawings shown
+PASS spoiler data table available but collapsed
+PASS in-game call uses a measured shot from the backend — “It's me. Open the door.”Listened at dial 0: clear line. Source: measured shot from built-in simulator (test double).
+PASS night 1 dial 0 is clear on the ideal fake backend
+PASS all 7 listens at dial 4 are static (destructive interference in measured data) — Listen dial 4 → static “—pen th— —oor—” | Listen dial 4 → static “—ease—” | Listen dial 4 → static “—hy aren't— —ou—” | Listen dial 4 → static “—old out— —ere—” | Listen dial 4 → static “(only static)” | Listen dial 4 → static “—s me— —ssshh—” | Listen dial 4 → static “—pen th— —oor—”
+PASS budget exhausted after 8 calls
+PASS no page errors
+PASS failed run is reported, not hidden — The run did not complete: RuntimeError: batch rejected. You can still play on the ideal model (clearly labelled), or fix the problem and press Run again.
+PASS fallback outcomes are labelled as the ideal model, not quantum results
+PASS spoiler data table stays hidden
+PASS no page errors
+qollab/: 24 files, largest 28.3 KB

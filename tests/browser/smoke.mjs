@@ -76,6 +76,14 @@ try {
   await page.waitForTimeout(100);
   check("keyboard L listens and arrows turn the dial", (await page.$$("#log li")).length === 4 && (await page.$eval("#dial", (d) => d.getAttribute("aria-valuenow"))) === "3");
   void meter1;
+  // focused dial: one arrow press = one step; held keys and Ctrl+L never spend calls
+  await page.focus("#dial");
+  await page.keyboard.press("ArrowRight");
+  check("one arrow key moves the focused dial one step", (await page.$eval("#dial", (d) => d.getAttribute("aria-valuenow"))) === "4");
+  const before = (await page.$$("#log li")).length;
+  await page.keyboard.press("Control+l");
+  await page.evaluate(() => document.dispatchEvent(new KeyboardEvent("keydown", { key: "l", repeat: true, bubbles: true })));
+  check("modifier and auto-repeat keys don't make calls", (await page.$$("#log li")).length === before);
 
   await page.click("#open-front");
   await page.waitForSelector(".sheet-confirm");
@@ -84,6 +92,11 @@ try {
   const res = await page.textContent(".sheet-result");
   check("night 1 result: Mira saved through either door", /It was Mira/.test(res) && /\+1\d\d/.test(res), res.slice(0, 120));
   await page.screenshot({ path: path.join(root, "artifacts", "screen_result.png") });
+  // Settings over the result sheet, then Escape: the result (and its Next button) must come back
+  await page.evaluate(() => document.getElementById("settings-btn").inert = false); // header is inert under a sheet; force-open via code path
+  await page.evaluate(() => window.__lastCall.ui["showSettings"]());
+  await page.keyboard.press("Escape");
+  check("closing Settings restores the result sheet underneath", !!(await page.$(".sheet-result #next")));
 
   // play the remaining nights: hang up each time
   for (let k = 2; k <= 4; k++) {
@@ -110,6 +123,15 @@ try {
   await page.click("#exit2");
   await page.waitForSelector("#start-form");
   check("exit returns to start", true);
+
+  // seed in the URL is never interpreted as HTML
+  const x = await browser.newPage();
+  let alerted = false;
+  x.on("dialog", async (d) => { alerted = true; await d.dismiss(); });
+  await x.goto(`http://localhost:${port}/?seed=%22%3E%3Cimg%20src%3Dx%20onerror%3Dalert(1)%3E`);
+  await x.waitForSelector("#start-form");
+  await x.waitForTimeout(300);
+  check("seed URL parameter cannot inject HTML", !alerted && !(await x.$("img")));
 
   // phone-sized layout
   const phone = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });

@@ -62,7 +62,14 @@ export class MarkerView {
       });
     } catch (e) {
       this.wrap.remove();
+      this.stopped = true;
       throw new Error("The camera could not be opened (" + (e instanceof Error ? e.name : "error") + "). Allow camera access or play on screen.");
+    }
+    if (this.stopped) {
+      // exited while the permission prompt was open
+      this.stream.getTracks().forEach((t) => t.stop());
+      this.wrap.remove();
+      return;
     }
     this.video.srcObject = this.stream;
     this.watchTrack();
@@ -97,23 +104,37 @@ export class MarkerView {
   };
 
   /** iOS pauses the video and may end camera tracks in the background. */
+  private resuming = false;
+
   private async resumeCamera(): Promise<void> {
-    if (this.stopped || !this.video) return;
-    const track = this.stream?.getVideoTracks()[0];
-    if (!track || track.readyState === "ended") {
-      try {
-        this.stream = await navigator.mediaDevices.getUserMedia({
-          audio: false,
-          video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } },
-        });
-        this.video.srcObject = this.stream;
+    if (this.stopped || !this.video || this.resuming) return;
+    this.resuming = true;
+    try {
+      const track = this.stream?.getVideoTracks()[0];
+      if (!track || track.readyState === "ended") {
+        let fresh: MediaStream;
+        try {
+          fresh = await navigator.mediaDevices.getUserMedia({
+            audio: false,
+            video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } },
+          });
+        } catch {
+          this.markLost("The camera stopped. Exit and start marker AR again.");
+          return;
+        }
+        if (this.stopped) {
+          fresh.getTracks().forEach((t) => t.stop()); // exited meanwhile: never leave the camera on
+          return;
+        }
+        this.stream?.getTracks().forEach((t) => t.stop());
+        this.stream = fresh;
+        this.video.srcObject = fresh;
         this.watchTrack();
-      } catch {
-        this.markLost("The camera stopped. Exit and start marker AR again.");
-        return;
       }
+      await this.video.play().catch(() => undefined);
+    } finally {
+      this.resuming = false;
     }
-    await this.video.play().catch(() => undefined);
   }
 
   private watchTrack(): void {

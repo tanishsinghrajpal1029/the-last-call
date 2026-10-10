@@ -22,6 +22,10 @@ export class Ui {
     off;
     skipTraceConfirm = new Set();
     sheetOpen = null;
+    /** sheets stack: closing a sheet reopens the one beneath it (e.g. Settings over a result) */
+    sheetStack = [];
+    timers = [];
+    disposed = false;
     lastFocus = null;
     onExit = null;
     onRestart = null;
@@ -127,6 +131,9 @@ export class Ui {
         click("exit-btn", () => this.onExit?.());
         const dial = this.q("#dial");
         dial.addEventListener("keydown", (e) => {
+            if (e.repeat || e.ctrlKey || e.metaKey || e.altKey)
+                return;
+            e.stopPropagation(); // the document handler must not move the dial a second time
             if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
                 c.setDial(c.state.night.dial - 1);
                 this.audio.dial();
@@ -151,10 +158,12 @@ export class Ui {
     }
     onKey = (e) => {
         if (this.sheetOpen) {
-            if (e.key === "Escape" && (this.sheetOpen === "how" || this.sheetOpen === "settings" || this.sheetOpen === "confirm"))
+            if (e.key === "Escape" && !e.repeat && (this.sheetOpen === "how" || this.sheetOpen === "settings" || this.sheetOpen === "confirm"))
                 this.closeSheet();
             return;
         }
+        if (e.repeat || e.ctrlKey || e.metaKey || e.altKey)
+            return; // held keys and browser shortcuts never spend calls
         const tag = e.target?.tagName;
         if (tag === "INPUT" || tag === "BUTTON" && (e.key === " " || e.key === "Enter"))
             return;
@@ -241,7 +250,16 @@ export class Ui {
             [msg, target] = n.dial !== 4 ? ["Now turn the dial half a turn, to 4. It shifts the side-door channel by 180°.", "dial-up"] : ["Listen again at dial 4.", "listen-btn"];
         }
         else if (!traced) {
-            [msg, target] = ["At 0 the two door channels added up (clear). At 4 they cancelled (static). That is interference, and it only happens because one call comes through both doors. Now press Trace.", "trace-btn"];
+            const said = (d) => {
+                const at = listens.filter((r) => r.dial === d);
+                if (!at.length)
+                    return null;
+                const clear = at.filter((r) => r.line === "clear").length;
+                return clear === at.length ? "clear" : clear === 0 ? "static" : `${clear} of ${at.length} clear`;
+            };
+            const at0 = said(0), at4 = said(4);
+            const heard = [at0 ? `at dial 0 you heard: ${at0}` : null, at4 ? `at dial 4: ${at4}` : null].filter(Boolean).join("; ");
+            [msg, target] = [`So far ${heard}. On a perfect line her two door channels add up at 0 (clear) and cancel at 4 (static). That is interference, and it only happens because one call comes through both doors. Now press Trace.`, "trace-btn"];
         }
         else {
             [msg, target] = ["Tracing told you which door this call came through, but a traced call is a coin flip at every dial: knowing the door destroyed the interference. Tonight she's balanced between both doors, so either door is right. Open one.", "open-front"];
@@ -264,10 +282,10 @@ export class Ui {
         const speak = () => (r.line === "clear" ? this.audio.say(r.text) : this.audio.staticBurst());
         if (r.kind === "trace") {
             this.audio.traceBeeps();
-            setTimeout(speak, 750);
+            this.later(speak, 750);
         }
         else
-            setTimeout(speak, 200);
+            this.later(speak, 200);
         if (this.c.state.night.callsLeft === 0)
             this.toast("That was the last call. Open a door or hang up.");
     }
@@ -275,20 +293,28 @@ export class Ui {
         const a = this.audio;
         if (res === "letIn") {
             a.door();
-            setTimeout(() => { a.stinger(); a.say("Thank you.", true); }, 900);
+            this.later(() => { a.stinger(); a.say("Thank you.", true); }, 900);
         }
         else if (res === "refused") {
-            setTimeout(() => a.say("Next time.", true), 400);
+            this.later(() => a.say("Next time.", true), 400);
         }
         else if (res === "saved") {
             a.door();
-            setTimeout(() => { a.relief(); a.say("Took you long enough."); }, 900);
+            this.later(() => { a.relief(); a.say("Took you long enough."); }, 900);
         }
         else if (res === "wrongDoor") {
             a.door();
-            setTimeout(() => a.say("Wrong one."), 900);
+            this.later(() => a.say("Wrong one."), 900);
         }
-        setTimeout(() => this.showResult(res), res === "letIn" && !this.c.settings.gentle ? 2600 : 1400);
+        this.later(() => this.showResult(res), res === "letIn" && !this.c.settings.gentle ? 2600 : 1400);
+    }
+    later(fn, ms) {
+        const h = window.setTimeout(() => {
+            this.timers = this.timers.filter((x) => x !== h);
+            if (!this.disposed)
+                fn();
+        }, ms);
+        this.timers.push(h);
     }
     toast(msg) {
         const t = this.q("#toast");
@@ -298,9 +324,16 @@ export class Ui {
         t._h = setTimeout(() => (t.hidden = true), 3500);
     }
     // ---------- sheets ----------
-    openSheet(kind, html, focusSel) {
-        this.lastFocus = document.activeElement;
+    openSheet(kind, html, focusSel, reopen) {
+        if (!this.sheetOpen)
+            this.lastFocus = document.activeElement;
+        const top = this.sheetStack[this.sheetStack.length - 1];
+        if (top && top.kind === kind)
+            top.reopen = reopen;
+        else
+            this.sheetStack.push({ kind, reopen });
         this.sheetOpen = kind;
+        this.setInert(true);
         const wrap = this.q("#sheet-wrap"), sheet = this.q("#sheet");
         sheet.className = "sheet sheet-" + kind;
         sheet.innerHTML = html;
@@ -309,11 +342,28 @@ export class Ui {
         const f = (focusSel && sheet.querySelector(focusSel));
         (f || sheet).focus();
     }
+    /** Close the top sheet; if another sheet was beneath it, show that one again. */
     closeSheet() {
+        this.sheetStack.pop();
+        const prev = this.sheetStack.pop();
+        if (prev) {
+            this.sheetOpen = null;
+            prev.reopen();
+            return;
+        }
         this.sheetOpen = null;
+        this.setInert(false);
         this.q("#sheet-wrap").hidden = true;
         this.onSheet?.(false);
         this.lastFocus?.focus?.();
+    }
+    /** While a sheet is open nothing else in the game can be reached. */
+    setInert(on) {
+        for (const el of Array.from(this.root.children)) {
+            if (el.id === "sheet-wrap" || el.id === "toast")
+                continue;
+            el.inert = on;
+        }
     }
     sheetButtons(sheet, map) {
         for (const [id, fn] of Object.entries(map))
@@ -325,7 +375,7 @@ export class Ui {
       <p class="story">${esc(INTRO[cfg.id] ?? "")}</p>
       <p class="intel"><strong>What you know:</strong> ${esc(cfg.intel)}</p>
       <p class="sub">${cfg.budget} calls before the line dies. Listening and tracing each use one call. Turning the dial is free.</p>
-      <div class="sheet-buttons"><button type="button" class="btn btn-primary" id="answer">Answer the call</button></div>`, "#answer");
+      <div class="sheet-buttons"><button type="button" class="btn btn-primary" id="answer">Answer the call</button></div>`, "#answer", () => this.showIntro());
         this.sheetButtons(this.q("#sheet"), {
             answer: () => {
                 this.closeSheet();
@@ -348,7 +398,7 @@ export class Ui {
       <p>Tracing records which door this call comes through. You learn the door, but this call's line becomes a coin flip at every dial setting, so it tells you nothing about <em>who</em> is calling.</p>
       <p class="sub">Uses 1 call. The next call is a fresh call, untraced unless you trace it too.</p>
       <label class="check"><input type="checkbox" id="no-ask"> Don't ask again for this call</label>
-      <div class="sheet-buttons"><button type="button" class="btn btn-trace" id="do-trace">Trace</button><button type="button" class="btn btn-ghost" id="cancel">Cancel</button></div>`, "#do-trace");
+      <div class="sheet-buttons"><button type="button" class="btn btn-trace" id="do-trace">Trace</button><button type="button" class="btn btn-ghost" id="cancel">Cancel</button></div>`, "#do-trace", () => this.askTrace());
         this.sheetButtons(this.q("#sheet"), {
             "do-trace": () => {
                 if (this.q("#no-ask").checked)
@@ -364,7 +414,7 @@ export class Ui {
             return;
         const what = choice === "hangup" ? "Hang up and keep both doors locked?" : `Open the ${choice} door?`;
         this.openSheet("confirm", `<h2>${what}</h2><p class="sub">This ends the call. It can't be undone.</p>
-      <div class="sheet-buttons"><button type="button" class="btn ${choice === "hangup" ? "btn-hang" : "btn-door"}" id="yes">${choice === "hangup" ? "Hang up" : "Open it"}</button><button type="button" class="btn btn-ghost" id="cancel">Cancel</button></div>`, "#cancel");
+      <div class="sheet-buttons"><button type="button" class="btn ${choice === "hangup" ? "btn-hang" : "btn-door"}" id="yes">${choice === "hangup" ? "Hang up" : "Open it"}</button><button type="button" class="btn btn-ghost" id="cancel">Cancel</button></div>`, "#cancel", () => this.askDecide(choice));
         this.sheetButtons(this.q("#sheet"), {
             yes: () => { this.closeSheet(); this.c.decide(choice); },
             cancel: () => this.closeSheet(),
@@ -389,7 +439,7 @@ export class Ui {
         <li>You listened ${listens}× and traced ${traces}×, with ${n.callsLeft} call${n.callsLeft === 1 ? "" : "s"} to spare. ${cfg.id > 1 ? `The most telling dial settings tonight were ${best.join(" and ")}.` : ""}</li>
         <li>Points: <strong>${n.points >= 0 ? "+" : ""}${n.points}</strong></li>
       </ul>
-      <div class="sheet-buttons"><button type="button" class="btn btn-primary" id="next">${this.c.state.index + 1 >= this.c.nights.nights.length ? "See how the night ends" : "Next call"}</button></div>`, "#next");
+      <div class="sheet-buttons"><button type="button" class="btn btn-primary" id="next">${this.c.state.index + 1 >= this.c.nights.nights.length ? "See how the night ends" : "Next call"}</button></div>`, "#next", () => this.showResult(res));
         this.sheetButtons(this.q("#sheet"), { next: () => { this.closeSheet(); this.c.next(); } });
     }
     showEnding() {
@@ -404,12 +454,11 @@ export class Ui {
       <table class="score-table"><thead><tr><th scope="col">Call</th><th scope="col">Caller</th><th scope="col">You</th><th scope="col">Points</th></tr></thead><tbody>${rows}</tbody>
       <tfoot><tr><th scope="row" colspan="3">Total</th><td><strong>${s.score}</strong></td></tr></tfoot></table>
       <p class="sub">Outcomes came from: ${esc(this.c.sourceLabel)}.</p>
-      <div class="sheet-buttons"><button type="button" class="btn btn-primary" id="again">Play again</button><button type="button" class="btn btn-ghost" id="how2">How it works</button><button type="button" class="btn btn-ghost" id="exit2">Exit</button></div>`, "#again");
+      <div class="sheet-buttons"><button type="button" class="btn btn-primary" id="again">Play again</button><button type="button" class="btn btn-ghost" id="how2">How it works</button><button type="button" class="btn btn-ghost" id="exit2">Exit</button></div>`, "#again", () => this.showEnding());
         this.sheetButtons(this.q("#sheet"), { again: () => this.onRestart?.(), how2: () => this.showHow(), exit2: () => this.onExit?.() });
         this.audio.stopAmbience();
     }
     showHow() {
-        const back = this.sheetOpen && this.sheetOpen !== "how" ? this.sheetOpen : null;
         this.openSheet("how", `<h2>How it works</h2>
       <p><strong>One call, two entrances.</strong> The call is a single qubit. Its two basis states are the two doors. Mira's call is in a superposition of both: not "at one door and we don't know which", but at both in a way that can interfere.</p>
       <p><strong>Listen</strong> recombines the two door channels at the handset (a Hadamard gate) and measures. Whether they add up (clear line) or cancel (static) depends on the phase between them: the caller's hidden phase θ minus your dial φ.</p>
@@ -420,17 +469,10 @@ export class Ui {
       <pre class="circuit">q0 (doors): ─ Ry(α) ─ P(θ) ─ P(−φ) ─●─ H ─ M   → clear / static
                                          │
 q1 (trace record):  ─────────────────────X─────── M   → front / side   (trace only)</pre>
-      <p class="sub"><strong>Honesty notes.</strong> The doors, figures and voices are fiction; the circuit never processes audio. Each outcome only picks which prepared line is shown. Outcomes in this app come from: ${esc(this.c.sourceLabel)}. On Qollab, the game replays fresh shots measured on the backend you chose, one shot per call, each used once. A classical computer can simulate this small circuit; the point is the rule it teaches: coherent alternatives interfere, and recording which path destroys that.</p>
-      <div class="sheet-buttons"><button type="button" class="btn btn-primary" id="close">Close</button></div>`, "#close");
+      <p class="sub"><strong>Honesty notes.</strong> The doors, figures and voices are fiction; the circuit never processes audio. Each outcome only picks which prepared line is shown. Outcomes in this game come from: ${esc(this.c.sourceLabel)}. When a Qollab run succeeds, the game replays shots from the backend you chose, one shot per call, each used once. A classical computer can simulate this small circuit; the point is the rule it teaches: coherent alternatives interfere, and recording which path destroys that.</p>
+      <div class="sheet-buttons"><button type="button" class="btn btn-primary" id="close">Close</button></div>`, "#close", () => this.showHow());
         this.sheetButtons(this.q("#sheet"), {
-            close: () => {
-                if (back === "ending")
-                    this.showEnding();
-                else if (back === "intro")
-                    this.showIntro();
-                else
-                    this.closeSheet();
-            },
+            close: () => this.closeSheet(),
         });
     }
     showSettings() {
@@ -443,7 +485,7 @@ q1 (trace record):  ────────────────────
       ${row("set-meter", "Evidence meter", s.meter)}
       ${row("set-motion", "Reduce motion and flicker", s.reducedMotion)}
       <p class="sub">Captions are always on.</p>
-      <div class="sheet-buttons"><button type="button" class="btn btn-primary" id="close">Done</button></div>`, "#close");
+      <div class="sheet-buttons"><button type="button" class="btn btn-primary" id="close">Done</button></div>`, "#close", () => this.showSettings());
         const sheet = this.q("#sheet");
         const bindBox = (id, fn) => sheet.querySelector("#" + id).addEventListener("change", (e) => fn(e.target.checked));
         bindBox("set-voice", (v) => { s.voice = v; this.audio.voice = v; });
@@ -457,6 +499,10 @@ q1 (trace record):  ────────────────────
         this.sheetButtons(sheet, { close: () => this.closeSheet() });
     }
     dispose() {
+        this.disposed = true;
+        for (const h of this.timers)
+            clearTimeout(h);
+        this.timers = [];
         this.off();
         document.removeEventListener("keydown", this.onKey);
         this.feed?.dispose();

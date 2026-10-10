@@ -177,6 +177,8 @@ export class Audio {
   }
 
   dispose(): void {
+    this.voice = false; // any late timer must stay silent
+    this.sound = false;
     this.stopAmbience();
     try {
       window.speechSynthesis?.cancel();

@@ -19,6 +19,7 @@ const settings: Settings = defaultSettings();
 let running: { dispose: () => void } | null = null;
 let nights: NightsFile;
 let caps = { xr: false, camera: false };
+const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
 function randomSeed(): string {
   const a = new Uint32Array(1);
@@ -57,13 +58,13 @@ async function main(): Promise<void> {
 function showStart(message = ""): void {
   running?.dispose();
   running = null;
-  const seed = params.get("seed") || randomSeed();
+  const seed = (params.get("seed") || randomSeed()).replace(/[^0-9A-Za-z_-]/g, "").slice(0, 12) || randomSeed();
   app.innerHTML = `
   <main class="start">
     <p class="kicker">A quantum horror game · Qollab × IonQ Global Quantum Hackathon</p>
     <h1>The Last Call</h1>
     <p class="pitch">Your sister calls and asks you to let her in. The intercom shows her at <em>both</em> doors at once: one call, two entrances. Listen to both doors together and the pattern tells you <strong>who</strong> is calling. Trace the call and you learn <strong>where</strong> she is, but tracing destroys the very interference that told you who she was.</p>
-    ${message ? `<p class="notice" role="alert">${message}</p>` : ""}
+    ${message ? `<p class="notice" role="alert">${esc(message)}</p>` : ""}
     <p class="content-note"><strong>Content note:</strong> mild horror, a creepy voice and sudden sounds (turn on Gentle mode below). No gore.</p>
     <form class="start-form" id="start-form">
       <div class="modes">
@@ -82,7 +83,7 @@ function showStart(message = ""): void {
         <label><input type="checkbox" id="opt-sound" ${settings.sound ? "checked" : ""}> Sound</label>
         <label><input type="checkbox" id="opt-gentle" ${settings.gentle ? "checked" : ""}> Gentle mode (no loud stingers)</label>
         <label><input type="checkbox" id="opt-meter" ${settings.meter ? "checked" : ""}> Evidence meter</label>
-        <label class="seed">Run seed <input id="seed" value="${seed}" inputmode="numeric" maxlength="12" aria-describedby="seed-help"></label>
+        <label class="seed">Run seed <input id="seed" value="${esc(seed)}" inputmode="numeric" maxlength="12" aria-describedby="seed-help"></label>
         <p class="fine" id="seed-help">The seed fixes who calls each night and how each call leans. Call outcomes are always fresh.</p>
       </fieldset>
     </form>

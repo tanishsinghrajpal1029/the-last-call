@@ -92,6 +92,16 @@ def run_calls(backend, plan_json, seed):
                     specs.append((int(p["nightId"]), k, trace))
                     circuits.append(build_call(math.radians(float(p["alphaDeg"])), math.radians(float(p["thetaDeg"])),
                                                dial_angle(k, steps), trace, name="n%d-d%d-%s" % (p["nightId"], k, "t" if trace else "l")))
+        # Map to the backend's gate set when possible (needed for device-noise
+        # backends, whose noise is attached to native gates). If the backend
+        # cannot be targeted by transpile, submit the circuits as built.
+        try:
+            from qiskit import transpile
+            circuits = transpile(circuits, backend=backend, optimization_level=0)
+            out["transpiled"] = True
+        except Exception as e:  # noqa: BLE001
+            out["transpiled"] = False
+            out["transpileNote"] = "%s: %s" % (type(e).__name__, e)
         job = backend.run(circuits, shots=config.SHOTS)
         try:
             out["jobId"] = job.job_id()

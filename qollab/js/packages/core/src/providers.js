@@ -28,7 +28,9 @@ export function shotBagProvider(data, rng) {
     const queues = new Map();
     for (const [k, v] of Object.entries(data.bags))
         queues.set(k, shuffled(v, rng));
-    const source = "measured shot from " + data.backendName;
+    const source = data.sampledFromProbabilities
+        ? "shot sampled from " + data.backendName + "'s returned probabilities"
+        : "measured shot from " + data.backendName;
     const p = ((req) => {
         const q = queues.get(bagKey(req.nightId, req.dial, req.trace));
         if (!q || !q.length)
