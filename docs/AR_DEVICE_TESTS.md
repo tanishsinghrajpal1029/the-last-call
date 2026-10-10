@@ -10,7 +10,10 @@ until the results table has real rows.
 | Marker detection + pose maths on synthetic images (5 poses, 4 print rotations) | Node 22 | pass | `tests/core/marker.test.mjs` |
 | Marker AR end-to-end with a synthetic fake camera: marker tracked, 3D house drawn over the video, Listen works from the overlay, 3 exit/enter cycles leave one view, no errors | Headless Chromium (Playwright), `--use-file-for-fake-video-capture` | pass | `tests/browser/marker_e2e.mjs`, `artifacts/marker_*fake_camera.png` |
 | WebXR button disabled when `immersive-ar` is unsupported | Headless Chromium | pass | `tests/browser/smoke.mjs` |
+| Look-around AR (no marker): fake camera + synthetic `deviceorientation` events; house placed ahead, leaves the view when turned 120° away, returns when turned back, Listen works, exit cleans up | Headless Chromium | pass | `tests/browser/gyro_e2e.mjs`, `artifacts/gyro_fake_camera.png` |
+| Orientation maths (upright/north, turning, flat, landscape, orthonormal) | Node 22 | pass | `tests/core/gyro.test.mjs` |
 | WebXR session, hit test, anchors, DOM overlay | none | **not tested** (no device or emulator) | none |
+| Real motion sensors and the iOS Motion & Orientation prompt | none | **not tested** | none |
 
 The marker and WebXR plumbing is adapted from the Dark Sweeper AR views written earlier in this
 hackathon, which were also not yet device-tested. A code review pass fixed start/stop races
@@ -30,8 +33,10 @@ Camera and WebXR need a secure context; `http://<laptop-ip>:8080` is not one.
 ## Protocol (repeat per phone)
 
 1. Open the HTTPS address. Note which AR buttons are enabled.
-2. **Android:** *Play in AR on your table*; grant camera. **iPhone:** print `marker.html` at 100%
-   (black square = 120 mm), lay it flat in even light, *Play in AR with the printed marker*.
+2. **Android:** *Play in AR on your table*; grant camera. **iPhone, no marker:** *Play in AR, no
+   marker*; allow camera and Motion & Orientation; hold the phone up; turn left/right and tilt: the
+   house should stay fixed in the room; press Recenter. **iPhone, marker:** print `marker.html` at
+   100% (black square = 120 mm), lay it flat in even light, *Play in AR on a printed marker*.
 3. Placement: WebXR — move until the ring appears, try Smaller/Larger, tap to place. Marker — point
    at the marker; the house should appear on the paper.
 4. Walk half way around the table. Does the house stay on the table? Note drift.

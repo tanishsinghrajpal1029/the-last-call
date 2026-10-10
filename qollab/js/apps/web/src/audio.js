@@ -1,6 +1,8 @@
 /**
- * All sound is generated in code (Web Audio) and the voice uses the device's
- * built-in speech synthesis. No audio files. Everything fails silently: the
+ * Sound effects are generated in code (Web Audio). Spoken lines are pre-rendered
+ * clips (Piper TTS, MIT, with the LibriTTS-trained voice, CC BY 4.0; see
+ * THIRD_PARTY_NOTICES.md) embedded in voicedata.ts; if a clip can't play, the
+ * device's speech synthesis is used instead. Everything fails silently: the
  * captions always carry the full content.
  */
 export class Audio {
@@ -150,6 +152,104 @@ export class Audio {
     relief() {
         [392, 494, 587].forEach((f, i) => this.tone(f, 1.6, 0.05, i * 0.12, "sine"));
     }
+    // ---------- recorded (neural TTS) voice clips ----------
+    clips = new Map();
+    clipData = null;
+    loading = null;
+    current = null;
+    voiceToken = 0;
+    /** Load the pre-rendered voice clips (lazy; a separate module). */
+    loadVoices() {
+        if (!this.loading) {
+            this.loading = import("./voicedata.js")
+                .then((m) => { this.clipData = m.VOICES; })
+                .catch(() => { this.clipData = null; });
+        }
+        return this.loading;
+    }
+    async clip(id) {
+        const c = this.ctx;
+        if (!c)
+            return null;
+        const hit = this.clips.get(id);
+        if (hit)
+            return hit;
+        await this.loadVoices();
+        const b64 = this.clipData?.[id];
+        if (!b64)
+            return null;
+        try {
+            const bin = atob(b64);
+            const bytes = new Uint8Array(bin.length);
+            for (let i = 0; i < bin.length; i++)
+                bytes[i] = bin.charCodeAt(i);
+            const buf = await c.decodeAudioData(bytes.buffer);
+            this.clips.set(id, buf);
+            return buf;
+        }
+        catch {
+            return null;
+        }
+    }
+    /**
+     * Play a recorded line by id. Falls back to the device's speech synthesis
+     * with `fallbackText` if the clip can't be played. Interrupts the previous line.
+     */
+    async voiceLine(id, fallbackText, eerie = false) {
+        if (!this.voice)
+            return;
+        const token = ++this.voiceToken;
+        const buf = await this.clip(id);
+        if (!this.voice || token !== this.voiceToken)
+            return; // a newer line (or stop) superseded this one
+        const c = this.ctx;
+        if (!buf || !c || !this.master) {
+            if (fallbackText)
+                this.say(fallbackText, eerie);
+            return;
+        }
+        try {
+            this.current?.stop();
+        }
+        catch {
+            /* already stopped */
+        }
+        try {
+            window.speechSynthesis?.cancel();
+        }
+        catch {
+            /* ignore */
+        }
+        const src = c.createBufferSource();
+        src.buffer = buf;
+        const g = c.createGain();
+        g.gain.value = 1.0;
+        src.connect(g).connect(this.master);
+        src.start();
+        this.current = src;
+    }
+    stopVoice() {
+        this.voiceToken++;
+        try {
+            this.current?.stop();
+        }
+        catch {
+            /* ignore */
+        }
+        this.current = null;
+        try {
+            window.speechSynthesis?.cancel();
+        }
+        catch {
+            /* ignore */
+        }
+    }
+    knock() {
+        for (let i = 0; i < 3; i++) {
+            this.tone(90, 0.18, 0.22, i * 0.32, "sine", 55);
+            this.noise(0.08, 300, 1, 0.18, i * 0.32, "lowpass");
+        }
+    }
     /** Speak with the device voice. `eerie` lowers and slows it. */
     say(text, eerie = false) {
         if (!this.voice)
@@ -175,6 +275,7 @@ export class Audio {
         }
     }
     dispose() {
+        this.stopVoice();
         this.voice = false; // any late timer must stay silent
         this.sound = false;
         this.stopAmbience();

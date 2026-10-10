@@ -8,9 +8,10 @@ import { Audio } from "./audio.js";
 import { Controller, Settings } from "./controller.js";
 import { MarkerView } from "./ar/marker.js";
 import { XrView, xrSupported } from "./ar/xr.js";
+import { GyroView, gyroCapable, requestMotionPermission } from "./ar/gyro.js";
 import { Ui } from "./ui.js";
 
-type Mode = "screen" | "xr" | "marker";
+type Mode = "screen" | "xr" | "marker" | "gyro";
 type Source = "ideal" | "noisy";
 
 const app = document.getElementById("app")!;
@@ -18,7 +19,7 @@ const params = new URLSearchParams(location.search);
 const settings: Settings = defaultSettings();
 let running: { dispose: () => void } | null = null;
 let nights: NightsFile;
-let caps = { xr: false, camera: false };
+let caps = { xr: false, camera: false, gyro: false };
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
 function randomSeed(): string {
@@ -47,7 +48,7 @@ async function main(): Promise<void> {
     app.innerHTML = `<main class="start"><h1>The Last Call</h1><p role="alert">${(e as Error).message}</p></main>`;
     return;
   }
-  caps = { xr: await xrSupported(), camera: window.isSecureContext && !!navigator.mediaDevices?.getUserMedia };
+  caps = { xr: await xrSupported(), camera: window.isSecureContext && !!navigator.mediaDevices?.getUserMedia, gyro: gyroCapable() };
   if (params.get("autostart") === "screen") {
     launch("screen", (params.get("source") as Source) || "ideal", params.get("seed") || randomSeed());
     return;
@@ -69,7 +70,8 @@ function showStart(message = ""): void {
     <form class="start-form" id="start-form">
       <div class="modes">
         <button type="submit" class="btn btn-primary btn-big" data-mode="xr" ${caps.xr ? "" : "disabled"}>Play in AR on your table <span class="sub">${caps.xr ? "Android Chrome (WebXR)" : "needs Chrome on an ARCore Android phone, over HTTPS"}</span></button>
-        <button type="submit" class="btn btn-primary btn-big" data-mode="marker" ${caps.camera ? "" : "disabled"}>Play in AR with the printed marker <span class="sub">${caps.camera ? "iPhone Safari and others; print the marker first" : "needs a camera and an HTTPS page"}</span></button>
+        <button type="submit" class="btn btn-primary btn-big" data-mode="gyro" ${caps.gyro ? "" : "disabled"}>Play in AR, no marker (iPhone) <span class="sub">${caps.gyro ? "camera + motion sensors: turn to look around; the house stays put" : "needs a phone camera, motion sensors and an HTTPS page"}</span></button>
+        <button type="submit" class="btn btn-secondary btn-big" data-mode="marker" ${caps.camera ? "" : "disabled"}>Play in AR on a printed marker <span class="sub">${caps.camera ? "full table tracking on iPhone: walk around the house" : "needs a camera and an HTTPS page"}</span></button>
         <button type="submit" class="btn btn-secondary btn-big" data-mode="screen">Play on this screen <span class="sub">desktop or phone, keyboard friendly</span></button>
       </div>
       <p><a href="./marker.html" target="_blank" rel="noopener">Open the printable marker</a> (print at 100%, 120 mm square).</p>
@@ -94,6 +96,8 @@ function showStart(message = ""): void {
     e.preventDefault();
     const btn = (e as SubmitEvent).submitter as HTMLButtonElement | null;
     const mode = (btn?.dataset.mode as Mode) || "screen";
+    // iOS only allows the motion-sensor prompt directly inside the tap
+    const motion = mode === "gyro" ? requestMotionPermission() : Promise.resolve(true);
     const source = ((form.querySelector('input[name="source"]:checked') as HTMLInputElement)?.value as Source) || "ideal";
     const get = (id: string) => (document.getElementById(id) as HTMLInputElement).checked;
     settings.voice = get("opt-voice");
@@ -101,7 +105,10 @@ function showStart(message = ""): void {
     settings.gentle = get("opt-gentle");
     settings.meter = get("opt-meter");
     const s = (document.getElementById("seed") as HTMLInputElement).value.trim() || randomSeed();
-    launch(mode, source, s);
+    void motion.then((ok) => {
+      if (mode === "gyro" && !ok) { showStart("Motion & Orientation access was not allowed, so look-around AR can't follow the phone. Allow it in the prompt, or use the printed marker."); return; }
+      launch(mode, source, s);
+    });
   });
 }
 
@@ -137,8 +144,8 @@ function launch(mode: Mode, source: Source, seed: string): void {
     showStart();
   };
   // eslint-disable-next-line prefer-const
-  let view: XrView | MarkerView;
-  view = mode === "xr" ? new XrView(controller, mountUi, exit) : new MarkerView(controller, mountUi, exit);
+  let view: XrView | MarkerView | GyroView;
+  view = mode === "xr" ? new XrView(controller, mountUi, exit) : mode === "gyro" ? new GyroView(controller, mountUi, exit) : new MarkerView(controller, mountUi, exit);
   running = { dispose: () => { void view.stop(); audio.dispose(); } };
   (window as any).__lastCall = { controller, view };
   view.start(app).catch((e: Error) => {

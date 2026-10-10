@@ -11,6 +11,15 @@ The player needs two answers and the two tools each give one:
 | Who is calling? | Listen at chosen dial settings | a traced call is 50/50 at every dial, for both callers |
 | Which door? | Trace | listening depends only on sin α, identical for both doors |
 
+## The walkthrough (call 1)
+
+Seven gated steps in the Guide panel: How to win → Two doors (superposition) → Listen → Turn the
+dial (interference) → The voiceprint → Trace (measurement destroys interference) → Decide. Each
+step enables only the control it teaches, highlights it, then explains the actual result in game
+terms and quantum terms. The walkthrough never lets optional calls use up the calls later steps
+need, and jumps straight to the decision if the calls run out. From call 2 on, the Guide shows a
+WHO / WHERE / DECIDE checklist with a tip, and a "What just happened" explanation after each call.
+
 ## A night
 
 | Call | Calls | Lean (α) | Mimic offset | Caller |

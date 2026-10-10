@@ -51,5 +51,5 @@ export function evidenceChart(f: NightsFile, cfg: NightConfig, alphaDeg: number,
     ${pts.join("")}${ticks}
     <text x="${(L + W - R) / 2}" y="${H - 4}" text-anchor="middle" class="ch-t">dial setting · y: how often the line came through clear</text>
   </svg>
-  <p class="legend"><span class="lg-sister"></span> if it's Mira <span class="lg-mimic"></span> if it isn't <span class="lg-pt"></span> your listens (with 95% range)</p>`;
+  <p class="legend"><span class="lg-item"><span class="lg-sister"></span> Mira's voiceprint</span><span class="lg-item"><span class="lg-mimic"></span> impostor's voiceprint</span><span class="lg-item"><span class="lg-pt"></span> your listens</span></p>`;
 }

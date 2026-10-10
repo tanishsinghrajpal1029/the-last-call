@@ -8,7 +8,8 @@
 
 import { Controller } from "../controller.js";
 import { Renderer, RGBA } from "./gl.js";
-import { Mat4, multiply, rotationY, rotationZ, scaling, segmentMatrix, translation, Vec3 } from "./math.js";
+import { figureSprite } from "../art.js";
+import { Mat4, multiply, rotationX, rotationY, rotationZ, scaling, segmentMatrix, translation, Vec3 } from "./math.js";
 
 const C = {
   ground: [0.07, 0.1, 0.1, 0.94] as RGBA,
@@ -38,6 +39,7 @@ const withA = (c: RGBA, a: number): RGBA => [c[0], c[1], c[2], c[3] * a];
 const BASE_WIDTH = 0.34;
 
 export class HousePainter {
+  private figTex: WebGLTexture | null = null;
   constructor(private r: Renderer) {}
 
   draw(board: Mat4, c: Controller, width: number, now: number): void {
@@ -92,9 +94,10 @@ export class HousePainter {
       }
       if (a > 0.01) {
         const sway = c.settings.reducedMotion ? 0 : Math.sin(now * 0.8 + x * 40) * 0.002;
-        const fz = v.result === "letIn" && n.decision === door ? -0.012 - Math.min(0.02, resAge * 0.02) : -0.01;
-        box(x + sway, 0.032, fz, 0.024, 0.05, 0.014, withA(C.figure, a));
-        sphere([x + sway, 0.068, fz], 0.022, withA(C.figure, a));
+        const fz = v.result === "letIn" && n.decision === door ? -0.012 - Math.min(0.02, resAge * 0.02) : -0.008;
+        if (!this.figTex) this.figTex = r.texture(figureSprite(256));
+        const fh = 0.095, fw = fh / 2;
+        r.drawTextured(this.figTex, at(multiply(translation(x + sway, fh / 2, fz), multiply(rotationX(Math.PI / 2), scaling(fw, 1, fh)))), [1, 1, 1, a]);
       }
     }
 

@@ -189,3 +189,15 @@ test("dial information: on the last night the best dials are not Mira's own sett
   const tally = E.doorTally([{ kind: "trace", door: "front" }, { kind: "trace", door: "side" }, { kind: "trace", door: "front" }, { kind: "listen" }]);
   assert.deepEqual(tally, { front: 2, side: 1 });
 });
+
+test("every spoken game line has a recorded clip with the same text", async () => {
+  const L = await J("lines.js");
+  const voices = JSON.parse(readFileSync(path.join(root, "shared/voice_lines.json"), "utf8"));
+  const byId = Object.fromEntries(voices.lines.map((l) => [l.id, l.text]));
+  L.CLEAR_LINES.forEach((t, i) => assert.equal(byId["clear_" + i], t));
+  L.STATIC_LINES.forEach((t, i) => assert.equal(byId["static_" + i], t));
+  for (const [k, t] of Object.entries(L.INTRO)) assert.equal(byId["intro_" + k], t);
+  const manifest = JSON.parse(readFileSync(path.join(root, "data/voices/manifest.json"), "utf8"));
+  assert.equal(manifest.version, voices.version);
+  for (const l of voices.lines) assert.ok(manifest.files[l.id] && manifest.files[l.id].text === l.text, "clip for " + l.id + " is current");
+});

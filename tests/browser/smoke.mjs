@@ -39,15 +39,25 @@ try {
   check("night 1 intro sheet shown", /The first call/.test(await page.textContent(".sheet-intro")));
   await page.click("#answer");
   await page.waitForSelector("#sheet-wrap", { state: "hidden" });
-  check("tutorial coach asks to listen at dial 0", /Press Listen/.test(await page.textContent("#coach")));
+  const guide = () => page.textContent("#guide-card");
+  check("walkthrough step 1 explains how to win (WHO and WHERE)", /WHO/.test(await guide()) && /WHERE/.test(await guide()));
+  check("stepper shows 7 stages", (await page.$$("#stepper li")).length === 7);
+  check("step 1 gates the controls (listen disabled)", await page.$eval("#listen-btn", (b) => b.disabled));
+  await page.click("#stage-next");
+  check("step 2 explains superposition", /Superposition/.test(await guide()));
+  await page.click("#stage-next");
+  check("step 3 asks to listen at dial 0; trace still locked", /press <strong>Listen<\/strong>|press Listen/i.test(await page.innerHTML("#guide-card")) && await page.$eval("#trace-btn", (b) => b.disabled));
   check("listen button highlighted", await page.$eval("#listen-btn", (b) => b.classList.contains("hl")));
 
   await page.click("#listen-btn");
   await page.waitForTimeout(100);
   let log = await page.$$eval("#log li", (l) => l.map((x) => x.textContent));
   check("first listen logged as clear (ideal, Mira, balanced, dial 0)", log.length === 1 && /clear/.test(log[0]), log[0]);
+  check("guide explains the result with both voiceprints", /Mira comes through clear over 99%/.test(await guide()));
   check("calls left decremented", /7 of 8/.test(await page.$eval("#calls-chip .pips", (e) => e.getAttribute("aria-label"))));
-  check("meter moved toward Mira", /Is it Mira\? (9\d%|over 99%)/.test(await page.textContent("#meter")), await page.textContent("#meter"));
+  check("WHO meter moved toward Mira", /Chance it's Mira: (9\d%|over 99%)/.test(await page.textContent("#meter")), await page.textContent("#meter"));
+  await page.click("#stage-next");
+  check("step 4 explains interference", /Interference/.test(await guide()));
 
   for (let i = 0; i < 4; i++) await page.click("#dial-up");
   check("dial at 4", (await page.$eval("#dial", (d) => d.getAttribute("aria-valuenow"))) === "4");
@@ -56,8 +66,11 @@ try {
   await page.waitForTimeout(100);
   log = await page.$$eval("#log li", (l) => l.map((x) => x.textContent));
   check("listen at dial 4 is static (destructive interference)", /static/.test(log[0]), log[0]);
-  check("coach now asks for a trace", /press Trace/i.test(await page.textContent("#coach")));
   await page.screenshot({ path: path.join(root, "artifacts", "screen_listen.png") });
+  await page.click("#stage-next");
+  check("step 5 introduces the voiceprint", /voiceprint/.test(await guide()));
+  await page.click("#stage-next");
+  check("step 6 asks to trace; listen now locked", /Trace/.test(await guide()) && await page.$eval("#listen-btn", (b) => b.disabled));
 
   await page.click("#trace-btn");
   await page.waitForSelector(".sheet-confirm");
@@ -66,16 +79,19 @@ try {
   await page.waitForTimeout(100);
   log = await page.$$eval("#log li", (l) => l.map((x) => x.textContent));
   check("trace logged with a door", /Trace.*(front|side) door/.test(log[0]), log[0]);
-  const meter1 = await page.textContent("#meter");
   check("caption announces traced door", /Traced at dial 4/.test(await page.textContent("#caption")));
+  check("guide explains measurement destroys interference", /destroys interference/.test(await guide()));
   await page.screenshot({ path: path.join(root, "artifacts", "screen_trace.png") });
+  await page.click("#stage-next");
+  check("step 7: decide, all controls unlocked", /Decide/.test(await guide()) && !(await page.$eval("#open-front", (b) => b.disabled)) && !(await page.$eval("#listen-btn", (b) => b.disabled)));
 
+  const clipSecs = await page.evaluate(async () => { const a = window.__lastCall.audio; a.unlock(); const b = await a["clip"]("clear_0"); return b ? b.duration : 0; });
+  check("recorded neural voice clip decodes in the browser", clipSecs > 1, clipSecs.toFixed(2) + " s");
   // keyboard: L listens
   await page.keyboard.press("ArrowLeft");
   await page.keyboard.press("l");
   await page.waitForTimeout(100);
   check("keyboard L listens and arrows turn the dial", (await page.$$("#log li")).length === 4 && (await page.$eval("#dial", (d) => d.getAttribute("aria-valuenow"))) === "3");
-  void meter1;
   // focused dial: one arrow press = one step; held keys and Ctrl+L never spend calls
   await page.focus("#dial");
   await page.keyboard.press("ArrowRight");
@@ -105,8 +121,12 @@ try {
     check(`night ${k} intro`, new RegExp(`Call ${k} of 4`).test(await page.textContent(".sheet-intro")));
     await page.click("#answer");
     await page.waitForSelector("#sheet-wrap", { state: "hidden" });
-    check(`night ${k}: no tutorial coach`, await page.$eval("#coach", (c) => c.hidden));
+    check(`night ${k}: guide shows the goal checklist, no stepper`, /WHO is calling\?/.test(await page.textContent("#guide-card")) && await page.$eval("#stepper", (c) => c.hidden));
     for (let i = 0; i < 3; i++) await page.click("#listen-btn");
+    if (k === 3) {
+      check("after a listen the guide explains it in game and quantum terms", /What just happened/.test(await page.textContent("#guide-card")) && /Quantum/i.test(await page.textContent("#guide-card")));
+      await page.screenshot({ path: path.join(root, "artifacts", "screen_case.png") });
+    }
     await page.click("#hangup");
     await page.click("#yes");
     await page.waitForSelector(".sheet-result", { timeout: 5000 });
@@ -133,12 +153,37 @@ try {
   await x.waitForTimeout(300);
   check("seed URL parameter cannot inject HTML", !alerted && !(await x.$("img")));
 
+  // the walkthrough can't be soft-locked by spending calls early
+  const w = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  w.on("pageerror", (e) => errors.push(String(e)));
+  await w.goto(`http://localhost:${port}/?autostart=screen&seed=5`);
+  await w.waitForSelector(".sheet-intro");
+  await w.click("#answer");
+  await w.click("#stage-next");
+  await w.click("#stage-next");
+  for (let i = 0; i < 10; i++) await w.keyboard.press("l");
+  const left = await w.$eval("#calls-chip .pips", (e) => e.getAttribute("aria-label"));
+  check("walkthrough keeps the calls the remaining steps need", /^2 of 8$/.test(left), left);
+  await w.click("#stage-next");
+  for (let i = 0; i < 4; i++) await w.click("#dial-up");
+  await w.click("#listen-btn");
+  await w.click("#stage-next");
+  await w.click("#stage-next");
+  await w.click("#trace-btn");
+  await w.click("#do-trace");
+  await w.waitForTimeout(100);
+  if (await w.$("#stage-next")) await w.click("#stage-next"); // out of calls jumps straight to the decision
+  check("…and still reaches the decision", !(await w.$eval("#open-front", (b) => b.disabled)));
+  await w.close();
+
   // phone-sized layout
   const phone = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   phone.on("pageerror", (e) => errors.push(String(e)));
   await phone.goto(`http://localhost:${port}/?autostart=screen&seed=7`);
   await phone.waitForSelector(".sheet-intro");
   await phone.tap("#answer");
+  await phone.tap("#stage-next");
+  await phone.tap("#stage-next");
   await phone.tap("#listen-btn");
   const overflow = await phone.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
   check("phone layout has no horizontal scroll", !overflow);

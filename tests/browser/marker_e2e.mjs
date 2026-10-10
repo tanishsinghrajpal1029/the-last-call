@@ -50,6 +50,8 @@ try {
     return n;
   });
   check("3D house rendered over the camera", drawn > 500, String(drawn));
+  await page.click("#stage-next");
+  await page.click("#stage-next");
   await page.click("#listen-btn");
   await page.waitForTimeout(200);
   check("listen works from the AR overlay", (await page.$$("#log li")).length === 1);

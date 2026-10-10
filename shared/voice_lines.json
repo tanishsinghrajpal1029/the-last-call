@@ -1,0 +1,228 @@
+{
+ "version": "voices-v1",
+ "model": "Piper en-us-libritts-high (LibriTTS, CC BY 4.0)",
+ "voices": {
+  "mira": {
+   "speaker": 12,
+   "length_scale": 1.08,
+   "noise_scale": 0.75
+  },
+  "narrator": {
+   "speaker": 90,
+   "length_scale": 1.12,
+   "noise_scale": 0.6
+  }
+ },
+ "lines": [
+  {
+   "id": "clear_0",
+   "text": "It's me. Open the door.",
+   "voice": "mira",
+   "fx": "phone"
+  },
+  {
+   "id": "clear_1",
+   "text": "I'm freezing out here.",
+   "voice": "mira",
+   "fx": "phone"
+  },
+  {
+   "id": "clear_2",
+   "text": "The car wouldn't start.",
+   "voice": "mira",
+   "fx": "phone"
+  },
+  {
+   "id": "clear_3",
+   "text": "Please. It's so dark.",
+   "voice": "mira",
+   "fx": "phone"
+  },
+  {
+   "id": "clear_4",
+   "text": "Why aren't you opening?",
+   "voice": "mira",
+   "fx": "phone"
+  },
+  {
+   "id": "clear_5",
+   "text": "I can hear you on the line.",
+   "voice": "mira",
+   "fx": "phone"
+  },
+  {
+   "id": "clear_6",
+   "text": "It's really me. Open the door.",
+   "voice": "mira",
+   "fx": "phone"
+  },
+  {
+   "id": "clear_7",
+   "text": "Don't make me wait out here.",
+   "voice": "mira",
+   "fx": "phone"
+  },
+  {
+   "id": "clear_8",
+   "text": "You know my voice.",
+   "voice": "mira",
+   "fx": "phone"
+  },
+  {
+   "id": "clear_9",
+   "text": "I'm right here.",
+   "voice": "mira",
+   "fx": "phone"
+  },
+  {
+   "id": "clear_10",
+   "text": "Please.",
+   "voice": "mira",
+   "fx": "phone"
+  },
+  {
+   "id": "clear_11",
+   "text": "Open the door.",
+   "voice": "mira",
+   "fx": "phone"
+  },
+  {
+   "id": "static_0",
+   "text": "—pen th— —oor—",
+   "speak": "open the door",
+   "voice": "mira",
+   "fx": "static"
+  },
+  {
+   "id": "static_1",
+   "text": "—s me— —ssshh—",
+   "speak": "it's me",
+   "voice": "mira",
+   "fx": "static"
+  },
+  {
+   "id": "static_2",
+   "text": "(only static)",
+   "speak": "",
+   "voice": "mira",
+   "fx": "static"
+  },
+  {
+   "id": "static_3",
+   "text": "—old out— —ere—",
+   "speak": "cold out here",
+   "voice": "mira",
+   "fx": "static"
+  },
+  {
+   "id": "static_4",
+   "text": "—hy aren't— —ou—",
+   "speak": "why aren't you",
+   "voice": "mira",
+   "fx": "static"
+  },
+  {
+   "id": "static_5",
+   "text": "—ease—",
+   "speak": "please",
+   "voice": "mira",
+   "fx": "static"
+  },
+  {
+   "id": "intro_1",
+   "text": "11:52 pm. The storm took the street lights. Mira went out to check the car twenty minutes ago. The intercom crackles: both door cameras show her, at the front door and the side door, at the same time. One call, two entrances.",
+   "voice": "narrator",
+   "fx": "room"
+  },
+  {
+   "id": "intro_2",
+   "text": "12:20 am. She calls again. Same coat, same voice, both doors. Before she went out she said: “If anything weird happens, don't open until you're sure.”",
+   "voice": "narrator",
+   "fx": "room"
+  },
+  {
+   "id": "intro_3",
+   "text": "1:05 am. The porch light on one side flickers. Another call. Tonight the call leans toward one of the doors.",
+   "voice": "narrator",
+   "fx": "room"
+  },
+  {
+   "id": "intro_4",
+   "text": "3:33 am. The intercom battery is almost gone. One more call, and then the line is dead.",
+   "voice": "narrator",
+   "fx": "room"
+  },
+  {
+   "id": "res_saved",
+   "text": "Took you long enough.",
+   "voice": "mira",
+   "fx": "room"
+  },
+  {
+   "id": "res_wrong",
+   "text": "Wrong one.",
+   "voice": "mira",
+   "fx": "distant"
+  },
+  {
+   "id": "mimic_next",
+   "text": "Next time.",
+   "voice": "mira",
+   "fx": "eerie"
+  },
+  {
+   "id": "mimic_thanks",
+   "text": "Thank you.",
+   "voice": "mira",
+   "fx": "eerie"
+  },
+  {
+   "id": "mimic_letmein",
+   "text": "Let me in.",
+   "voice": "mira",
+   "fx": "eerie"
+  },
+  {
+   "id": "stage_goal",
+   "text": "Every call, two questions. Who is calling, and which door. Listen to learn who. Trace to learn where.",
+   "voice": "narrator",
+   "fx": "room"
+  },
+  {
+   "id": "stage_superposition",
+   "text": "One call. Two doors. She is at both of them at once. That is superposition.",
+   "voice": "narrator",
+   "fx": "room"
+  },
+  {
+   "id": "stage_listen",
+   "text": "Set the dial to zero, and press Listen.",
+   "voice": "narrator",
+   "fx": "room"
+  },
+  {
+   "id": "stage_interference",
+   "text": "Now turn the dial to four, and listen again.",
+   "voice": "narrator",
+   "fx": "room"
+  },
+  {
+   "id": "stage_impostor",
+   "text": "An impostor's pattern is shifted. Where Mira comes through clear, it gives static.",
+   "voice": "narrator",
+   "fx": "room"
+  },
+  {
+   "id": "stage_trace",
+   "text": "Now trace the call. You will learn the door, and lose the pattern.",
+   "voice": "narrator",
+   "fx": "room"
+  },
+  {
+   "id": "stage_decide",
+   "text": "Tonight, either door is safe. Open one.",
+   "voice": "narrator",
+   "fx": "room"
+  }
+ ]
+}

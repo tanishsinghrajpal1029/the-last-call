@@ -24,6 +24,13 @@ outcome providers, intercom UI, generated audio, 2D feed, AR diorama, Qollab pro
 benchmark and documentation, written on 10–11 October 2026. The git history records the actual
 commit times.
 
+## Generated assets
+
+* Voices: generated with Piper TTS (MIT) and the `en-us-libritts-high` voice (trained on LibriTTS,
+  CC BY 4.0), then processed with ffmpeg; see `THIRD_PARTY_NOTICES.md`. The creature and scenes are
+  procedural Canvas drawings written for this game (an original design, not based on any film
+  character).
+
 ## AI assistance
 
 * Code, tests, story text and documentation were written with **Claude (model configured as

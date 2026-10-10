@@ -75,6 +75,8 @@ try {
     check("failed run is reported, not hidden", /did not complete: RuntimeError: batch rejected/.test(status), status);
     await page.waitForSelector(".sheet-intro");
     await page.click("#answer");
+    await page.click("#stage-next");
+    await page.click("#stage-next");
     await page.click("#listen-btn");
     check("fallback outcomes are labelled as the ideal model, not quantum results", /ideal model/.test(await page.textContent("#caption")));
     check("spoiler data table stays hidden", await page.$eval("#raw-details", (d) => d.hidden));
@@ -84,11 +86,14 @@ try {
     check("spoiler data table available but collapsed", !(await page.$eval("#raw-details", (d) => d.hidden || d.open)));
     await page.waitForSelector(".sheet-intro");
     await page.click("#answer");
+    await page.click("#stage-next");
+    await page.click("#stage-next");
     await page.click("#listen-btn");
     const cap = await page.textContent("#caption");
     check("in-game call uses a measured shot from the backend", /measured shot from built-in simulator \(test double\)/.test(cap), cap);
     check("night 1 dial 0 is clear on the ideal fake backend", /Listened at dial 0: clear line/.test(cap));
     // spend every call at dial 4: every shot comes from the 16-shot bag, all static
+    await page.click("#stage-next");
     for (let i = 0; i < 4; i++) await page.click("#dial-up");
     for (let i = 0; i < 7; i++) await page.click("#listen-btn");
     const log = await page.$$eval("#log li", (l) => l.map((x) => x.textContent));

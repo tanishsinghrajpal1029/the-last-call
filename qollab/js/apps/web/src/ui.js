@@ -1,14 +1,20 @@
 /**
  * DOM interface shared by every mode: on-screen ("screen"), WebXR overlay
- * ("xr") and marker AR overlay ("marker"). Captions always carry the full
- * content of every spoken line and sound cue.
+ * ("xr"), marker AR ("marker") and look-around AR ("gyro"). Captions always
+ * carry the full content of every spoken line and sound cue.
+ *
+ * Layout: the Guide (left) explains what to do now, why, and what it means in
+ * quantum terms; the first call is a gated, staged walkthrough. The Case file
+ * shows the two answers being built: WHO (from listens) and WHERE (from traces).
  */
 import { posteriorSister, doorTally, dialInformation } from "../../../packages/core/src/evidence.js";
 import { resultText } from "../../../packages/core/src/game.js";
-import { endingText, INTRO } from "../../../packages/core/src/lines.js";
+import { CLEAR_LINES, endingText, INTRO, STATIC_LINES } from "../../../packages/core/src/lines.js";
 import { correctDoor } from "../../../packages/core/src/nights.js";
+import { dialAngle, rad, simulate } from "../../../packages/core/src/physics.js";
 import { evidenceChart } from "./chart.js";
 import { Feed } from "./feed.js";
+import { explainCall, guideForCase, STAGES } from "./guide.js";
 const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const pct = (x) => Math.round(100 * x) + "%";
 /** Never show 0% or 100% for a statistical judgement. */
@@ -27,6 +33,10 @@ export class Ui {
     timers = [];
     disposed = false;
     lastFocus = null;
+    /** walkthrough stage index (first call only) */
+    stage = 0;
+    stageSpoken = -1;
+    lastExplain = null;
     onExit = null;
     onRestart = null;
     onReposition = null;
@@ -37,12 +47,13 @@ export class Ui {
         this.mode = mode;
         this.audio = audio;
         this.root = document.createElement("div");
-        this.root.className = "ui ui-" + mode;
+        this.root.className = "ui ui-" + mode + (mode === "screen" ? "" : " ui-ar");
         parent.appendChild(this.root);
         this.root.innerHTML = this.skeleton();
         if (mode === "screen")
             this.feed = new Feed(this.q("#feed-slot"), c);
         this.bind();
+        void this.audio.loadVoices();
         this.off = c.on((e) => {
             if (e.type === "call")
                 this.onCall(e.record);
@@ -50,8 +61,11 @@ export class Ui {
                 this.onResult(e.result);
             if (e.type === "error")
                 this.toast(e.message);
-            if (e.type === "night")
+            if (e.type === "night") {
+                this.stage = 0;
+                this.lastExplain = null;
                 this.showIntro();
+            }
             if (e.type === "over")
                 this.showEnding();
             if (e.type === "state")
@@ -63,8 +77,28 @@ export class Ui {
     q(sel) {
         return this.root.querySelector(sel);
     }
+    get tutorial() {
+        return this.c.view().night.tutorial && this.c.phase === "play" && !this.c.state.night.result;
+    }
+    allowed(a) {
+        if (!this.tutorial)
+            return true;
+        const st = STAGES[this.stage];
+        if (!st.allow.includes(a))
+            return false;
+        if (a !== "listen" && a !== "trace")
+            return true;
+        // never let optional calls use up the calls the remaining steps need
+        const n = this.c.state.night;
+        const complete = this.stageComplete();
+        const completes = !complete && st.needs && st.needs.kind === a && (st.needs.dial === undefined || st.needs.dial === n.dial);
+        if (completes)
+            return n.callsLeft >= 1;
+        const ahead = STAGES.slice(this.stage + 1).filter((s) => s.needs).length + (st.needs && !complete ? 1 : 0);
+        return n.callsLeft > ahead;
+    }
     skeleton() {
-        const compact = this.mode !== "screen";
+        const ar = this.mode !== "screen";
         return `
       <header class="top">
         <span class="chip" id="night-chip"></span>
@@ -72,14 +106,32 @@ export class Ui {
         <span class="chip" id="score-chip"></span>
         <span class="top-buttons">
           ${this.mode === "xr" ? `<button type="button" class="btn btn-ghost" id="move-btn">Move house</button>` : ""}
+          ${this.mode === "gyro" ? `<button type="button" class="btn btn-ghost" id="move-btn">Recenter</button>` : ""}
           <button type="button" class="btn btn-ghost" id="how-btn">How it works</button>
           <button type="button" class="btn btn-ghost" id="settings-btn">Settings</button>
           <button type="button" class="btn btn-ghost" id="exit-btn">Exit</button>
         </span>
       </header>
-      ${compact ? "" : `<div id="feed-slot" class="feed-slot"></div>`}
+      <div class="col-left">
+      <aside class="guide" id="guide" aria-label="Guide">
+        <ol class="stepper" id="stepper" aria-label="Walkthrough steps"></ol>
+        <div class="guide-card" id="guide-card" aria-live="polite"></div>
+      </aside>
+      <section class="casefile" id="casefile" aria-label="Case file">
+        ${ar ? `<details id="ev-details"><summary>Case file</summary>` : `<h2 class="ev-h">Case file</h2>`}
+        <div class="answer"><div class="answer-h"><span class="q">WHO</span> is calling? <span class="sub">built by listening</span></div><div id="meter"></div></div>
+        <div class="answer"><div class="answer-h"><span class="q">WHERE</span> is she? <span class="sub">built by tracing</span></div><div id="doors"></div></div>
+        <details class="vp" id="vp-details" ${ar ? "" : "open"}><summary>Voiceprint chart</summary>
+          <p class="sub">How often the line came through clear at each dial setting. If your dots follow the solid line, it's Mira; the dashed line, it's the impostor.</p>
+          <div id="chart"></div>
+        </details>
+        <details class="vp"><summary>Call log</summary><ol class="log" id="log" reversed></ol></details>
+        ${ar ? `</details>` : ""}
+      </section>
+      </div>
+      <div class="col-right">
+      ${ar ? "" : `<div id="feed-slot" class="feed-slot"></div>`}
       <div class="caption" id="caption" aria-live="polite" aria-atomic="true"><p class="cap-line">…</p><p class="cap-meta"></p></div>
-      <p class="coach" id="coach" aria-live="polite" hidden></p>
       <section class="controls" aria-label="Intercom controls">
         <div class="dial-row">
           <button type="button" class="btn btn-round" id="dial-down" aria-label="Turn dial left">◀</button>
@@ -88,8 +140,8 @@ export class Ui {
           <div class="dial-label" id="dial-label"></div>
         </div>
         <div class="call-row">
-          <button type="button" class="btn btn-primary" id="listen-btn">Listen <span class="sub">both doors together</span></button>
-          <button type="button" class="btn btn-trace" id="trace-btn">Trace <span class="sub">find the door, lose the interference</span></button>
+          <button type="button" class="btn btn-primary" id="listen-btn">Listen <span class="sub">→ WHO is it?</span></button>
+          <button type="button" class="btn btn-trace" id="trace-btn">Trace <span class="sub">→ WHERE is she?</span></button>
         </div>
         <div class="decide-row">
           <button type="button" class="btn btn-door" id="open-front">Open front door</button>
@@ -97,14 +149,7 @@ export class Ui {
           <button type="button" class="btn btn-hang" id="hangup">Hang up</button>
         </div>
       </section>
-      <section class="evidence" id="evidence" aria-label="Evidence">
-        ${compact ? `<details id="ev-details"><summary>Evidence</summary>` : `<h2 class="ev-h">Evidence</h2>`}
-        <div class="meter" id="meter"></div>
-        <p class="doors" id="doors"></p>
-        <div id="chart"></div>
-        <ol class="log" id="log" reversed></ol>
-        ${compact ? `</details>` : ""}
-      </section>
+      </div>
       <div class="sheet-wrap" id="sheet-wrap" hidden><div class="sheet" id="sheet" role="dialog" aria-modal="true" tabindex="-1"></div></div>
       <div class="toast" id="toast" role="alert" hidden></div>`;
     }
@@ -117,15 +162,22 @@ export class Ui {
         });
         // AR: keep taps on the HUD from becoming XR select events
         this.root.addEventListener("beforexrselect", (e) => e.preventDefault());
-        click("dial-down", () => { c.setDial(c.state.night.dial - 1); this.audio.dial(); });
-        click("dial-up", () => { c.setDial(c.state.night.dial + 1); this.audio.dial(); });
-        click("listen-btn", () => c.call("listen"));
-        click("trace-btn", () => this.askTrace());
-        click("open-front", () => this.askDecide("front"));
-        click("open-side", () => this.askDecide("side"));
-        click("hangup", () => this.askDecide("hangup"));
+        const turn = (d) => { if (!this.allowed("dial"))
+            return; c.setDial(c.state.night.dial + d); this.audio.dial(); };
+        click("dial-down", () => turn(-1));
+        click("dial-up", () => turn(1));
+        click("listen-btn", () => { if (this.allowed("listen"))
+            c.call("listen"); });
+        click("trace-btn", () => { if (this.allowed("trace"))
+            this.askTrace(); });
+        click("open-front", () => { if (this.allowed("front"))
+            this.askDecide("front"); });
+        click("open-side", () => { if (this.allowed("side"))
+            this.askDecide("side"); });
+        click("hangup", () => { if (this.allowed("hangup"))
+            this.askDecide("hangup"); });
         click("how-btn", () => this.showHow());
-        if (this.mode === "xr")
+        if (this.mode === "xr" || this.mode === "gyro")
             click("move-btn", () => this.onReposition?.());
         click("settings-btn", () => this.showSettings());
         click("exit-btn", () => this.onExit?.());
@@ -135,22 +187,28 @@ export class Ui {
                 return;
             e.stopPropagation(); // the document handler must not move the dial a second time
             if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
-                c.setDial(c.state.night.dial - 1);
-                this.audio.dial();
+                turn(-1);
                 e.preventDefault();
             }
             if (e.key === "ArrowRight" || e.key === "ArrowUp") {
-                c.setDial(c.state.night.dial + 1);
-                this.audio.dial();
+                turn(1);
                 e.preventDefault();
             }
         });
         dial.addEventListener("click", (e) => {
             const t = e.target.closest("[data-k]");
-            if (t) {
+            if (t && this.allowed("dial")) {
                 this.audio.unlock();
                 c.setDial(Number(t.dataset.k));
                 this.audio.dial();
+            }
+        });
+        this.q("#guide-card").addEventListener("click", (e) => {
+            const b = e.target.closest("#stage-next");
+            if (b) {
+                e.preventDefault();
+                this.audio.unlock();
+                this.advanceStage();
             }
         });
         if (this.mode === "screen")
@@ -168,35 +226,104 @@ export class Ui {
         if (tag === "INPUT" || tag === "BUTTON" && (e.key === " " || e.key === "Enter"))
             return;
         const k = e.key.toLowerCase();
-        if (k === "l") {
+        if (k === "l" && this.allowed("listen")) {
             this.audio.unlock();
             this.c.call("listen");
         }
-        else if (k === "t") {
+        else if (k === "t" && this.allowed("trace")) {
             this.audio.unlock();
             this.askTrace();
         }
-        else if (e.key === "ArrowLeft") {
+        else if (e.key === "ArrowLeft" && this.allowed("dial")) {
             this.c.setDial(this.c.state.night.dial - 1);
             this.audio.dial();
         }
-        else if (e.key === "ArrowRight") {
+        else if (e.key === "ArrowRight" && this.allowed("dial")) {
             this.c.setDial(this.c.state.night.dial + 1);
             this.audio.dial();
         }
     };
+    // ---------- walkthrough ----------
+    advanceStage() {
+        if (!this.tutorial)
+            return;
+        if (this.stage < STAGES.length - 1)
+            this.stage++;
+        this.render();
+    }
+    /** Complete action stages automatically when their condition is met. */
+    checkStage() {
+        if (!this.tutorial)
+            return;
+        const st = STAGES[this.stage];
+        if (st.done && st.done(this.c.state.night.log, this.c.state.night.dial)) {
+            // show the explanation of the result first; the Next button moves on
+            this.render();
+        }
+    }
+    stageComplete() {
+        const st = STAGES[this.stage];
+        return !!st.done && st.done(this.c.state.night.log, this.c.state.night.dial);
+    }
+    renderGuide() {
+        const c = this.c, v = c.view(), n = v.state, cfg = v.night;
+        const stepper = this.q("#stepper"), card = this.q("#guide-card");
+        const hl = (id) => {
+            for (const b of this.root.querySelectorAll(".hl"))
+                b.classList.remove("hl");
+            if (id)
+                this.q("#" + id)?.classList.add("hl");
+        };
+        if (cfg.tutorial) {
+            stepper.hidden = false;
+            stepper.innerHTML = STAGES.map((s, i) => `<li class="${i < this.stage || (i === this.stage && n.result) ? "done" : i === this.stage ? "now" : ""}" ${i === this.stage ? 'aria-current="step"' : ""}><span class="num">${i < this.stage ? "✓" : i + 1}</span>${s.short}</li>`).join("");
+        }
+        else
+            stepper.hidden = true;
+        if (!this.tutorial) {
+            hl(null);
+            const plan = c.state.plan[c.state.index];
+            const leans = cfg.alphaChoicesDeg.some((a) => a !== 90);
+            void plan;
+            card.innerHTML = cfg.tutorial
+                ? `<h2>Walkthrough complete</h2><p>That's the whole game: <strong>listen</strong> to find out who, <strong>trace</strong> to find out where, then decide.</p>`
+                : this.mode !== "screen"
+                    ? `<details class="why"><summary>Goal: find out WHO (listen) and WHERE (trace), then decide</summary>${guideForCase(cfg, leans)}</details>` +
+                        (this.lastExplain ? `<p class="ex-ar">${this.lastExplain.game}</p>` : "")
+                    : `<h2>${esc(cfg.title)}</h2>${guideForCase(cfg, leans)}` +
+                        (this.lastExplain ? `<div class="explain"><p class="ex-h">What just happened</p><p>${this.lastExplain.game}</p><p class="quantum"><span class="qtag">Quantum</span> ${this.lastExplain.quantum}</p></div>` : "") +
+                        `<details class="win"><summary>How scoring works</summary><ul><li>Mira, right door: +100 (+5 per unused call)</li><li>Mira, wrong door: +20</li><li>Hang up on Mira: 0</li><li>Hang up on the impostor: +100 (+5 per unused call)</li><li>Let the impostor in: −100</li></ul></details>`;
+            return;
+        }
+        const st = STAGES[this.stage];
+        const complete = this.stageComplete();
+        const showNext = st.next || complete;
+        card.innerHTML = `<p class="tag">Step ${this.stage + 1} of ${STAGES.length}</p><h2>${st.title}</h2>
+      <p class="do">${complete ? "Done. Read what happened, then press Next." : st.doThis}</p>
+      ${complete && this.lastExplain ? `<div class="explain"><p>${this.lastExplain.game}</p></div>` : ""}
+      ${this.mode === "screen" ? `<p>${st.body}</p><p class="quantum"><span class="qtag">Quantum</span> ${st.quantum}</p>`
+            : `<p class="body-ar">${st.body}</p><details class="why"><summary>The quantum part</summary><p class="quantum"><span class="qtag">Quantum</span> ${st.quantum}</p></details>`}
+      ${showNext && this.stage < STAGES.length - 1 ? `<div class="sheet-buttons"><button type="button" class="btn btn-primary" id="stage-next">Next</button></div>` : ""}`;
+        hl(complete ? "stage-next" : st.target ? st.target(n.dial) : null);
+        if (this.stageSpoken !== this.stage && c.phase === "play") {
+            this.stageSpoken = this.stage;
+            void this.audio.voiceLine(st.voice, "");
+        }
+    }
     // ---------- rendering ----------
     render() {
         const c = this.c, v = c.view(), n = v.state, cfg = v.night, f = c.nights;
-        this.q("#night-chip").textContent = `Call ${cfg.id} of ${f.nights.length} · ${cfg.title}`;
+        this.q("#night-chip").textContent = cfg.tutorial ? `Walkthrough · ${cfg.title}` : `Call ${cfg.id} of ${f.nights.length} · ${cfg.title}`;
         this.q("#calls-chip").innerHTML = `Calls left <span class="pips" aria-label="${n.callsLeft} of ${n.budget}">${"●".repeat(n.callsLeft)}${"○".repeat(n.budget - n.callsLeft)}</span>`;
         this.q("#score-chip").textContent = `Score ${v.score}`;
         const playing = c.phase === "play";
         const ended = !!n.result;
-        for (const id of ["listen-btn", "trace-btn"])
-            this.q("#" + id).disabled = !playing || ended || n.callsLeft <= 0;
-        for (const id of ["open-front", "open-side", "hangup", "dial-down", "dial-up"])
-            this.q("#" + id).disabled = !playing || ended;
+        const can = (a) => playing && !ended && this.allowed(a);
+        this.q("#listen-btn").disabled = !can("listen") || n.callsLeft <= 0;
+        this.q("#trace-btn").disabled = !can("trace") || n.callsLeft <= 0;
+        for (const [id, a] of [["open-front", "front"], ["open-side", "side"], ["hangup", "hangup"], ["dial-down", "dial"], ["dial-up", "dial"]]) {
+            this.q("#" + id).disabled = !can(a);
+        }
         // dial
         const steps = f.dialSteps;
         const dial = this.q("#dial");
@@ -211,62 +338,25 @@ export class Ui {
         const pa = (2 * Math.PI * n.dial) / steps - Math.PI / 2;
         dial.innerHTML = `<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="27" class="knob"/>
       <line x1="50" y1="50" x2="${50 + 22 * Math.cos(pa)}" y2="${50 + 22 * Math.sin(pa)}" class="needle"/>${marks}</svg>`;
-        this.q("#dial-label").innerHTML = `Dial <strong>${n.dial}</strong><br><span class="sub">${(360 / steps) * n.dial}° shift on the side-door channel</span>`;
-        // evidence
+        this.q("#dial-label").innerHTML = `Dial <strong>${n.dial}</strong><br><span class="sub">delays the side door's half of the call by ${(360 / steps) * n.dial}°</span>`;
+        // case file
         const alpha = c.meterAlphaDeg();
         const t = doorTally(n.log);
         if (c.settings.meter) {
             const p = posteriorSister(f, cfg, alpha, n.log);
-            this.q("#meter").innerHTML = `<div class="meter-label">Is it Mira? <strong>${pctMeter(p)}</strong> <span class="sub">(from your listens; traces don't move it)</span></div>
-        <div class="meter-bar" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(100 * p)}" aria-label="Chance it is Mira"><span style="width:${(100 * p).toFixed(1)}%"></span></div>`;
+            const listens = n.log.filter((r) => r.kind === "listen").length;
+            this.q("#meter").innerHTML = `<div class="tug" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(100 * p)}" aria-label="Chance it is Mira">
+          <span class="end-l">Mira</span><span class="bar"><span class="fill" style="width:${(100 * p).toFixed(1)}%"></span><span class="mid"></span></span><span class="end-r">Impostor</span></div>
+        <p class="sub">${listens ? `Chance it's Mira: <strong>${pctMeter(p)}</strong> after ${listens} listen${listens === 1 ? "" : "s"}.` : "No listens yet: 50/50."} Traces never move this.</p>`;
         }
         else
-            this.q("#meter").innerHTML = `<p class="sub">Evidence meter is off (Settings).</p>`;
-        this.q("#doors").innerHTML = `Traces: front door <strong>${t.front}</strong> · side door <strong>${t.side}</strong>`;
+            this.q("#meter").innerHTML = `<p class="sub">WHO meter is off (Settings). Use the voiceprint chart.</p>`;
+        const leans = cfg.alphaChoicesDeg.some((a) => a !== 90);
+        this.q("#doors").innerHTML = `<p class="tally"><span>Front <strong>${"●".repeat(t.front) || "–"}</strong></span><span>Side <strong>${"●".repeat(t.side) || "–"}</strong></span></p>
+      <p class="sub">${leans ? (t.front + t.side ? `Leans ${t.front === t.side ? "— tied, trace again" : t.front > t.side ? "front" : "side"} so far.` : "Trace to see which door the call leans toward.") : "Balanced tonight: either door works."}</p>`;
         this.q("#chart").innerHTML = evidenceChart(f, cfg, alpha, n.log, n.dial);
         this.q("#log").innerHTML = n.log.slice().reverse().map((r) => `<li><span class="lg-kind ${r.kind}">${r.kind === "trace" ? "Trace" : "Listen"}</span> dial ${r.dial} → <strong>${r.line}</strong>${r.door ? ` · ${r.door} door` : ""} <span class="lg-text">“${esc(r.text)}”</span></li>`).join("");
-        this.renderCoach();
-    }
-    renderCoach() {
-        const c = this.c, n = c.state.night, cfg = c.view().night, el = this.q("#coach");
-        const hl = (id) => {
-            for (const b of this.root.querySelectorAll(".hl"))
-                b.classList.remove("hl");
-            if (id)
-                this.q("#" + id).classList.add("hl");
-        };
-        if (!cfg.tutorial || c.phase !== "play" || n.result) {
-            el.hidden = true;
-            hl(null);
-            return;
-        }
-        const listens = n.log.filter((r) => r.kind === "listen");
-        const traced = n.log.some((r) => r.kind === "trace");
-        let msg, target;
-        if (!listens.length && !traced) {
-            [msg, target] = n.dial === 0 ? ["Mira's own setting is dial 0. Press Listen to hear the call through both doors at once.", "listen-btn"] : ["Turn the dial back to 0, Mira's setting, then Listen.", "dial"];
-        }
-        else if (!listens.some((r) => r.dial === 4)) {
-            [msg, target] = n.dial !== 4 ? ["Now turn the dial half a turn, to 4. It shifts the side-door channel by 180°.", "dial-up"] : ["Listen again at dial 4.", "listen-btn"];
-        }
-        else if (!traced) {
-            const said = (d) => {
-                const at = listens.filter((r) => r.dial === d);
-                if (!at.length)
-                    return null;
-                const clear = at.filter((r) => r.line === "clear").length;
-                return clear === at.length ? "clear" : clear === 0 ? "static" : `${clear} of ${at.length} clear`;
-            };
-            const at0 = said(0), at4 = said(4);
-            const heard = [at0 ? `at dial 0 you heard: ${at0}` : null, at4 ? `at dial 4: ${at4}` : null].filter(Boolean).join("; ");
-            [msg, target] = [`So far ${heard}. On a perfect line her two door channels add up at 0 (clear) and cancel at 4 (static). That is interference, and it only happens because one call comes through both doors. Now press Trace.`, "trace-btn"];
-        }
-        else {
-            [msg, target] = ["Tracing told you which door this call came through, but a traced call is a coin flip at every dial: knowing the door destroyed the interference. Tonight she's balanced between both doors, so either door is right. Open one.", "open-front"];
-        }
-        el.hidden = false;
-        el.textContent = msg;
-        hl(target);
+        this.renderGuide();
     }
     // ---------- events ----------
     onCall(r) {
@@ -278,35 +368,56 @@ export class Ui {
             ? `Traced at dial ${r.dial}: the call came through the <strong>${r.door} door</strong>. Line: ${r.line} (a coin flip once traced).`
             : `Listened at dial ${r.dial}: <strong>${r.line === "clear" ? "clear line" : "static"}</strong>.`;
         this.q("#caption").innerHTML = `<p class="cap-line">“${esc(r.text)}”</p><p class="cap-meta">${meta} <span class="sub">Source: ${esc(r.source)}.</span></p>`;
+        // explanation for the Guide
+        const plan = this.c.state.plan[this.c.state.index], cfg = this.c.view().night, f = this.c.nights;
+        const pc = (theta) => simulate(rad(plan.alphaDeg), rad(theta), dialAngle(r.dial, f.dialSteps), false, this.c.sourceLabel.startsWith("the ideal model") ? null : f.noise)["clear"];
+        this.lastExplain = explainCall(r, pc(f.sisterPhaseDeg), pc(cfg.mimicPhaseDeg));
+        // sound and voice
         this.audio.lineOpen();
-        const speak = () => (r.line === "clear" ? this.audio.say(r.text) : this.audio.staticBurst());
+        const clearIdx = CLEAR_LINES.indexOf(r.text), staticIdx = STATIC_LINES.indexOf(r.text);
+        const speak = () => {
+            if (r.line === "clear")
+                void this.audio.voiceLine("clear_" + clearIdx, r.text);
+            else {
+                this.audio.staticBurst();
+                void this.audio.voiceLine("static_" + staticIdx, "");
+            }
+        };
         if (r.kind === "trace") {
             this.audio.traceBeeps();
             this.later(speak, 750);
         }
         else
             this.later(speak, 200);
-        if (this.c.state.night.callsLeft === 0)
+        if (!this.c.settings.gentle && Math.random() < 0.18)
+            this.later(() => this.audio.knock(), 2600);
+        if (this.c.state.night.callsLeft === 0) {
+            if (this.tutorial)
+                this.stage = STAGES.length - 1; // out of calls: go straight to the decision
             this.toast("That was the last call. Open a door or hang up.");
+        }
+        this.checkStage();
+        this.render();
     }
     onResult(res) {
         const a = this.audio;
+        a.stopVoice();
         if (res === "letIn") {
             a.door();
-            this.later(() => { a.stinger(); a.say("Thank you.", true); }, 900);
+            this.later(() => { a.stinger(); void a.voiceLine("mimic_thanks", "Thank you.", true); }, 900);
         }
         else if (res === "refused") {
-            this.later(() => a.say("Next time.", true), 400);
+            this.later(() => void a.voiceLine("mimic_next", "Next time.", true), 400);
         }
         else if (res === "saved") {
             a.door();
-            this.later(() => { a.relief(); a.say("Took you long enough."); }, 900);
+            this.later(() => { a.relief(); void a.voiceLine("res_saved", "Took you long enough."); }, 900);
         }
         else if (res === "wrongDoor") {
             a.door();
-            this.later(() => a.say("Wrong one."), 900);
+            this.later(() => void a.voiceLine("res_wrong", "Wrong one."), 900);
         }
-        this.later(() => this.showResult(res), res === "letIn" && !this.c.settings.gentle ? 2600 : 1400);
+        this.later(() => this.showResult(res), res === "letIn" && !this.c.settings.gentle ? 3000 : 1600);
     }
     later(fn, ms) {
         const h = window.setTimeout(() => {
@@ -327,6 +438,9 @@ export class Ui {
     openSheet(kind, html, focusSel, reopen) {
         if (!this.sheetOpen)
             this.lastFocus = document.activeElement;
+        // story sheets replace whatever was open (a stale Settings sheet must not reappear later)
+        if (kind === "result" || kind === "intro" || kind === "ending")
+            this.sheetStack = [];
         const top = this.sheetStack[this.sheetStack.length - 1];
         if (top && top.kind === kind)
             top.reopen = reopen;
@@ -375,14 +489,16 @@ export class Ui {
       <p class="story">${esc(INTRO[cfg.id] ?? "")}</p>
       <p class="intel"><strong>What you know:</strong> ${esc(cfg.intel)}</p>
       <p class="sub">${cfg.budget} calls before the line dies. Listening and tracing each use one call. Turning the dial is free.</p>
-      <div class="sheet-buttons"><button type="button" class="btn btn-primary" id="answer">Answer the call</button></div>`, "#answer", () => this.showIntro());
+      <div class="sheet-buttons"><button type="button" class="btn btn-ghost" id="hear">▶ Hear it read</button><button type="button" class="btn btn-primary" id="answer">${cfg.tutorial ? "Start the walkthrough" : "Answer the call"}</button></div>`, "#answer", () => this.showIntro());
         this.sheetButtons(this.q("#sheet"), {
+            hear: () => void this.audio.voiceLine("intro_" + cfg.id, INTRO[cfg.id] ?? ""),
             answer: () => {
                 this.closeSheet();
+                this.audio.stopVoice();
                 this.audio.startAmbience();
                 this.audio.ring();
                 this.c.begin();
-                this.q("#caption").innerHTML = `<p class="cap-line">The intercom shows her at both doors.</p><p class="cap-meta">Choose a dial setting, then Listen or Trace.</p>`;
+                this.q("#caption").innerHTML = `<p class="cap-line">The intercom shows her at both doors.</p><p class="cap-meta">${this.c.view().night.tutorial ? "Follow the Guide, one step at a time." : "Follow your goal in the Guide."}</p>`;
             },
         });
     }
@@ -470,6 +586,7 @@ export class Ui {
                                          │
 q1 (trace record):  ─────────────────────X─────── M   → front / side   (trace only)</pre>
       <p class="sub"><strong>Honesty notes.</strong> The doors, figures and voices are fiction; the circuit never processes audio. Each outcome only picks which prepared line is shown. Outcomes in this game come from: ${esc(this.c.sourceLabel)}. When a Qollab run succeeds, the game replays shots from the backend you chose, one shot per call, each used once. A classical computer can simulate this small circuit; the point is the rule it teaches: coherent alternatives interfere, and recording which path destroys that.</p>
+      <p class="sub"><strong>Credits.</strong> Voices: Piper TTS (MIT) with a voice trained on the LibriTTS corpus (Zen et al., CC BY 4.0). Art, sound effects and story: made for this game. This effort is supported by Qollab &amp; IonQ.</p>
       <div class="sheet-buttons"><button type="button" class="btn btn-primary" id="close">Close</button></div>`, "#close", () => this.showHow());
         this.sheetButtons(this.q("#sheet"), {
             close: () => this.closeSheet(),
@@ -479,16 +596,17 @@ q1 (trace record):  ────────────────────
         const s = this.c.settings;
         const row = (id, label, on) => `<label class="check"><input type="checkbox" id="${id}" ${on ? "checked" : ""}> ${label}</label>`;
         this.openSheet("settings", `<h2>Settings</h2>
-      ${row("set-voice", "Spoken voice (device text-to-speech)", s.voice)}
+      ${row("set-voice", "Voices (recorded neural TTS)", s.voice)}
       ${row("set-sound", "Sound effects and ambience", s.sound)}
       ${row("set-gentle", "Gentle mode (no loud stingers)", s.gentle)}
-      ${row("set-meter", "Evidence meter", s.meter)}
+      ${row("set-meter", "WHO meter", s.meter)}
       ${row("set-motion", "Reduce motion and flicker", s.reducedMotion)}
       <p class="sub">Captions are always on.</p>
       <div class="sheet-buttons"><button type="button" class="btn btn-primary" id="close">Done</button></div>`, "#close", () => this.showSettings());
         const sheet = this.q("#sheet");
         const bindBox = (id, fn) => sheet.querySelector("#" + id).addEventListener("change", (e) => fn(e.target.checked));
-        bindBox("set-voice", (v) => { s.voice = v; this.audio.voice = v; });
+        bindBox("set-voice", (v) => { s.voice = v; this.audio.voice = v; if (!v)
+            this.audio.stopVoice(); });
         bindBox("set-sound", (v) => { s.sound = v; this.audio.sound = v; if (!v)
             this.audio.stopAmbience();
         else if (this.c.phase === "play")

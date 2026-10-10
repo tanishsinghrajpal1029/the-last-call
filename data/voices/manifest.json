@@ -1,0 +1,176 @@
+{
+ "version": "voices-v1",
+ "model": "Piper en-us-libritts-high (LibriTTS, CC BY 4.0)",
+ "files": {
+  "clear_0": {
+   "bytes": 11198,
+   "sha256": "c69d1db4ae64611b569a2269ea22a7f422695965f4d6c9c7b2606c58a1b61723",
+   "text": "It's me. Open the door."
+  },
+  "clear_1": {
+   "bytes": 7802,
+   "sha256": "adfa7a5631da9943ef4041b34e55bf5a4e347c713ce903558ea39188ba983b67",
+   "text": "I'm freezing out here."
+  },
+  "clear_2": {
+   "bytes": 7933,
+   "sha256": "77016460ea142447a957b300f3c079254b8deb2d9698b4b00825129eb6f7a401",
+   "text": "The car wouldn't start."
+  },
+  "clear_3": {
+   "bytes": 10415,
+   "sha256": "c891ccb55b3dd414ff3b29b1d03ff7cf1c06be3fcac57b718de0a0a804a35e1c",
+   "text": "Please. It's so dark."
+  },
+  "clear_4": {
+   "bytes": 7411,
+   "sha256": "847db046f1bb0bb6dad749f5ea50bd559c4293906f92f2eefd4afa66fd1abd5d",
+   "text": "Why aren't you opening?"
+  },
+  "clear_5": {
+   "bytes": 8717,
+   "sha256": "48d109c0f1ce1ea9f4a8a3e8232f0f9698ad40707a996ebc83bc37baedc4a33f",
+   "text": "I can hear you on the line."
+  },
+  "clear_6": {
+   "bytes": 10676,
+   "sha256": "79866ef3385f1a4beb8e5dcbde4dec061cf55ecaef97d94e37a9e9085165210b",
+   "text": "It's really me. Open the door."
+  },
+  "clear_7": {
+   "bytes": 8194,
+   "sha256": "5ed1a6af025302f3625b5051aa834d395198bbf7337ab5843ffe59ac33564032",
+   "text": "Don't make me wait out here."
+  },
+  "clear_8": {
+   "bytes": 6757,
+   "sha256": "b1677544fb9e72379a5eead20a7c7e3ae1f54b8cd00c5602bd89ffa95803d3fc",
+   "text": "You know my voice."
+  },
+  "clear_9": {
+   "bytes": 5321,
+   "sha256": "2c01ed0a8aa16586062e072110fa5a004276724d852abaf739737bd4e9c73d64",
+   "text": "I'm right here."
+  },
+  "clear_10": {
+   "bytes": 4798,
+   "sha256": "ba932f47ed6e908cef48f38d1833513e0c79852bdeb6abeab661cea666c6bb72",
+   "text": "Please."
+  },
+  "clear_11": {
+   "bytes": 5843,
+   "sha256": "bfb6a4c6dd8c493d2f9171888f5030a5e23d57229cf9725087ea920a285f7c8b",
+   "text": "Open the door."
+  },
+  "static_0": {
+   "bytes": 5843,
+   "sha256": "e63cbc2291028f4f193ff9a206897385fab04afa483b51a7e614f2766ccd6d8a",
+   "text": "—pen th— —oor—"
+  },
+  "static_1": {
+   "bytes": 5060,
+   "sha256": "d915ab1233538793a963e38b949c157ddd7028f50308850c0abafed1588e1ffe",
+   "text": "—s me— —ssshh—"
+  },
+  "static_2": {
+   "bytes": 6496,
+   "sha256": "76d55df27c51b8997041615e50386145cf54cffc9edc630a7d987720039aa7dc",
+   "text": "(only static)"
+  },
+  "static_3": {
+   "bytes": 6235,
+   "sha256": "a37de0d1f333c45aaad58cf1ede58d435e9974b6c03c4f04f3b7d332114fa5a2",
+   "text": "—old out— —ere—"
+  },
+  "static_4": {
+   "bytes": 6104,
+   "sha256": "00acbde5cf9cf5d94cdaed3c898958d8beab18df1e03d77cd6fe26a04186ee35",
+   "text": "—hy aren't— —ou—"
+  },
+  "static_5": {
+   "bytes": 4798,
+   "sha256": "25d1ff4919cafd0b1d927e01b7c37ea1a15dfe5fbad0c93dd78238a3acf472bd",
+   "text": "—ease—"
+  },
+  "intro_1": {
+   "bytes": 79639,
+   "sha256": "0c86c12a42ea5f2bad1447f0894258d12c860acee6438fe5348733a8f5668095",
+   "text": "11:52 pm. The storm took the street lights. Mira went out to check the car twenty minutes ago. The intercom crackles: both door cameras show her, at the front door and the side door, at the same time. One call, two entrances."
+  },
+  "intro_2": {
+   "bytes": 54300,
+   "sha256": "c3e7a79852fb05bfc4784d353a6e28b65fce952765c3b4903a1a4980c9a826db",
+   "text": "12:20 am. She calls again. Same coat, same voice, both doors. Before she went out she said: “If anything weird happens, don't open until you're sure.”"
+  },
+  "intro_3": {
+   "bytes": 41892,
+   "sha256": "99a8008e4e2b0449dcf3bc88116d5c16cb87ab3ca2dfcf6343794d7affb81125",
+   "text": "1:05 am. The porch light on one side flickers. Another call. Tonight the call leans toward one of the doors."
+  },
+  "intro_4": {
+   "bytes": 37582,
+   "sha256": "de2ff3e1b28530699a6d0f24a41d4a950d5de2528a9e17dfc79bb118c8a35039",
+   "text": "3:33 am. The intercom battery is almost gone. One more call, and then the line is dead."
+  },
+  "res_saved": {
+   "bytes": 6235,
+   "sha256": "8f768d931d7f92f7164415158d9e4e1435d6526a335ae8fb12ee476a60831362",
+   "text": "Took you long enough."
+  },
+  "res_wrong": {
+   "bytes": 6496,
+   "sha256": "558b391845db2de5aca904a6897795b4f7ed2c208051c8b2daba0c44fd33f84e",
+   "text": "Wrong one."
+  },
+  "mimic_next": {
+   "bytes": 11329,
+   "sha256": "a2a2491fca5a060e59c9e2078f02f81e7db4552222bb038160a8e556590b137d",
+   "text": "Next time."
+  },
+  "mimic_thanks": {
+   "bytes": 10023,
+   "sha256": "e1f0a47f40f654946825fb8c1cca4c54fd968f25e15778fe1186f32e1b3f97ff",
+   "text": "Thank you."
+  },
+  "mimic_letmein": {
+   "bytes": 10415,
+   "sha256": "0b0248cbbf4a77541f1e28254edadf4885d62e0f5f00acea9e57704e3e4d134b",
+   "text": "Let me in."
+  },
+  "stage_goal": {
+   "bytes": 33794,
+   "sha256": "02a7688ceab4dad8cc721299d26682da18ab9350ae52b0a2780a8fb39cefae47",
+   "text": "Every call, two questions. Who is calling, and which door. Listen to learn who. Trace to learn where."
+  },
+  "stage_superposition": {
+   "bytes": 30660,
+   "sha256": "93fb17a7a7a7f9ab55befbeabd8f5c8d446e36b990b5981ed647b0c048a09112",
+   "text": "One call. Two doors. She is at both of them at once. That is superposition."
+  },
+  "stage_listen": {
+   "bytes": 17206,
+   "sha256": "2cc84b4c576c415d56c8bd67802d4d4f107a9015a826dbe44b9b27a277faefe3",
+   "text": "Set the dial to zero, and press Listen."
+  },
+  "stage_interference": {
+   "bytes": 14725,
+   "sha256": "03a65d389b0c85187cae828d4b68a5dca2643441e7b1237d77e02dcc42989c0a",
+   "text": "Now turn the dial to four, and listen again."
+  },
+  "stage_impostor": {
+   "bytes": 25566,
+   "sha256": "28f688e46b17548eda969a91efb355aaf852c6d2f895b145d614161e270e8eba",
+   "text": "An impostor's pattern is shifted. Where Mira comes through clear, it gives static."
+  },
+  "stage_trace": {
+   "bytes": 22039,
+   "sha256": "e9a2a2570816707882aca0e50888015405f44851e31a35e2d2a3c23681170f58",
+   "text": "Now trace the call. You will learn the door, and lose the pattern."
+  },
+  "stage_decide": {
+   "bytes": 15247,
+   "sha256": "b7230ade3531b52988764fead86918a20af903ddc889905cee1146b0ee6763ee",
+   "text": "Tonight, either door is safe. Open one."
+  }
+ }
+}

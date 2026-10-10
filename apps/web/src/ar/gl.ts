@@ -33,6 +33,13 @@ void main(){
   vec3 n = normalize(vNormal);
   float light = 0.55 + 0.45 * max(dot(n, normalize(vec3(0.3, 1.0, 0.5))), 0.0);
   vec4 c = uColor;
+  if (uUseTex == 2) {
+    vec4 t2 = texture(uTex, vUv);
+    c = vec4(t2.rgb * uColor.rgb, t2.a * uColor.a);
+    if (c.a < 0.02) discard;
+    outColor = c;
+    return;
+  }
   if (uUseTex == 1) {
     vec4 t = texture(uTex, uUvRect.xy + vUv * uUvRect.zw);
     c = vec4(uColor.rgb, uColor.a * t.a);
@@ -54,6 +61,7 @@ export class Renderer {
   readonly ring: Mesh;
   private labelTex: WebGLTexture | null = null;
   private labelIndex = new Map<string, [number, number, number, number]>();
+  private ownTextures: WebGLTexture[] = [];
 
   constructor(gl: WebGL2RenderingContext) {
     this.gl = gl;
@@ -235,8 +243,36 @@ export class Renderer {
     gl.uniform1i(this.loc.uUseTex!, 0);
   }
 
+  /** Upload a canvas as an RGBA texture (for sprites). */
+  texture(src: HTMLCanvasElement): WebGLTexture {
+    const gl = this.gl;
+    const t = gl.createTexture()!;
+    gl.bindTexture(gl.TEXTURE_2D, t);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    this.ownTextures.push(t);
+    return t;
+  }
+
+  /** Draw the unit quad (XZ plane, facing +Y) with a full-colour texture. */
+  drawTextured(tex: WebGLTexture, model: Mat4, color: RGBA): void {
+    const gl = this.gl;
+    gl.uniform1i(this.loc.uUseTex!, 2);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.uniform1i(this.loc.uTex!, 0);
+    gl.depthMask(false);
+    this.draw(this.quad, model, color, 1);
+    gl.depthMask(true);
+    gl.uniform1i(this.loc.uUseTex!, 0);
+  }
+
   dispose(): void {
     const gl = this.gl;
+    for (const t of this.ownTextures) gl.deleteTexture(t);
     gl.deleteProgram(this.prog);
     if (this.labelTex) gl.deleteTexture(this.labelTex);
     for (const m of [this.box, this.sphere, this.quad, this.ring]) gl.deleteVertexArray(m.vao);
