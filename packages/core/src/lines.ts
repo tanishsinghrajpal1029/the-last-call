@@ -5,8 +5,8 @@
  */
 
 export const INTRO: Record<number, string> = {
-  1: "11:52 pm. Mum and Dad are stuck across town in the storm, and you're watching your little sister Mira. Twenty minutes ago she slipped outside after the cat. Now the intercom crackles: both door cameras show a small figure in her yellow raincoat, at the front door and the side door, at the same time. One call, two doors.",
-  2: "12:20 am. She calls again. Same raincoat, same little voice, both doors. Mum's rule, taped to the fridge: “Never open the door at night unless you're sure who it is.”",
+  1: "11:52 pm. Mum and Dad are stuck across town in the storm, and you're watching your little sister Mira. Twenty minutes ago she slipped outside after the cat. Now the intercom crackles: both door cameras show the same dark, hooded shape, at the front door and the side door, at the same time. The night vision can't make out a face. One call, two doors.",
+  2: "12:20 am. She calls again. Same dark shape, same little voice, both doors. Mum's rule, taped to the fridge: “Never open the door at night unless you're sure who it is.”",
   3: "1:05 am. The porch light on one side won't stop flickering. Another call. Tonight the call leans toward one of the doors.",
   4: "3:33 am. The intercom battery is almost dead. One more call. Somewhere out in the rain, something has learned exactly how she says your name.",
 };
@@ -39,7 +39,7 @@ export const RESULT_TEXT = {
   saved: "The lock turns. Mira runs in, soaked to the bone, and wraps herself around your legs. “You took forever.”",
   wrongDoor: "You open the door. The step is empty. A small voice from the other door: “Wrong one.” By the time you get there she has squeezed in through the cat flap, shaking.",
   abandoned: "You hang up. At dawn you find her asleep in the garden shed, hugging the cat. She won't look at you all day.",
-  refused: "You hang up. The camera stays on. The little figure lifts its head, slowly, much too far, and says in Mira's voice: “Next time.” Then you hear the real Mira knocking at the back window, crying.",
+  refused: "You hang up. The camera stays on. The hooded shape lifts its head, slowly, and looks straight into the camera. In Mira's voice: “Next time.” Then you hear the real Mira knocking at the back window, crying.",
   letIn: "The lock turns. Nothing comes in. Then every light in the house goes out, and a small wet voice says, from the hallway right behind you: “Thank you.”",
 } as const;
 

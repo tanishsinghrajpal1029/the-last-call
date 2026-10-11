@@ -1,8 +1,8 @@
 /**
  * Procedural horror art (Canvas 2D), drawn in code: no image files.
- * The creature is an original design for this game: a small figure in Mira's
- * raincoat with its head at the wrong angle, and, if you let it in, her face
- * with black eyes and a jaw that keeps opening.
+ * The creature is an original design for this game: a tall hooded shape with
+ * its head at the wrong angle and arms too long, and, if you let it in, a
+ * cracked waxy face with weeping black eyes and a torn, too-wide mouth.
  *
  * Nothing drawn before the decision depends on who is really calling: both
  * door cameras always show the same hooded figure.
@@ -103,127 +103,116 @@ export function drawPorch(g, x, y, w, h, t, opts) {
     return { doorX, doorY, doorW, doorH };
 }
 /**
- * The little figure on the porch: a child in a raincoat, hood up, head hanging
- * at a wrong angle, arms too long, toes not quite touching the ground. It is
- * identical at both doors and for Mira and the mimic; dread rises with `near`
- * (calls used). `lookUp` (0..1) is only used after the decision, when the
- * mimic lifts its face to the camera.
+ * The hooded figure on the porch. `lean` animates a slow head tilt; `near`
+ * (0..1) brings it closer to the camera. `lookUp` (0..1) straightens the head and
+ * opens the mouth (only after the player hangs up on the mimic). Identical for
+ * Mira and the mimic until the decision.
  */
 export function drawFigure(g, cx, footY, h, t, alpha, near = 0, still = false, lookUp = 0) {
     if (alpha <= 0.01)
         return;
-    const s = h * 0.62 * (1 + near * 1.1); // child height, growing as it comes closer
-    // every few seconds the head snaps to the other side for a moment
-    const snap = !still && Math.sin(t * 0.9) > 0.985 ? -1 : 1;
-    const tilt = (still ? 0.38 : 0.36 + Math.sin(t * 0.21) * 0.06 + near * 0.35) * snap;
-    const hover = still ? s * 0.012 : s * (0.012 + 0.006 * Math.sin(t * 0.7));
+    const s = h * (1 + near * 0.9);
+    const sway = still ? 0 : Math.sin(t * 0.6) * s * 0.006;
+    const tilt = still ? 0.12 : 0.12 + Math.sin(t * 0.23) * 0.05;
     g.save();
     g.globalAlpha = alpha;
-    g.translate(cx, footY + near * s * 0.1);
-    // a shadow that doesn't quite meet the feet
-    const sh = g.createRadialGradient(0, 0, 1, 0, 0, s * 0.4);
-    sh.addColorStop(0, "rgba(0,0,0,0.65)");
+    g.translate(cx + sway, footY + near * s * 0.15);
+    // shadow on the wet floor
+    const sh = g.createRadialGradient(0, 0, 2, 0, 0, s * 0.35);
+    sh.addColorStop(0, "rgba(0,0,0,0.6)");
     sh.addColorStop(1, "rgba(0,0,0,0)");
     g.fillStyle = sh;
     g.beginPath();
-    g.ellipse(0, 0, s * 0.4, s * 0.07, 0, 0, Math.PI * 2);
+    g.ellipse(0, 0, s * 0.35, s * 0.06, 0, 0, Math.PI * 2);
     g.fill();
-    g.translate(0, -hover);
-    // boots
-    g.fillStyle = "#0b0b0b";
-    for (const side of [-1, 1]) {
-        g.beginPath();
-        g.ellipse(side * s * 0.07, -s * 0.03, s * 0.055, s * 0.035, 0, 0, Math.PI * 2);
-        g.fill();
-    }
-    // raincoat: small, A-line, wet sheen
-    const coat = g.createLinearGradient(-s * 0.22, -s * 0.8, s * 0.22, 0);
-    coat.addColorStop(0, "#3a3a2c");
-    coat.addColorStop(0.45, "#5a5638");
-    coat.addColorStop(1, "#24241a");
+    // coat: tall, too narrow at the shoulders, hem dripping
+    const coat = g.createLinearGradient(-s * 0.2, -s, s * 0.2, 0);
+    coat.addColorStop(0, "#0b0c0d");
+    coat.addColorStop(0.5, "#16191a");
+    coat.addColorStop(1, "#060707");
     g.fillStyle = coat;
     g.beginPath();
-    g.moveTo(-s * 0.2, -s * 0.06);
-    g.quadraticCurveTo(-s * 0.18, -s * 0.45, -s * 0.11, -s * 0.66);
-    g.lineTo(s * 0.11, -s * 0.66);
-    g.quadraticCurveTo(s * 0.18, -s * 0.45, s * 0.2, -s * 0.06);
+    g.moveTo(-s * 0.2, 0);
+    g.bezierCurveTo(-s * 0.21, -s * 0.35, -s * 0.15, -s * 0.66, -s * 0.09, -s * 0.78);
+    g.lineTo(s * 0.09, -s * 0.78);
+    g.bezierCurveTo(s * 0.15, -s * 0.66, s * 0.21, -s * 0.35, s * 0.2, 0);
+    for (let i = 0; i <= 8; i++)
+        g.lineTo(s * (0.2 - i * 0.05), (i % 2 ? s * 0.02 : 0));
     g.closePath();
     g.fill();
-    g.strokeStyle = "rgba(220,230,210,0.12)";
-    g.lineWidth = Math.max(1, s * 0.01);
-    g.beginPath();
-    g.moveTo(-s * 0.08, -s * 0.6);
-    g.quadraticCurveTo(-s * 0.13, -s * 0.35, -s * 0.15, -s * 0.1);
-    g.stroke();
-    // arms hanging straight down, far too long: grey fingers past the knees
+    // arms too long, fingers past the knees
+    g.strokeStyle = "#0a0b0c";
     g.lineCap = "round";
+    g.lineWidth = s * 0.045;
     for (const side of [-1, 1]) {
-        g.strokeStyle = "#2c2c22";
-        g.lineWidth = s * 0.05;
         g.beginPath();
-        g.moveTo(side * s * 0.12, -s * 0.62);
-        g.quadraticCurveTo(side * s * 0.2, -s * 0.38, side * s * 0.19, -s * 0.16);
+        g.moveTo(side * s * 0.1, -s * 0.74);
+        g.quadraticCurveTo(side * s * 0.2, -s * 0.45, side * s * 0.17, -s * 0.2);
         g.stroke();
-        g.strokeStyle = "rgba(200,198,185,0.75)";
-        g.lineWidth = Math.max(1, s * 0.011);
+        g.lineWidth = s * 0.008;
+        g.strokeStyle = "rgba(190,190,180,0.55)";
         for (let f = 0; f < 4; f++) {
             g.beginPath();
-            g.moveTo(side * s * (0.18 + f * 0.009), -s * 0.15);
-            g.quadraticCurveTo(side * s * (0.19 + f * 0.01), -s * 0.09, side * s * (0.185 + f * 0.012), -s * (0.04 - f * 0.004));
+            g.moveTo(side * s * (0.16 + f * 0.008), -s * 0.2);
+            g.lineTo(side * s * (0.155 + f * 0.012), -s * (0.12 - f * 0.006));
             g.stroke();
         }
+        g.strokeStyle = "#0a0b0c";
+        g.lineWidth = s * 0.045;
     }
-    // the head: hood up, tilted too far
+    // hood, tilted, with a black void where the face should be
     g.save();
-    g.translate(0, -s * 0.68);
-    g.rotate(tilt - lookUp * 0.5 * Math.sign(tilt));
-    const hood = g.createRadialGradient(-s * 0.03, -s * 0.12, s * 0.02, 0, -s * 0.1, s * 0.17);
-    hood.addColorStop(0, "#5c5a3c");
-    hood.addColorStop(1, "#22221a");
+    g.translate(0, -s * 0.8);
+    g.rotate(tilt * (1 - lookUp));
+    const hood = g.createRadialGradient(0, -s * 0.06, s * 0.02, 0, -s * 0.05, s * 0.14);
+    hood.addColorStop(0, "#151718");
+    hood.addColorStop(1, "#070808");
     g.fillStyle = hood;
     g.beginPath();
-    g.ellipse(0, -s * 0.1, s * 0.13, s * 0.15, 0, 0, Math.PI * 2);
+    g.ellipse(0, -s * 0.06, s * 0.085, s * 0.11, 0, 0, Math.PI * 2);
     g.fill();
-    g.fillStyle = "#020202";
+    g.fillStyle = "#000";
     g.beginPath();
-    g.ellipse(0, -s * 0.08, s * 0.085, s * 0.105, 0, 0, Math.PI * 2);
+    g.ellipse(0, -s * 0.045, s * 0.052, s * 0.072, 0, 0, Math.PI * 2);
     g.fill();
-    const faceA = 0.35 + 0.5 * lookUp;
-    const face = g.createRadialGradient(0, -s * 0.08, s * 0.01, 0, -s * 0.07, s * 0.09);
-    face.addColorStop(0, `rgba(220,214,198,${faceA})`);
+    // a pale face, half lost in the hood: hollow eyes, no expression
+    const face = g.createRadialGradient(-s * 0.008, -s * 0.06, s * 0.004, 0, -s * 0.04, s * 0.06);
+    face.addColorStop(0, "rgba(214,208,192,0.55)");
+    face.addColorStop(0.7, "rgba(150,145,130,0.25)");
     face.addColorStop(1, "rgba(0,0,0,0)");
     g.fillStyle = face;
     g.beginPath();
-    g.ellipse(0, -s * 0.07, s * 0.065, s * 0.085, 0, 0, Math.PI * 2);
+    g.ellipse(0, -s * 0.035, s * 0.036, s * 0.055, 0, 0, Math.PI * 2);
     g.fill();
-    // eyes: two black hollows; for a split second, a glint of light in them
-    g.fillStyle = `rgba(0,0,0,${0.6 + 0.4 * lookUp})`;
+    g.fillStyle = "rgba(0,0,0,0.92)";
     for (const side of [-1, 1]) {
         g.beginPath();
-        g.ellipse(side * s * 0.026, -s * 0.095, s * (0.014 + 0.01 * lookUp), s * (0.018 + 0.014 * lookUp), 0, 0, Math.PI * 2);
+        g.ellipse(side * s * 0.015, -s * 0.05, s * 0.009, s * 0.013, side * 0.2, 0, Math.PI * 2);
         g.fill();
     }
-    if (!still && Math.sin(t * 1.7) > 0.992) {
-        g.fillStyle = "rgba(255,255,255,0.9)";
-        for (const side of [-1, 1])
-            g.fillRect(side * s * 0.026 - 1, -s * 0.097, 2, 2);
-    }
+    g.fillStyle = "rgba(0,0,0,0.5)";
+    g.fillRect(-s * 0.002, -s * 0.04, s * 0.004, s * 0.018);
     if (lookUp > 0.3) {
-        // the mouth opens: a thin dark line that keeps going
-        g.fillStyle = "rgba(0,0,0,0.9)";
+        // it looks straight into the camera: pinprick eyes, the jaw dropping open
+        const k = (lookUp - 0.3) / 0.7;
+        g.fillStyle = `rgba(240,235,220,${0.9 * k})`;
+        for (const side of [-1, 1]) {
+            g.beginPath();
+            g.arc(side * s * 0.015, -s * 0.05, s * 0.0028, 0, Math.PI * 2);
+            g.fill();
+        }
+        g.fillStyle = "rgba(0,0,0,0.95)";
         g.beginPath();
-        g.ellipse(0, -s * 0.035, s * 0.02, s * 0.03 * lookUp, 0, 0, Math.PI * 2);
+        g.ellipse(0, -s * 0.012 + k * s * 0.012, s * 0.016, s * 0.006 + k * s * 0.024, 0, 0, Math.PI * 2);
         g.fill();
     }
-    // wet hair hanging out of the hood, across the face
-    g.strokeStyle = "rgba(3,3,3,0.95)";
-    g.lineWidth = Math.max(1, s * 0.006);
-    for (let k = -6; k <= 6; k++) {
-        if (lookUp > 0.5 && Math.abs(k) < 3)
-            continue;
+    // wet hair hanging over the face
+    g.strokeStyle = "rgba(4,4,4,0.9)";
+    g.lineWidth = Math.max(1, s * 0.004);
+    for (let k = -5; k <= 5; k++) {
         g.beginPath();
-        g.moveTo(k * s * 0.011, -s * 0.18);
-        g.quadraticCurveTo(k * s * 0.014, -s * 0.07, k * s * 0.015 + Math.sin(k * 1.7) * s * 0.008, s * (0.03 + 0.012 * Math.abs(k % 3)));
+        g.moveTo(k * s * 0.008, -s * 0.105);
+        g.quadraticCurveTo(k * s * 0.011, -s * 0.05, k * s * 0.012 + Math.sin(k) * s * 0.004, s * (0.03 + 0.01 * Math.abs(k % 3)));
         g.stroke();
     }
     g.restore();
@@ -238,8 +227,8 @@ export function drawHandprints(g, x, y, w, h, count, seed) {
         g.save();
         g.translate(px, py);
         g.rotate(rot);
-        g.fillStyle = "rgba(210,225,215,0.13)";
-        g.strokeStyle = "rgba(230,240,235,0.18)";
+        g.fillStyle = "rgba(200,215,205,0.06)";
+        g.strokeStyle = "rgba(220,232,226,0.08)";
         g.beginPath();
         g.ellipse(0, 0, r, r * 1.1, 0, 0, Math.PI * 2);
         g.fill();
@@ -279,91 +268,109 @@ export function drawLensFlash(g, x, y, w, h, k) {
     }
     g.restore();
 }
-/** Full-frame close-up of the mimic wearing Mira's small face, for the reveal (jump scare). */
+/** Full-frame close-up of the mimic, for the reveal (jump scare). */
 export function drawMimicFace(g, w, h, t, intensity = 1) {
-    const rnd = prng(4242);
+    const rnd = prng(1337);
     g.save();
     g.fillStyle = "#000";
     g.fillRect(0, 0, w, h);
-    const shake = intensity > 0.5 ? (Math.random() - 0.5) * 10 * intensity : 0;
-    g.translate(w / 2 + shake, h * 0.5 + shake * 0.5);
-    g.rotate(0.22 + Math.sin(t * 2.3) * 0.02);
-    const fw = h * 0.36, fh = h * 0.62;
-    // yellow hood and soaked black hair
-    g.fillStyle = "#3e3c26";
+    const shake = intensity > 0.5 ? (Math.random() - 0.5) * 8 * intensity : 0;
+    const cx = w / 2 + shake, cy = h * 0.58;
+    const fw = h * 0.5, fh = h * 0.95;
+    g.translate(cx, cy);
+    g.rotate(0.14 + Math.sin(t * 3) * 0.01);
+    // hood and wet hair
+    g.fillStyle = "#030303";
     g.beginPath();
-    g.ellipse(0, -fh * 0.15, fw * 1.55, fh * 1.05, 0, 0, Math.PI * 2);
+    g.ellipse(0, -fh * 0.15, fw * 1.4, fh * 0.85, 0, 0, Math.PI * 2);
     g.fill();
-    g.fillStyle = "#040404";
-    g.beginPath();
-    g.ellipse(0, -fh * 0.12, fw * 1.25, fh * 0.92, 0, 0, Math.PI * 2);
-    g.fill();
-    // a small round face, grey and wet
-    const skin = g.createRadialGradient(-fw * 0.2, -fh * 0.3, fw * 0.05, 0, 0, fw * 1.2);
-    skin.addColorStop(0, "#d2d0c4");
-    skin.addColorStop(0.55, "#8e8c80");
-    skin.addColorStop(1, "#191917");
+    // face: grey, waxy, too long
+    const skin = g.createRadialGradient(-fw * 0.2, -fh * 0.3, fw * 0.05, 0, 0, fw * 1.15);
+    skin.addColorStop(0, "#c8c6ba");
+    skin.addColorStop(0.5, "#8a887c");
+    skin.addColorStop(1, "#141412");
     g.fillStyle = skin;
     g.beginPath();
-    g.ellipse(0, -fh * 0.08, fw * 0.82, fh * 0.62, 0, 0, Math.PI * 2);
+    g.moveTo(0, -fh * 0.6);
+    g.bezierCurveTo(fw * 0.82, -fh * 0.58, fw * 0.66, fh * 0.32, fw * 0.12, fh * 0.56);
+    g.quadraticCurveTo(0, fh * 0.62, -fw * 0.12, fh * 0.56);
+    g.bezierCurveTo(-fw * 0.66, fh * 0.32, -fw * 0.82, -fh * 0.58, 0, -fh * 0.6);
     g.fill();
-    for (let k = 0; k < 120; k++) {
-        g.fillStyle = `rgba(${rnd() < 0.5 ? "15,15,12" : "220,215,200"},${0.04 + rnd() * 0.06})`;
+    // mottled texture
+    for (let k = 0; k < 140; k++) {
+        g.fillStyle = `rgba(${rnd() < 0.5 ? "20,18,15" : "210,205,190"},${0.05 + rnd() * 0.07})`;
         g.beginPath();
-        g.arc((rnd() - 0.5) * fw * 1.4, (rnd() - 0.6) * fh, rnd() * fw * 0.07, 0, Math.PI * 2);
+        g.arc((rnd() - 0.5) * fw * 1.2, (rnd() - 0.6) * fh, rnd() * fw * 0.06, 0, Math.PI * 2);
         g.fill();
     }
-    // eyes: completely black, too big, weeping black down the cheeks
-    for (const side of [-1, 1]) {
-        const ex = side * fw * 0.33, ey = -fh * 0.2;
-        g.fillStyle = "#000";
+    // cracks
+    g.strokeStyle = "rgba(15,12,10,0.8)";
+    g.lineWidth = 1.5;
+    for (let c = 0; c < 10; c++) {
+        let px = (rnd() - 0.5) * fw * 1.1, py = (rnd() - 0.7) * fh * 0.9;
         g.beginPath();
-        g.ellipse(ex, ey, fw * 0.2, fw * (side < 0 ? 0.25 : 0.21), side * 0.12, 0, Math.PI * 2);
+        g.moveTo(px, py);
+        for (let k = 0; k < 6; k++) {
+            px += (rnd() - 0.5) * fw * 0.16;
+            py += rnd() * fh * 0.06;
+            g.lineTo(px, py);
+        }
+        g.stroke();
+    }
+    // eyes: deep black sockets that weep down the cheeks, mismatched pinpricks
+    for (const side of [-1, 1]) {
+        const ex = side * fw * 0.3, ey = -fh * 0.16;
+        const eg = g.createRadialGradient(ex, ey, 1, ex, ey, fw * 0.27);
+        eg.addColorStop(0, "#000");
+        eg.addColorStop(0.6, "rgba(0,0,0,0.98)");
+        eg.addColorStop(1, "rgba(0,0,0,0)");
+        g.fillStyle = eg;
+        g.beginPath();
+        g.ellipse(ex, ey, fw * 0.24, fw * (side < 0 ? 0.3 : 0.25), side * 0.18, 0, Math.PI * 2);
         g.fill();
-        g.strokeStyle = "rgba(0,0,0,0.85)";
-        g.lineWidth = fw * 0.03;
-        for (let d = 0; d < 3; d++) {
+        g.strokeStyle = "rgba(0,0,0,0.75)";
+        g.lineWidth = fw * 0.025;
+        for (let d = 0; d < 2; d++) {
             g.beginPath();
-            g.moveTo(ex + (d - 1) * fw * 0.06, ey + fw * 0.16);
-            g.bezierCurveTo(ex + (d - 1) * fw * 0.08, ey + fh * 0.25, ex + (d - 1) * fw * 0.05, ey + fh * 0.35, ex + (d - 1.2) * fw * 0.07, ey + fh * (0.42 + d * 0.05));
+            g.moveTo(ex + (d - 0.5) * fw * 0.08, ey + fw * 0.18);
+            g.bezierCurveTo(ex + (d - 0.5) * fw * 0.1, ey + fh * 0.2, ex + (d - 0.3) * fw * 0.06, ey + fh * 0.3, ex + (d - 0.4) * fw * 0.08, ey + fh * (0.34 + d * 0.06));
             g.stroke();
         }
-    }
-    // the jaw hangs open far too long: a black gap reaching below the chin
-    const open = fh * (0.55 + 0.05 * Math.sin(t * 16) * intensity);
-    g.fillStyle = "#020000";
-    g.beginPath();
-    g.moveTo(-fw * 0.22, fh * 0.05);
-    g.quadraticCurveTo(-fw * 0.3, fh * 0.05 + open * 0.6, -fw * 0.08, fh * 0.05 + open);
-    g.lineTo(fw * 0.08, fh * 0.05 + open);
-    g.quadraticCurveTo(fw * 0.3, fh * 0.05 + open * 0.6, fw * 0.22, fh * 0.05);
-    g.quadraticCurveTo(0, -fh * 0.02, -fw * 0.22, fh * 0.05);
-    g.fill();
-    g.fillStyle = "rgba(225,220,200,0.92)";
-    for (let k = -4; k <= 4; k++) {
-        const tx = (k / 5) * fw * 0.2, tw = fw * 0.025, len = fh * (0.05 + rnd() * 0.04);
+        g.fillStyle = "#f2efe6";
         g.beginPath();
-        g.moveTo(tx - tw, fh * 0.06);
-        g.lineTo(tx + tw, fh * 0.06);
-        g.lineTo(tx, fh * 0.06 + len);
-        g.closePath();
+        g.arc(ex + side * fw * 0.03, ey + (side < 0 ? fw * 0.05 : -fw * 0.02), fw * (side < 0 ? 0.022 : 0.015), 0, Math.PI * 2);
         g.fill();
     }
-    // wet hair hanging in clumps over the edges of the face
-    g.strokeStyle = "rgba(2,2,2,0.92)";
-    for (let k = 0; k < 16; k++) {
-        const side = k % 2 ? 1 : -1, off = 0.35 + rnd() * 0.75;
-        g.lineWidth = Math.max(1.5, fw * (0.01 + rnd() * 0.035));
-        const x0 = side * fw * off;
+    // mouth: torn far too wide and hanging open, uneven teeth
+    const my = fh * 0.2, mw = fw * 0.62, open = fh * (0.16 + 0.03 * Math.sin(t * 18) * intensity);
+    g.fillStyle = "#050000";
+    g.beginPath();
+    g.moveTo(-mw, my - fh * 0.03);
+    g.bezierCurveTo(-mw * 0.5, my - fh * 0.06, mw * 0.5, my - fh * 0.06, mw, my - fh * 0.03);
+    g.bezierCurveTo(mw * 0.6, my + open, -mw * 0.6, my + open, -mw, my - fh * 0.03);
+    g.fill();
+    g.fillStyle = "rgba(205,195,170,0.9)";
+    for (let k = -8; k <= 8; k++) {
+        const tx = (k / 9) * mw * 0.9, tw = mw * 0.045, topY = my - fh * 0.045 + Math.abs(k / 9) * fh * 0.02;
+        const len = fh * (0.035 + rnd() * 0.03) * (1 - Math.abs(k / 9) * 0.4);
         g.beginPath();
-        g.moveTo(x0 * 0.6, -fh * 0.82);
-        g.bezierCurveTo(x0 * (0.7 + rnd() * 0.3), -fh * 0.35, x0 * (0.8 + rnd() * 0.4), fh * 0.1, x0 * (0.75 + rnd() * 0.5), fh * (0.45 + rnd() * 0.4));
-        g.stroke();
+        g.moveTo(tx - tw, topY);
+        g.lineTo(tx + tw, topY);
+        g.lineTo(tx + rnd() * tw * 0.4, topY + len);
+        g.closePath();
+        g.fill();
+        const botY = my + open * 0.62 - Math.abs(k / 9) * open * 0.45;
+        g.beginPath();
+        g.moveTo(tx - tw, botY);
+        g.lineTo(tx + tw, botY);
+        g.lineTo(tx, botY - len * 0.8);
+        g.closePath();
+        g.fill();
     }
     g.restore();
     g.save();
     g.globalCompositeOperation = "multiply";
-    g.fillStyle = "rgba(140,40,35,0.28)";
+    g.fillStyle = "rgba(150,30,25,0.45)";
     g.fillRect(0, 0, w, h);
     g.restore();
     postProcess(g, 0, 0, w, h, t, { tint: "none", strength: intensity });
@@ -400,6 +407,6 @@ export function figureSprite(size = 256) {
     c.width = size;
     c.height = size * 2;
     const g = c.getContext("2d");
-    drawFigure(g, size / 2, size * 2 - 6, size * 1.9 / 0.62, 0, 1, 0, true);
+    drawFigure(g, size / 2, size * 2 - 6, size * 1.9, 0, 1, 0, true);
     return c;
 }

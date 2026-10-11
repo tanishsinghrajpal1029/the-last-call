@@ -66,11 +66,12 @@ Sort → Decide. On Qollab the bonus uses 8 extra eraser circuits from the same 
 
 ## Look and sound
 
-Night-vision door cameras with rain, flicker and lightning. Mira is a small child in a yellow
-raincoat; the thing that copies her is an original creature drawn procedurally in code: a child-sized
-hooded figure that creeps closer as your calls run out, tilts its head too far, leaves small wet
-handprints on the camera glass (one per call), presses against the lens on a broken line, lifts its
-face if you hang up on it, and shows a hollow-eyed, too-wide-mouthed face if you let it in. A music
+Night-vision door cameras with rain, flicker and lightning. Mira is your little sister and speaks
+in a child's voice; what the cameras show is an original creature drawn procedurally in code: a
+tall hooded shape with arms too long, the same at both doors, that creeps closer as your calls run
+out, leaves faint wet handprints on the camera glass (one per call), presses against the lens on a
+broken line, looks straight into the camera if you hang up on it, and shows a cracked, weeping,
+too-wide-mouthed face if you let it in. A music
 box plays now and then under the rain. Voices are neural text-to-speech (Piper with a
 LibriTTS-trained voice, CC BY 4.0), pitched up into a child's voice and processed into a phone line,
 broken static and, for the mimic, her voice slowed with something much deeper underneath it.
