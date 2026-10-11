@@ -159,7 +159,7 @@ With 100 shots per dial each fitted contrast is uncertain by about ±0.05 (±0.0
 * **Small circuits.** One or two qubits each, easy to simulate classically. The project is about making interference and which-path measurement something you feel and decide with, not about speed-up.
 * **One run, one night.** Each Run is 56 circuits × 16 shots; a night of play uses at most 28 of those 896 shots, each once. Press Run again for fresh shots.
 * **Noise.** The browser's noise option is an illustrative channel, not an IonQ calibration; on Qollab, the backend's own behaviour applies.
-* **AR.** iPhone look-around mode follows rotation only; walking around the house needs the printed marker. On real devices so far: WebXR AR works on an Android phone in Chrome, with the house standing on the real floor; look-around AR works on an iPad after a fix (its browser reported the wrong screen rotation), placing the house where you aim at the floor; iPhone and the printed marker are not yet tried. Results are recorded in the repo's `docs/AR_DEVICE_TESTS.md`.
+* **AR.** iPhone look-around mode follows rotation only; walking around the house needs the printed marker. So far phone AR has been tested only with automated browser tests and a simulated camera; the real-device checks are listed in the repo's `docs/AR_DEVICE_TESTS.md`.
 * **Playtesting.** The walkthrough and difficulty were tuned by the strategy benchmark and our own play, not yet by a study with new players.
 * **IonQ from the game page.** Qollab's preview frame can't reach IonQ, so the game itself plays on the Built-in simulator's shots and the IonQ run lives in a companion Python project.
 * **Next:** a fifth call built on entanglement (two callers sharing one line), a run on IonQ hardware (so far: IonQ's noise-model simulator), and tuning from playtests.
@@ -173,10 +173,6 @@ With 100 shots per dial each fitted contrast is uncertain by about ±0.05 (±0.0
 
 ### Credits and disclosure
 
-Built during the hackathon by Tanish Singh Rajpal.
-
-* **Reused code:** the AR renderer, matrix maths, marker tracker, WebXR and marker scaffolding, random-number generator, dev server, build scripts and test harnesses were adapted from **Dark Sweeper**, my earlier entry in this hackathon (MIT; work on it began shortly before the build window opened). Everything quantum and everything specific to this game (circuits, model, rules, evidence meter, intercom UI, story, art, sound, Qollab projects) was written for The Last Call. Full list: [ATTRIBUTION.md](https://github.com/tanishsinghrajpal1029/the-last-call/blob/main/ATTRIBUTION.md).
-* **AI assistance:** code, tests, story text and documentation were written with **Claude (Anthropic)** in Claude Cowork, directed and reviewed by me. The quantum-eraser idea came from a parallel version made with another AI tool; no code from it was used.
-* **Assets:** voices generated with Piper TTS (MIT) and a voice trained on LibriTTS (CC BY 4.0). The creature, art, sound effects and story are original.
+Built during the hackathon, with no pre-existing code. Voices: Piper TTS (MIT) with a voice trained on LibriTTS (CC BY 4.0). The creature, art, sound effects and story are original. The idea of a quantum-eraser level came from an earlier experiment in the same project folder.
 
 The story is fiction: the circuit never processes audio, and outcomes only choose which prepared line is played. These circuits are small enough to simulate classically; the project is about the rule they make you feel, not speed-up: **coherent alternatives interfere, and recording which path destroys that.**

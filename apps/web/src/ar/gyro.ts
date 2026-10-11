@@ -1,5 +1,5 @@
 /**
- * Markerless "look-around" AR for iPhone (and any phone): the rear camera feed
+ * Markerless "look-around" AR for iPhone and iPad (and any phone): the rear camera feed
  * with the house drawn on top, held in place by the phone's motion sensors
  * (DeviceOrientation). This is rotation-only (3-DoF) tracking: turn and tilt
  * the phone and the house stays put in the room; walking around it does not
