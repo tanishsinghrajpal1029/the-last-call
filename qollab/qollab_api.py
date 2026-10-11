@@ -12,8 +12,8 @@ import random
 import time
 
 import config
-from quantum.circuits import CIRCUIT_VERSION, build_call, dial_angle
-from quantum.decode import OUTCOME_MAPPING_VERSION, decode_counts
+from quantum.circuits import CIRCUIT_VERSION, build_call, call_gate_list, dial_angle
+from quantum.decode import OUTCOME_MAPPING_VERSION, classify, decode_counts, key_to_int
 
 
 def load_nights():
@@ -71,6 +71,85 @@ def _integer_counts(totals, shots, rng):
     return out, True
 
 
+def build_combined(alpha, theta, steps, dials):
+    """One wide circuit made of independent blocks (no gate links two blocks):
+    a listen block (1 qubit) per dial, then an eraser block (2 qubits) per dial.
+    Classical bit i holds qubit i. Returns (circuit, blocks, width)."""
+    from qiskit import QuantumCircuit
+
+    blocks, q = [], 0
+    for k in dials:
+        blocks.append((k, "listen", (q,)))
+        q += 1
+    for k in dials:
+        blocks.append((k, "erase", (q, q + 1)))
+        q += 2
+    qc = QuantumCircuit(q, q, name="last-call-one-circuit")
+    for k, kind, qs in blocks:
+        for gate, angle, local in call_gate_list(alpha, theta, dial_angle(k, steps), kind != "listen", kind == "erase"):
+            g = [qs[i] for i in local]
+            if gate == "ry":
+                qc.ry(angle, g[0])
+            elif gate == "p":
+                qc.p(angle, g[0])
+            elif gate == "cx":
+                qc.cx(g[0], g[1])
+            elif gate == "h":
+                qc.h(g[0])
+    qc.measure(list(range(q)), list(range(q)))
+    return qc, blocks, q
+
+
+def decode_combined(raw, blocks, width):
+    """Marginal outcome totals for every block from the wide circuit's counts."""
+    out = {}
+    for k, kind, qs in blocks:
+        out[(k, kind)] = {}
+    for key, c in raw.items():
+        c = float(c)
+        if c < 0:
+            raise ValueError("negative count")
+        v = key_to_int(key, width)
+        for k, kind, qs in blocks:
+            local = (v >> qs[0]) & 1
+            if len(qs) > 1:
+                local |= ((v >> qs[1]) & 1) << 1
+            o = classify(local, kind != "listen", kind == "erase")
+            out[(k, kind)][o] = out[(k, kind)].get(o, 0.0) + c
+    return out
+
+
+def _single_circuit(kind):
+    if config.SINGLE_CIRCUIT is True or config.SINGLE_CIRCUIT is False:
+        return config.SINGLE_CIRCUIT
+    return kind == "ionq_noise"
+
+
+def _run_single(backend, plan, seed, out, steps):
+    """IonQ path: one circuit per run. Call 1's settings (Mira, balanced) are
+    listened to and erased at every dial in a single 24-qubit circuit."""
+    p1 = next(p for p in plan if int(p["nightId"]) == 1)
+    qc, blocks, width = build_combined(math.radians(float(p1["alphaDeg"])), math.radians(float(p1["thetaDeg"])), steps, list(config.IONQ_DIALS))
+    job = backend.run(qc, shots=config.IONQ_SHOTS)
+    try:
+        out["jobId"] = job.job_id()
+    except Exception:
+        pass
+    result = job.result()
+    raw = {str(key): float(v) for key, v in dict(result.get_counts()).items()}
+    rng = random.Random(str(seed))
+    for (k, kind), totals in decode_combined(raw, blocks, width).items():
+        full = {o: totals.get(o, 0.0) for o in (("clear", "static") if kind == "listen" else ("plus|clear", "plus|static", "minus|clear", "minus|static"))}
+        counts, sampled = _integer_counts(full, config.IONQ_SHOTS, rng)
+        out["sampledFromProbabilities"] = out["sampledFromProbabilities"] or sampled
+        out["bags"][_key(1, k, kind)] = {"totals": counts}
+    out["mode"] = "single"
+    out["circuits"] = 1
+    out["qubits"] = width
+    out["shots"] = config.IONQ_SHOTS
+    out["ok"] = True
+
+
 def run_calls(backend, plan_json, seed):
     """plan_json: [{"nightId", "alphaDeg", "thetaDeg"}, ...] chosen by main.js.
     Builds 8 dial settings x each tool the night allows (listen, trace, erase;
@@ -91,6 +170,11 @@ def run_calls(backend, plan_json, seed):
             nights_cfg = json.load(f)
         steps = nights_cfg["dialSteps"]
         tools_by_night = {n["id"]: n["tools"] for n in nights_cfg["nights"]}
+        if _single_circuit(kind):
+            _run_single(backend, plan, seed, out, steps)
+            out["seconds"] = round(time.perf_counter() - started, 3)
+            return json.dumps(out)
+        out["mode"] = "batch"
         if config.SHOTS < max(n["budget"] for n in nights_cfg["nights"]):
             raise ValueError("SHOTS must cover the largest call budget")
         specs, circuits = [], []

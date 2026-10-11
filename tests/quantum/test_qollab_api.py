@@ -127,6 +127,73 @@ class FakeBackend:
         return FakeJob(out)
 
 
+class FakeIonQBackend:
+    """Accepts ONE circuit per run (like IonQ), samples it from the stub statevector."""
+    name = "ionq_simulator (test double)"
+
+    def __init__(self):
+        self.calls = 0
+        self.rng = random.Random(7)
+        self.widths = []
+
+    def run(self, qc, shots=1024):
+        self.calls += 1
+        assert not isinstance(qc, list), "IonQ path must send one circuit"
+        self.widths.append(qc.num_qubits)
+        w = qc.num_qubits
+        # the blocks never interact, so simulate each connected block on its own and sample them independently
+        parent = list(range(w))
+
+        def find(x):
+            while parent[x] != x:
+                x = parent[x]
+            return x
+        for name, a, q in qc.ops:
+            if name == "cx":
+                parent[find(a)] = find(q)
+        comps = {}
+        for q in range(w):
+            comps.setdefault(find(q), []).append(q)
+        sims = []
+        for qs in comps.values():
+            idx = {q: i for i, q in enumerate(qs)}
+            sub = StubCircuit(len(qs), len(qs))
+            for name, a, q in qc.ops:
+                if name == "measure":
+                    continue
+                if name == "cx" and a in idx:
+                    sub.ops.append(("cx", idx[a], idx[q]))
+                elif name != "cx" and q in idx:
+                    sub.ops.append((name, a, idx[q]))
+            sims.append((qs, statevector(sub)))
+        counts = {}
+        for _ in range(shots):
+            v = 0
+            for qs, p in sims:
+                u, acc = self.rng.random(), 0.0
+                for i, pv in enumerate(p):
+                    acc += pv
+                    if u < acc:
+                        break
+                for j, q in enumerate(qs):
+                    v |= ((i >> j) & 1) << q
+            k = format(v, "0%db" % w)
+            counts[k] = counts.get(k, 0) + 1
+
+        class R:
+            def get_counts(self, i=None):
+                return counts
+
+        class J:
+            def job_id(self):
+                return "ionq-job-1"
+
+            def result(self):
+                return R()
+
+        return J()
+
+
 class BrokenBackend:
     name = "IonQ Forte 1 (broken test double)"
 
@@ -218,6 +285,38 @@ class TestQollabApi(unittest.TestCase):
         self.assertIn("batch rejected", run["error"])
         self.assertEqual(run["bags"], {})
         self.assertEqual(run["backendKind"], "ionq_noise")
+
+    def test_ionq_sends_one_wide_circuit_and_decodes_each_block(self):
+        cfg = sys.modules["config"]
+        saved = cfg.IONQ_DIALS, cfg.IONQ_SHOTS
+        cfg.IONQ_DIALS, cfg.IONQ_SHOTS = [0, 4], 400  # small enough for the stub statevector (6 qubits)
+        try:
+            b = FakeIonQBackend()
+            run = json.loads(self.api.run_calls(b, json.dumps(plan()), "s"))
+        finally:
+            cfg.IONQ_DIALS, cfg.IONQ_SHOTS = saved
+        self.assertTrue(run["ok"], run["error"])
+        self.assertEqual((b.calls, b.widths, run["mode"], run["circuits"], run["qubits"]), (1, [6], "single", 1, 6))
+        self.assertEqual(run["backendKind"], "ionq_noise")
+        # call 1 is Mira, balanced: listen is always clear at dial 0, always static at dial 4
+        self.assertEqual(run["bags"]["1|0|listen"]["totals"], {"clear": 400, "static": 0})
+        self.assertEqual(run["bags"]["1|4|listen"]["totals"], {"clear": 0, "static": 400})
+        # eraser blocks: + group clear at dial 0, static at dial 4; all shots together about flat
+        e0, e4 = run["bags"]["1|0|erase"]["totals"], run["bags"]["1|4|erase"]["totals"]
+        self.assertEqual((e0["plus|static"], e0["minus|clear"]), (0, 0))
+        self.assertEqual((e4["plus|clear"], e4["minus|static"]), (0, 0))
+        self.assertTrue(150 < e0["plus|clear"] + e0["minus|clear"] < 250)
+        self.assertEqual(sum(e0.values()), 400)
+
+    def test_combined_circuit_layout_fits_aria(self):
+        qc, blocks, width = self.api.build_combined(math.pi / 2, 0.0, 8, list(range(8)))
+        self.assertEqual(width, 24)
+        self.assertEqual(len(blocks), 16)
+        # no gate connects two blocks: every cx stays inside one eraser pair
+        pairs = {qs for _, kind, qs in blocks if kind == "erase"}
+        for name, a, q in qc.ops:
+            if name == "cx":
+                self.assertIn((a, q), pairs)
 
     def test_circuit_text(self):
         self.assertIn("2 qubits", self.api.circuit_text(True))

@@ -1,3 +1,2 @@
-# Python dependencies for the Qollab runtime (the JS / Qiskit wrapper project shape).
-# Qollab provides qiskit; listed here so the project shape matches the template.
-qiskit
+# No extra packages: Qollab already provides Qiskit 2.x and NumPy.
+# (Listing qiskit here would make the runtime try to install it again.)

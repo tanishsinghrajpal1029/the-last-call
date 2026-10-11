@@ -70,18 +70,26 @@ function fitFringe(ps, steps) {
 
 function resultsData(nights, plan, run) {
   const steps = nights.dialSteps;
-  const p1 = plan.find((p) => p.nightId === 1), p4 = plan.find((p) => p.nightId === 4);
+  const single = run.mode === "single"; // IonQ: one circuit with call 1's settings, listened to and erased at every dial
+  const p1 = plan.find((p) => p.nightId === 1), p4 = single ? p1 : plan.find((p) => p.nightId === 4);
+  const eNight = single ? 1 : 4;
   const listen = [], trace = [], ideal1 = [];
   for (let k = 0; k < steps; k++) {
-    const l = run.bags[`1|${k}|listen`].totals, t = run.bags[`1|${k}|trace`].totals;
+    const l = run.bags[`1|${k}|listen`].totals;
     listen.push({ c: l.clear, n: l.clear + l.static });
-    const tc = t["front|clear"] + t["side|clear"], tn = tc + t["front|static"] + t["side|static"];
-    trace.push({ c: tc, n: tn, front: t["front|clear"] + t["front|static"] });
+    if (single) { // the record is made in every eraser block: q0 alone (all shots together) is a traced line
+      const e = run.bags[`1|${k}|erase`].totals;
+      trace.push({ c: e["plus|clear"] + e["minus|clear"], n: e["plus|clear"] + e["plus|static"] + e["minus|clear"] + e["minus|static"], front: 0 });
+    } else {
+      const t = run.bags[`1|${k}|trace`].totals;
+      const tc = t["front|clear"] + t["side|clear"], tn = tc + t["front|static"] + t["side|static"];
+      trace.push({ c: tc, n: tn, front: t["front|clear"] + t["front|static"] });
+    }
     ideal1.push(simulate(rad(p1.alphaDeg), rad(p1.thetaDeg), dialAngle(k, steps), false, null).clear);
   }
   const plus = [], minus = [], all = [], idealPlus = [];
   for (let k = 0; k < steps; k++) {
-    const e = run.bags[`4|${k}|erase`].totals;
+    const e = run.bags[`${eNight}|${k}|erase`].totals;
     const pn = e["plus|clear"] + e["plus|static"], mn = e["minus|clear"] + e["minus|static"];
     plus.push({ c: e["plus|clear"], n: pn });
     minus.push({ c: e["minus|clear"], n: mn });
@@ -90,7 +98,7 @@ function resultsData(nights, plan, run) {
     idealPlus.push(ie["plus|clear"] / (ie["plus|clear"] + ie["plus|static"]));
   }
   const rate = (xs) => xs.map((x) => (x.n ? x.c / x.n : 0.5));
-  return { steps, p1, p4, listen, trace, ideal1, plus, minus, all, idealPlus,
+  return { steps, single, p1, p4, listen, trace, ideal1, plus, minus, all, idealPlus,
     fitListen: fitFringe(rate(listen), steps), fitTrace: fitFringe(rate(trace), steps),
     fitPlus: fitFringe(rate(plus), steps), fitAll: fitFringe(rate(all), steps), fitIdealPlus: fitFringe(idealPlus, steps) };
 }
@@ -126,9 +134,9 @@ function drawResults(cv, d, backendName) {
   const steps = d.steps;
   const ideal1 = (k) => simulate(rad(d.p1.alphaDeg), rad(d.p1.thetaDeg), (2 * Math.PI * k) / steps, false, null).clear;
   const idealP = (k) => { const e = simulateEraser(rad(d.p4.alphaDeg), rad(d.p4.thetaDeg), (2 * Math.PI * k) / steps, null); return e["plus|clear"] / (e["plus|clear"] + e["plus|static"]); };
-  let leg = panel(0, "Call 1: Listen vs Trace", [[d.listen, "#7ad38a"], [d.trace, "#ff8a6b"]], ideal1);
-  leg("#7ad38a", "listen (measured)"); leg("#ff8a6b", "trace (measured)"); leg("#cfd8d4", "ideal listen", true);
-  leg = panel(W / 2, "Call 4: the eraser, sorted", [[d.plus, "#5fd3c4"], [d.minus, "#b48cff"], [d.all, "#9aa6a4"]], idealP);
+  let leg = panel(0, d.single ? "Listen vs door recorded" : "Call 1: Listen vs Trace", [[d.listen, "#7ad38a"], [d.trace, "#ff8a6b"]], ideal1);
+  leg("#7ad38a", "listen (measured)"); leg("#ff8a6b", d.single ? "door recorded (measured)" : "trace (measured)"); leg("#cfd8d4", "ideal listen", true);
+  leg = panel(W / 2, d.single ? "The eraser, sorted (same circuit)" : "Call 4: the eraser, sorted", [[d.plus, "#5fd3c4"], [d.minus, "#b48cff"], [d.all, "#9aa6a4"]], idealP);
   leg("#5fd3c4", "+ group"); leg("#b48cff", "− group"); leg("#9aa6a4", "all together"); leg("#cfd8d4", "ideal +", true);
   g.fillStyle = "#8f9a96"; g.font = "12px system-ui"; g.fillText(`Measured on “${backendName}”. y: share of shots with a clear line.`, 20, 52);
 }
@@ -141,6 +149,27 @@ function resultsMarkdown(d, run, mimic4Deg) {
   const traceAll = d.trace.reduce((a, x) => ({ c: a.c + x.c, n: a.n + x.n, front: a.front + x.front }), { c: 0, n: 0, front: 0 });
   const allE = d.all.reduce((a, x) => ({ c: a.c + x.c, n: a.n + x.n }), { c: 0, n: 0 });
   const who4 = d.p4.caller === "sister" ? "Mira" : "the impostor";
+  if (d.single) {
+    const n0 = d.listen[0].n;
+    return [
+      `**${run.backendName}** · job ${run.jobId || "(no id)"} · one ${run.qubits}-qubit circuit × ${run.shots} shots (IonQ accepts one circuit per run) · ${run.generatedAt}${run.sampledFromProbabilities ? " · this backend returned probabilities, so shots were sampled from them" : ""}`,
+      ``,
+      `Call 1's settings (Mira, balanced) in one circuit: a 1-qubit **listen** block at each of the 8 dials, and a 2-qubit **erase** block (record made, then read as + / −) at each dial. Clear shots out of ${n0} per dial:`,
+      ``,
+      `| | ${ks.map((k) => "dial " + k).join(" | ")} |`,
+      `|---|${ks.map(() => "---").join("|")}|`,
+      row("Listen, measured", d.listen.map(cell)),
+      row("Listen, ideal", d.ideal1.map(pc)),
+      row("Door recorded, all shots", d.trace.map(cell)),
+      row("+ group (record erased)", d.plus.map(cell)),
+      ``,
+      `* **Listening shows the fringe:** fitted contrast **${d.fitListen.contrast.toFixed(2)}** (ideal 1.00) at phase ${Math.round(d.fitListen.phaseDeg)}°.`,
+      `* **Recording the door flattens it:** fitted contrast **${d.fitTrace.contrast.toFixed(2)}** (ideal 0); ${traceAll.c} of ${traceAll.n} shots clear (${pc(traceAll.c / traceAll.n)}, ideal 50%).`,
+      `* **Erasing the record and sorting brings it back:** + group contrast **${d.fitPlus.contrast.toFixed(2)}** (ideal ${d.fitIdealPlus.contrast.toFixed(2)}) at phase ${Math.round(d.fitPlus.phaseDeg)}°.`,
+      ``,
+      `*Fitted contrast and phase: least-squares fit of the clear rate across the 8 dial settings to ½(1 + V·cos(θ − φ)).*`,
+    ].join("\n");
+  }
   return [
     `### Results from a real run`,
     ``,
@@ -198,7 +227,14 @@ async function main() {
   const run = JSON.parse(String(await run_calls.callPromising(backend, JSON.stringify(plan), seed)));
   const settings = defaultSettings();
   let provider, label;
-  if (run.ok) {
+  if (run.ok && run.mode === "single") {
+    // IonQ accepts one circuit per run: this run measured the call-1 experiment shown in the results card.
+    provider = modelProvider(null, rngFromSeed("single:" + seed), nights.dialSteps);
+    label = `the ideal model sampled in your browser. This run on “${run.backendName}” measured one ${run.qubits}-qubit circuit (call 1's listen and eraser experiment, shown above); IonQ accepts one circuit per run, too few for a whole night of calls`;
+    $("run-status").textContent = `Done in ${run.seconds} s on “${run.backendName}”: one ${run.qubits}-qubit circuit × ${run.shots} shots` + (run.jobId ? `, job ${run.jobId}` : "") +
+      (run.sampledFromProbabilities ? " (probabilities returned; shots sampled from them)" : "") + ". IonQ accepts one circuit per run, so the measured results are in the card below; the game plays on the labelled ideal model.";
+    showResults(nights, plan, run);
+  } else if (run.ok) {
     const bags = {};
     for (const [k, v] of Object.entries(run.bags)) {
       const t = v.totals;

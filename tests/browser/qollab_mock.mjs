@@ -23,14 +23,14 @@ const SEED = "04242";
 const N = await import(path.join(root, "build/js/packages/core/src/nights.js"));
 const nights = JSON.parse(readFileSync(path.join(root, "shared/nights.json"), "utf8"));
 const plan = N.planRun(nights, SEED);
-const mode = process.argv[2] === "broken" ? "broken" : "ok";
+const mode = ["broken", "ionq"].includes(process.argv[2]) ? process.argv[2] : "ok";
 const py = `
 import sys, json, os
 sys.path.insert(0, ${JSON.stringify(path.join(root, "tests/quantum"))})
 import test_qollab_api as t
 api = t.load_api()
 os.chdir(${JSON.stringify(path.join(root, "qollab"))})
-backend = t.BrokenBackend() if ${JSON.stringify(mode)} == "broken" else t.FakeBackend()
+backend = {"broken": t.BrokenBackend, "ionq": t.FakeIonQBackend}.get(${JSON.stringify(mode)}, t.FakeBackend)()
 print(json.dumps({"nights": api.load_nights(), "run": api.run_calls(backend, ${JSON.stringify(JSON.stringify(plan))}, ${JSON.stringify(SEED)}),
   "c0": api.circuit_text(False), "c1": api.circuit_text(True)}))
 `;
@@ -71,7 +71,20 @@ try {
   await page.goto(`http://localhost:${port}/harness.html`);
   await page.waitForFunction(() => /Done in|did not complete|Error/.test(document.getElementById("run-status").textContent), null, { timeout: 10000 });
   const status = await page.textContent("#run-status");
-  if (mode === "broken") {
+  if (mode === "ionq") {
+    check("IonQ: one 24-qubit circuit, results shown, game labelled as the model", /ionq_simulator \(test double\)”: one 24-qubit circuit × 100 shots, job ionq-job-1/.test(status) && /one circuit per run/.test(status), status);
+    const res = await page.evaluate(() => ({ hidden: document.getElementById("results-card").hidden, md: document.getElementById("res-md").value }));
+    check("IonQ results card: listen fringe, flat with the record, fringe back after sorting", !res.hidden && /one 24-qubit circuit × 100 shots/.test(res.md) && /Listening shows the fringe:\*\* fitted contrast \*\*(0\.9|1\.[01])/.test(res.md) && /Recording the door flattens it:\*\* fitted contrast \*\*0\.[0-2]/.test(res.md) && /\+ group contrast \*\*(0\.9|1\.[01])/.test(res.md), res.md.slice(0, 400));
+    await page.evaluate(() => { document.getElementById("sheet-wrap").style.visibility = "hidden"; });
+    await (await page.$("#results-card")).screenshot({ path: path.join(root, "artifacts", "qollab_ionq_card.png") });
+    await page.evaluate(() => { document.getElementById("sheet-wrap").style.visibility = ""; });
+    check("IonQ: spoiler table stays hidden (no night data)", await page.$eval("#raw-details", (d) => d.hidden));
+    await page.waitForSelector(".sheet-intro");
+    await page.click("#skip");
+    await page.waitForSelector("#sheet-wrap", { state: "hidden" });
+    await page.click("#listen-btn");
+    check("IonQ: in-game calls are labelled as the ideal model", /ideal model/.test(await page.textContent("#caption")));
+  } else if (mode === "broken") {
     check("failed run is reported, not hidden", /did not complete: RuntimeError: batch rejected/.test(status), status);
     await page.waitForSelector(".sheet-intro");
     await page.click("#answer");
