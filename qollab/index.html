@@ -1,7 +1,7 @@
 <header class="lc-header">
   <p class="kicker">A quantum horror game</p>
   <h1>The Last Call</h1>
-  <p class="pitch">Your little sister Mira is outside in the storm and asks you to let her in. The intercom shows her at both doors at once. one call, two entrances. Listen to both doors together and the interference pattern tells you <strong>who</strong> is calling. Trace the call and you learn <strong>where</strong> she is, but tracing destroys the interference.</p>
+  <p class="pitch">Your little sister Mira is outside in the storm and asks you to let her in. The intercom shows her at both doors at once: one call, two entrances. Listen to both doors together and the interference pattern tells you <strong>who</strong> is calling. Trace the call and you learn <strong>where</strong> she is, but tracing destroys the interference.</p>
   <p class="attribution">This effort is supported by Qollab &amp; IonQ</p>
 </header>
 
@@ -11,6 +11,15 @@
   <p class="fine">Pressing Run submits one batched job to the backend chosen in “Select QPU”: 4 calls × 8 dial settings × the two tools each call allows (listen and trace; on the last call, trace and the quantum eraser) = 56 small circuits. Every in-game call then uses one of those shots, once.</p>
   <details id="raw-details" hidden><summary>This run's data (spoilers: shows who is calling)</summary><div id="raw"></div></details>
   <details><summary>The circuits</summary><pre id="circuit" class="circuit"></pre></details>
+</section>
+
+<section class="lc-card" id="results-card" hidden aria-labelledby="res-h">
+  <h2 id="res-h">This run's results (for the write-up)</h2>
+  <p class="fine">Measured on the backend you chose. The chart and the text below come from this run's shots only; call 4's caller is named, so look after you play if you don't want the spoiler.</p>
+  <canvas id="res-chart" width="1100" height="440" style="width:100%;height:auto;border-radius:8px" aria-label="Clear-line rate by dial: call 1 listen and trace, call 4 eraser groups"></canvas>
+  <p class="fine">Right-click the chart and save it as an image, or take a screenshot.</p>
+  <textarea id="res-md" rows="12" readonly style="width:100%;font:12px ui-monospace,Menlo,monospace;background:#070a0b;color:#cfd8d4;border:1px solid #27393b;border-radius:8px;padding:8px"></textarea>
+  <p><button type="button" class="btn btn-primary" id="res-copy">Copy results text</button></p>
 </section>
 
 <section class="lc-card lc-game" aria-labelledby="game-h">
@@ -23,5 +32,6 @@
   <h2 id="about-h">What the circuit does</h2>
   <p>q0 holds the call. Its two states are the two doors. Ry(α) splits the call between the doors, P(θ) is the caller's hidden phase (Mira: 0, the mimic: a known offset), P(−φ) is your dial, and H recombines the doors at the handset. Measuring q0 gives a clear line (0) or static (1), with P(clear) = ½(1 + sin α cos(θ − φ)).</p>
   <p>Trace adds a CNOT that copies “which door” onto q1 before recombining. You learn the door; the line becomes a coin flip at every dial, for Mira and the mimic alike.</p>
+  <p>Erase (the last call) traces, then measures q1 after a Hadamard: the record is read as + or −, which says nothing about the door. Sorted by that reading, the line shows the fringe again (+ group) and its mirror image (− group); all shots together stay flat.</p>
   <p class="fine">Edit <code>config.py</code> to change shots. The doors, figures and voices are fiction: the circuit never processes audio. A classical computer can simulate this small circuit; the game is about the rule it teaches.</p>
 </section>

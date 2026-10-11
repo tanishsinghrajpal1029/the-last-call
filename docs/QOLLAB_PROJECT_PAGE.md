@@ -4,11 +4,11 @@
 
 This effort is supported by Qollab & IonQ
 
-It is 3:33 am. Your little sister Mira went outside after the cat, and now the intercom shows a small voice at the **front door and the side door at the same time**. Something out there has learned to sound exactly like her. You have a handful of calls before the line dies, and two questions: **who** is calling, and **where** is she?
+It is 3:33 am. Your little sister Mira went outside after the cat, and now the intercom picks up a small voice at the **front door and the side door at the same time**. Something outside sounds just like her. You have a few calls before the line goes dead, and two questions: **who** is calling, and **where** is she?
 
 The only way to tell Mira from the thing copying her is **interference**. The only way to find the door is **measurement**. And measuring the door destroys the interference.
 
-**Play in AR on your phone:** [Pages address] · **Video (2:30):** [link] · **Source (MIT):** [repo link]
+**Play in AR on your phone:** https://tanishsinghrajpal.com/the-last-call/ · **Source (MIT):** https://github.com/tanishsinghrajpal1029/the-last-call
 
 ---
 
@@ -16,14 +16,16 @@ The only way to tell Mira from the thing copying her is **interference**. The on
 
 1. Open *Select QPU*, pick a simulator (the built-in one, or IonQ's), and press **Run**.
 2. The page sends **one batched job of 56 small circuits** (16 shots each) and waits for the result.
-3. The game starts. Every in-game call spends one of those measured shots, once. The caption under each line says which backend it came from.
+3. The game starts. Every in-game call uses one of those measured shots, once. The caption under each line shows which backend it came from.
 4. Call 1 is a short spoken walkthrough. After that you are on your own; press **Hint** only if you want the strategy.
+
+![The walkthrough: the narrator reacts to your result, and the two halves of the call meet at the handset under the door cameras](https://raw.githubusercontent.com/tanishsinghrajpal1029/the-last-call/main/artifacts/screen_listen.png)
 
 ---
 
 ### Why the quantum part is essential, not decoration
 
-The call is one qubit. Its two basis states are the two doors: $|0\rangle$ = front, $|1\rangle$ = side. The caller is not "at one door, we don't know which": she is in a superposition of both, and the two halves can interfere.
+The call is one qubit. Its two basis states are the two doors: |0⟩ = front, |1⟩ = side. The caller is not "at one door, we don't know which": she is in a superposition of both, and the two halves can interfere.
 
 | Your action | What the circuit does | What you learn | What it costs |
 |---|---|---|---|
@@ -31,28 +33,28 @@ The call is one qubit. Its two basis states are the two doors: $|0\rangle$ = fro
 | **Trace** | copy "which door" onto a second qubit (CNOT) first | the **door** | the interference: the line becomes a coin flip at every dial |
 | **Erase** (last call) | trace, then read that record in the X basis (+ / −) | nothing until you **sort** your calls by + / −; then the voiceprint returns in two mirror-image halves | the door |
 
-Mira and the impostor differ only in a hidden **phase**, which no single measurement reveals. Only the pattern of interference across dial settings does. Randomness is not the mechanic; superposition, interference and which-path measurement are.
+Mira and the impostor differ only in a hidden **phase**, which no single measurement reveals. Only the pattern of interference across dial settings does. The game isn't about randomness; it's about superposition, interference and which-path measurement.
+
+![Listen, Trace and Erase: the exact model of the game's circuits](https://raw.githubusercontent.com/tanishsinghrajpal1029/the-last-call/main/artifacts/how_it_works.png)
 
 ---
 
 ### The circuit
 
-```
-q0 (door):   ─ Ry(α) ─ P(θ) ─ P(−φ) ─●─ H ─ M    clear / static
-                                     │
-q1 (record): ────────────────────────X─[H]─ M    front / side   (trace)
-                                                 + / −          (erase, with the H)
-```
+    q0 (door):   ─ Ry(α) ─ P(θ) ─ P(−φ) ─●─ H ─ M    clear / static
+                                         │
+    q1 (record): ────────────────────────X─[H]─ M    front / side   (trace)
+                                                     + / −          (erase, with the H)
 
-* $\alpha$: how the call leans between the doors (hidden: $90°$, or $60°$/$120°$)
-* $\theta$: the caller's phase (hidden: $0$ for Mira, a known offset for the impostor)
-* $\varphi$: the dial you turn, $k \cdot 45°$
+* **α**: how the call leans between the doors (hidden: 90°, or 60° / 120°)
+* **θ**: the caller's phase (hidden: 0 for Mira, a known offset for the impostor)
+* **φ**: the dial you turn, k × 45°
 
-**Listen:** $P(\text{clear}) = \tfrac12\left(1 + \sin\alpha \cos(\theta - \varphi)\right)$
+**Listen:** P(clear) = ½ · (1 + sin α · cos(θ − φ))
 
-**Trace:** $P(\text{clear}) = \tfrac12$ at every $\varphi$, and $P(\text{front}) = \cos^2(\alpha/2)$
+**Trace:** P(clear) = ½ at every φ, and P(front) = cos²(α/2)
 
-**Erase:** $P(+, \text{clear}) = \tfrac14\left(1 + \sin\alpha\cos(\theta-\varphi)\right)$. Within the + group the full fringe is back; the − group shows its mirror image; both together stay flat. Nothing changes in the past: the pattern exists only in the sorted data.
+**Erase:** P(+, clear) = ¼ · (1 + sin α · cos(θ − φ)). Within the + group the full fringe is back; the − group shows its mirror image; both together stay flat. Nothing changes in the past: the pattern exists only in the sorted data.
 
 ---
 
@@ -64,6 +66,8 @@ q1 (record): ──────────────────────�
 | 2 · Same voice | 4 | The impostor is only 90° off and the line holds four calls. Which dials are worth a call? | Listen |
 | 3 · Two entrances | 6 | The call leans toward one door. Split the budget between WHO and WHERE. | Listen, Trace |
 | 4 · The last call | 10 | Every call is recorded, so plain listening is flat. Erase, sort, and identify the caller; trace for the door. | Trace, Erase |
+
+![Call 4 after sorting: the + group (teal) and the flipped − group (purple) both follow Mira's voiceprint](https://raw.githubusercontent.com/tanishsinghrajpal1029/the-last-call/main/artifacts/screen_eraser_sorted.png)
 
 ---
 
@@ -79,7 +83,7 @@ q1 (record): ──────────────────────�
 | WHO calls at the most informative dial, then 3 traces | 95% | 87% | 89% |
 | Adaptive: WHO calls until sure, then trace | 94% | 87% | 90% |
 
-Tracing everything is no better than a coin flip at identifying the caller: measuring the path costs exactly the information you needed. On the eraser call, the best dial is not Mira's own. No policy always wins, so losses are part of the game; the result screen explains what a better plan would have been, using your own evidence.
+Tracing everything is no better than a coin flip at identifying the caller: measuring the path costs exactly the information you needed. On the eraser call, the best dial is not Mira's own. No strategy always wins, so losing is part of the game; the result screen explains what a better plan would have been, using your own evidence.
 
 ---
 
@@ -91,13 +95,17 @@ After playing, open **This run's data** (it reveals the callers).
 * On a noisy backend the fringe contrast shrinks; compare each cell with the ideal value printed beside it.
 * On call 4, the + group's clear rate follows the voiceprint, while all erased calls together stay near 50%.
 
-**My runs:** [backend] · job [id] · call 1: [x]% clear at dial 0, [y]% at dial 4 · [second backend, same numbers]
+After a successful run, the page also shows a **This run's results** card: a chart of the measured clear rate per dial (call 1 listen vs trace, call 4 eraser groups) and a text summary with fitted fringe contrast and phase, ready to copy.
+
+### Results from a real run
+
+[Paste the text from the "This run's results" card here, and add the chart as an image.]
 
 ---
 
 ### How it was verified
 
-* The closed-form formulas, a NumPy density-matrix simulation and the game's TypeScript simulator agree to $10^{-12}$ for every setting, ideal and with an illustrative noise channel.
+* The closed-form formulas, a NumPy density-matrix simulation and the game's TypeScript simulator agree to 1e-12 for every setting, ideal and with an illustrative noise channel.
 * Unit tests check that traces never move the evidence meter, that the meter cannot reveal the door, that every shot is used at most once, and that each call only allows its own tools.
 * Browser tests play the whole game, the AR modes with a simulated camera, and this Qollab page against a stand-in backend, including a failing one.
 
@@ -105,21 +113,30 @@ After playing, open **This run's data** (it reveals the callers).
 
 ### Also in the project
 
-* **AR** on phones: WebXR on Android, look-around AR on iPhone (rotation only), or a printed marker for full table tracking.
+* **AR on phones:** WebXR on Android, look-around AR on iPhone (rotation only), or a printed marker for full table tracking.
 * **Accessibility:** captions for every line and sound, Gentle mode without loud scares, reduced motion, keyboard play.
 * **Honesty:** if the backend run fails, the page says why and the game falls back to a clearly labelled ideal model. Backends that return probabilities are sampled in Python and labelled so.
 
 ---
+
+### Limitations and what's next
+
+* **Small circuits.** One or two qubits each, easy to simulate classically. The project is about making interference and which-path measurement something you feel and decide with, not about speed-up.
+* **One run, one night.** Each Run is 56 circuits × 16 shots; a night of play uses at most 28 of those 896 shots, each once. Press Run again for fresh shots.
+* **Noise.** The browser's noise option is an illustrative channel, not an IonQ calibration; on Qollab, the backend's own behaviour applies.
+* **AR.** iPhone look-around mode follows rotation only; walking around the house needs the printed marker. Phone AR has been tested with automated browser tests and a simulated camera; real-device results are in the repo's `docs/AR_DEVICE_TESTS.md`.
+* **Playtesting.** The walkthrough and difficulty were tuned by the strategy benchmark and our own play, not yet by a study with new players.
+* **Next:** a fifth call built on entanglement (two callers sharing one line), a run on IonQ hardware, and tuning from playtests.
 
 ### Run, reproduce, extend
 
 * `config.py`: shots per circuit (16; must cover the largest call budget, 10).
 * `data/nights.json`: the four calls, budgets, offsets and tools. Edit it to design your own night.
 * `qollab_api.py` builds and submits the circuits; `quantum/` holds the canonical circuit and decoding code.
-* Full source, tests and the AR app: [repo link] (MIT).
+* Full source, tests and the AR app: https://github.com/tanishsinghrajpal1029/the-last-call (MIT).
 
 ### Credits and disclosure
 
-Built during the hackathon. No pre-existing code. Voices: Piper TTS (MIT) with a voice trained on LibriTTS (CC BY 4.0). The creature, art, sound effects and story are original. The idea of a quantum-eraser level came from an earlier experiment in the same project folder.
+Built during the hackathon, with no pre-existing code. Voices: Piper TTS (MIT) with a voice trained on LibriTTS (CC BY 4.0). The creature, art, sound effects and story are original. The idea of a quantum-eraser level came from an earlier experiment in the same project folder.
 
 The story is fiction: the circuit never processes audio, and outcomes only choose which prepared line is played. These circuits are small enough to simulate classically; the project is about the rule they make you feel, not speed-up: **coherent alternatives interfere, and recording which path destroys that.**

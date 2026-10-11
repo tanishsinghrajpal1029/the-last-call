@@ -82,6 +82,14 @@ try {
     check("spoiler data table stays hidden", await page.$eval("#raw-details", (d) => d.hidden));
   } else {
     check("run status names backend, 56 circuits and job", /built-in simulator \(test double\).*56 circuits × 16 shots.*fake-job-1/.test(status), status);
+    // the results card: measured numbers for the write-up, from this run only
+    const res = await page.evaluate(() => ({ hidden: document.getElementById("results-card").hidden, md: document.getElementById("res-md").value }));
+    check("results card shows this run's measured numbers", !res.hidden && /Results from a real run/.test(res.md) && /built-in simulator \(test double\)/.test(res.md) && /fake-job-1/.test(res.md), res.md.slice(0, 200));
+    check("results: ideal fake backend gives listen contrast 1.00 and a flat trace", /Listening shows the interference fringe: fitted contrast \*\*(0\.9|1\.[01])\d\*\* \(ideal 1\.00\)/.test(res.md) && /Tracing the same call erases it: fitted contrast \*\*0\.[0-3]/.test(res.md), (res.md.match(/fitted contrast[^\n]*/g) || []).join(" | "));
+    const card = await page.$("#results-card");
+    await page.evaluate(() => { document.getElementById("sheet-wrap").style.visibility = "hidden"; });
+    await card.screenshot({ path: path.join(root, "artifacts", "qollab_results_card.png") });
+    await page.evaluate(() => { document.getElementById("sheet-wrap").style.visibility = ""; });
     check("circuit drawings shown", /stub drawing: 2 qubits/.test(await page.textContent("#circuit")));
     check("spoiler data table available but collapsed", !(await page.$eval("#raw-details", (d) => d.hidden || d.open)));
     await page.waitForSelector(".sheet-intro");
