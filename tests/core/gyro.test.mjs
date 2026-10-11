@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const { cameraRotation } = await import(path.join(root, "build/js/apps/web/src/ar/gyro.js"));
+const { cameraRotation, resolveScreenAngle } = await import(path.join(root, "build/js/apps/web/src/ar/gyro.js"));
 const fwd = (m) => [-m[8], -m[9], -m[10]].map((v) => Math.round(v * 1e6) / 1e6 + 0);
 const up = (m) => [m[4], m[5], m[6]].map((v) => Math.round(v * 1e6) / 1e6 + 0);
 
@@ -32,4 +32,16 @@ test("rotation matrix is orthonormal", () => {
     for (let k = 0; k < 3; k++) d += m[a * 4 + k] * m[b * 4 + k];
     assert.ok(Math.abs(d - (a === b ? 1 : 0)) < 1e-6);
   }
+});
+
+test("screen angle: trusted only when it matches the page's shape (iPad reported a landscape angle on a portrait page)", () => {
+  assert.equal(resolveScreenAngle(0, undefined, 800, 1100, 0), 0);           // portrait, agrees
+  assert.equal(resolveScreenAngle(90, undefined, 1100, 800, -90), 90);       // landscape, agrees
+  assert.equal(resolveScreenAngle(270, undefined, 1100, 800, 90), 270);
+  assert.equal(resolveScreenAngle(90, undefined, 800, 1100, 0), 0);          // portrait page, landscape angle: portrait wins
+  assert.equal(resolveScreenAngle(90, 0, 800, 1100, 0), 0);                  // legacy value agrees with the page
+  assert.equal(resolveScreenAngle(0, undefined, 1100, 800, -85), 90);        // landscape page, portrait angle: use gravity
+  assert.equal(resolveScreenAngle(0, undefined, 1100, 800, 85), 270);
+  assert.equal(resolveScreenAngle(undefined, -90, 1100, 800, 85), 270);      // iOS window.orientation -90 = 270
+  assert.equal(resolveScreenAngle(undefined, undefined, 390, 844, 0), 0);
 });

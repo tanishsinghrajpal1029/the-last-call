@@ -6,7 +6,7 @@
  * change your viewpoint. iPhone Safari has no WebXR, so true surface tracking
  * there needs the printed marker (marker mode).
  *
- * Untested on a physical device at the time of writing: see docs/AR_DEVICE_TESTS.md.
+ * Device results: see docs/AR_DEVICE_TESTS.md.
  */
 
 import { Controller } from "../controller.js";
@@ -32,6 +32,26 @@ export async function requestMotionPermission(): Promise<boolean> {
     }
   }
   return true;
+}
+
+/**
+ * The screen's rotation (0, 90, 180 or 270) used to turn sensor readings into the camera's
+ * orientation. Browsers report it in different ways, and some iPads report an angle that doesn't
+ * match how the page is actually shown (portrait page, landscape angle, or the reverse), which
+ * turned the house sideways. So the reported angle is only trusted when it agrees with the page's
+ * shape; otherwise portrait means 0, and landscape uses which side of the device points down
+ * (gamma < 0: right edge up, angle 90; gamma > 0: angle 270).
+ */
+export function resolveScreenAngle(reported: number | undefined, legacy: number | undefined, width: number, height: number, gamma: number): number {
+  const norm = (a: number) => ((Math.round(a / 90) * 90) % 360 + 360) % 360;
+  const landscapePage = width > height;
+  for (const a of [reported, legacy]) {
+    if (typeof a !== "number" || !isFinite(a)) continue;
+    const n = norm(a);
+    if ((n === 90 || n === 270) === landscapePage) return n;
+  }
+  if (!landscapePage) return 0;
+  return gamma < 0 ? 90 : 270;
 }
 
 export function gyroCapable(): boolean {
@@ -150,9 +170,8 @@ export class GyroView {
 
   private screenAngle(): number {
     const so = screen.orientation as ScreenOrientation | undefined;
-    if (so && typeof so.angle === "number") return so.angle;
     const wo = (window as unknown as { orientation?: number }).orientation;
-    return typeof wo === "number" ? wo : 0;
+    return resolveScreenAngle(so?.angle, wo, window.innerWidth, window.innerHeight, this.orient?.gamma ?? 0);
   }
 
   private loop = (): void => {

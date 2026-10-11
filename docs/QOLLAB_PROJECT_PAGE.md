@@ -159,7 +159,7 @@ With 100 shots per dial each fitted contrast is uncertain by about ±0.05 (±0.0
 * **Small circuits.** One or two qubits each, easy to simulate classically. The project is about making interference and which-path measurement something you feel and decide with, not about speed-up.
 * **One run, one night.** Each Run is 56 circuits × 16 shots; a night of play uses at most 28 of those 896 shots, each once. Press Run again for fresh shots.
 * **Noise.** The browser's noise option is an illustrative channel, not an IonQ calibration; on Qollab, the backend's own behaviour applies.
-* **AR.** iPhone look-around mode follows rotation only; walking around the house needs the printed marker. So far phone AR has been tested only with automated browser tests and a simulated camera, not yet on a physical phone; the real-device checks are listed in the repo's `docs/AR_DEVICE_TESTS.md`.
+* **AR.** iPhone look-around mode follows rotation only; walking around the house needs the printed marker. On real devices so far: WebXR AR works on an Android phone in Chrome; look-around AR on an iPad drew the house sideways, and a fix awaits a retest; iPhone and the printed marker are not yet tried. Results are recorded in the repo's `docs/AR_DEVICE_TESTS.md`.
 * **Playtesting.** The walkthrough and difficulty were tuned by the strategy benchmark and our own play, not yet by a study with new players.
 * **IonQ from the game page.** Qollab's preview frame can't reach IonQ, so the game itself plays on the Built-in simulator's shots and the IonQ run lives in a companion Python project.
 * **Next:** a fifth call built on entanglement (two callers sharing one line), a run on IonQ hardware (so far: IonQ's noise-model simulator), and tuning from playtests.

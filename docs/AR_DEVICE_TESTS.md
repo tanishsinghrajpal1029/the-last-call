@@ -1,7 +1,8 @@
 # AR device tests
 
-**Status: no physical phone has been tested yet.** Nothing below claims that AR works on a phone
-until the results table has real rows.
+**Status (11 Oct 2026):** first real-device checks by Tanish. WebXR AR on an Android phone in
+Chrome worked. Look-around AR on an iPad showed the house turned sideways; a fix is in and needs a
+retest. iPhone and the printed marker have not been tried on a device yet.
 
 ## What has been tested (desktop only)
 
@@ -57,7 +58,10 @@ Camera and WebXR need a secure context; `http://<laptop-ip>:8080` is not one.
 
 | Date | Phone | OS | Browser + version | Mode | Steps passed | Issues | Evidence |
 |---|---|---|---|---|---|---|---|
-| | | | | | | | |
+| 11 Oct 2026 | Android phone | Android | Chrome | WebXR (*Play in AR on your table*) | house placed on the floor, upright, doors and figures visible, controls usable (first call) | none reported | user screenshot |
+| 11 Oct 2026 | iPad | iPadOS | Chrome (WebKit) | Look-around (*no marker*) | camera feed and controls work | house drawn turned ~90° and to the side in portrait | user photo |
 
-Until rows exist: "Designed for Chrome on ARCore Android (WebXR) and iPhone Safari via a printed
-marker. Not yet verified on a physical device."
+**iPad fix (needs a retest):** the screen angle used to turn the motion-sensor reading into the
+camera's orientation is now trusted only when it matches the page's shape; a portrait page uses 0°
+and a landscape page uses gravity to pick 90° or 270° (`resolveScreenAngle` in `ar/gyro.ts`, unit
+tests in `tests/core/gyro.test.mjs`). Not yet confirmed on the iPad.
