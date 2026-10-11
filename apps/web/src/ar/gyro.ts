@@ -89,6 +89,15 @@ export function placeOnFloor(fx: number, fy: number, fz: number, eye = 1.2): { x
   return { x: (fx / h) * dist, y: -eye, z: (fz / h) * dist, dist, width: Math.min(0.9, Math.max(0.35, 0.3 * dist)) };
 }
 
+/**
+ * How much bigger to draw the house on a bigger screen. The picture covers the same view angle on
+ * every device, so on an iPad the house looked small next to the iPad's size; a 390-point-wide
+ * phone keeps 1×, and the factor grows with the screen's shorter side up to 1.8× (an 834-point iPad).
+ */
+export function screenSizeFactor(width: number, height: number): number {
+  return Math.min(1.8, Math.max(1, Math.min(width, height) / 460));
+}
+
 export function gyroCapable(): boolean {
   return window.isSecureContext && !!navigator.mediaDevices?.getUserMedia && "DeviceOrientationEvent" in window;
 }
@@ -136,6 +145,8 @@ export class GyroView {
   private lastEvent = 0;
   private waitStart = 0;
   private placeBar: HTMLElement | null = null;
+  /** size multiplier: starts from the screen size, then Smaller / Larger */
+  private sizeScale = 1;
   private placeMsg: HTMLElement | null = null;
   /** where the house would go right now (while placing) */
   private aim: { board: Mat4; width: number; floor: boolean } | null = null;
@@ -153,7 +164,9 @@ export class GyroView {
     this.wrap.innerHTML = `<video playsinline muted autoplay aria-hidden="true"></video><canvas aria-label="Augmented reality view: the house and its two doors in your room"></canvas>
       <p class="xr-status" role="status" aria-live="polite"></p><div class="gyro-ui"></div>
       <div class="place-bar gyro-place-bar"><p class="gyro-place-msg">Aim at the floor until the yellow ring appears where the house should stand, then tap Place here.</p>
-      <div class="place-buttons"><button type="button" class="btn btn-primary" id="gyro-place">Place here</button></div></div>`;
+      <div class="place-buttons"><button type="button" class="btn btn-ghost" id="gyro-smaller">Smaller</button>
+      <span id="gyro-size"></span><button type="button" class="btn btn-ghost" id="gyro-larger">Larger</button>
+      <button type="button" class="btn btn-primary" id="gyro-place">Place here</button></div></div>`;
     container.appendChild(this.wrap);
     this.video = this.wrap.querySelector("video")!;
     this.canvas = this.wrap.querySelector("canvas")!;
@@ -161,6 +174,10 @@ export class GyroView {
     this.placeBar = this.wrap.querySelector<HTMLElement>(".gyro-place-bar");
     this.placeMsg = this.wrap.querySelector<HTMLElement>(".gyro-place-msg");
     this.wrap.querySelector("#gyro-place")!.addEventListener("click", () => this.placeNow());
+    this.sizeScale = screenSizeFactor(window.innerWidth, window.innerHeight);
+    this.wrap.querySelector("#gyro-smaller")!.addEventListener("click", () => this.resize(1 / 1.2));
+    this.wrap.querySelector("#gyro-larger")!.addEventListener("click", () => this.resize(1.2));
+    this.resize(1);
     window.addEventListener("deviceorientation", this.onOrient);
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } } });
@@ -258,8 +275,8 @@ export class GyroView {
         const dx = fx / len, dz = fz / len, face = rotationY(Math.atan2(-dx, -dz));
         const floor = placeOnFloor(fx, -camRot[9]!, fz);
         this.aim = floor
-          ? { board: multiply(translation(floor.x, floor.y, floor.z), face), width: floor.width, floor: true }
-          : { board: multiply(translation(dx * this.distance, -this.drop, dz * this.distance), face), width: this.width, floor: false };
+          ? { board: multiply(translation(floor.x, floor.y, floor.z), face), width: floor.width * this.sizeScale, floor: true }
+          : { board: multiply(translation(dx * this.distance, -this.drop, dz * this.distance), face), width: this.width * this.sizeScale, floor: false };
       }
       if (this.placeMsg) this.placeMsg.textContent = !this.aim
         ? "Hold the device up a little: it's pointing too far down or up."
@@ -279,6 +296,12 @@ export class GyroView {
       r.draw(r.ring, multiply(this.aim.board, scaling(this.aim.width * 0.6, 1, this.aim.width * 0.6)), [1, 0.8, 0.3, 0.9], 1);
     }
   };
+
+  private resize(f: number): void {
+    this.sizeScale = Math.min(3, Math.max(0.5, this.sizeScale * f));
+    const l = this.wrap?.querySelector("#gyro-size");
+    if (l) l.textContent = Math.round(this.sizeScale * 100) + "%";
+  }
 
   /** Put the house where the ring is (or floating ahead if the device is held level). */
   placeNow(): void {

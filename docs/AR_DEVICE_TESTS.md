@@ -85,3 +85,7 @@ here** (Recenter brings the ring back). Aimed level, there is no ring and Place 
 house ahead. `tests/browser/gyro_e2e.mjs` checks the ring, floor placement and the level fallback
 (`artifacts/gyro_ring.png`). If the ring itself looks above the floor, the assumed 1.2 m device
 height is too high for how the iPad is held.
+
+**House size on bigger screens:** on the iPad the house felt small. Look-around mode now scales it
+with the screen's shorter side (1× on a phone up to 1.8× on an 834-point iPad;
+`screenSizeFactor`), and the placing bar has **Smaller / Larger** like WebXR. Needs a retest.

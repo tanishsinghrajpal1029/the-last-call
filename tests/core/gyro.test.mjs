@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const { cameraRotation, resolveScreenAngle, gravityScreenAngle, placeOnFloor } = await import(path.join(root, "build/js/apps/web/src/ar/gyro.js"));
+const { cameraRotation, resolveScreenAngle, gravityScreenAngle, placeOnFloor, screenSizeFactor } = await import(path.join(root, "build/js/apps/web/src/ar/gyro.js"));
 const fwd = (m) => [-m[8], -m[9], -m[10]].map((v) => Math.round(v * 1e6) / 1e6 + 0);
 const up = (m) => [m[4], m[5], m[6]].map((v) => Math.round(v * 1e6) / 1e6 + 0);
 
@@ -74,4 +74,13 @@ test("look-around placement: aiming at the floor stands the house on it", () => 
   assert.equal(placeOnFloor(0, 0.3, -0.95), null);         // aimed up
   assert.equal(placeOnFloor(...down(15)).dist, 3);          // far away: clamped
   assert.ok(placeOnFloor(...down(15)).width <= 0.9);
+});
+
+test("bigger screens draw a bigger house (iPhone 1x, iPad up to 1.8x)", () => {
+  assert.equal(screenSizeFactor(390, 844), 1);
+  assert.equal(screenSizeFactor(430, 932), 1);
+  assert.equal(screenSizeFactor(834, 1058), 1.8);                       // your iPad
+  assert.ok(Math.abs(screenSizeFactor(600, 960) - 600 / 460) < 1e-9);  // in between
+  assert.equal(screenSizeFactor(1024, 1366), 1.8);
+  assert.equal(screenSizeFactor(1366, 1024), 1.8);   // same in landscape
 });

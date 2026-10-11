@@ -50,6 +50,10 @@ try {
   await page.waitForTimeout(300);
   check("aiming at the floor shows the ring", /ring shows where the house will stand/.test(await page.textContent(".gyro-place-msg")) && (await centreDrawn(page)) > 20);
   await page.screenshot({ path: path.join(root, "artifacts", "gyro_ring.png") });
+  const s0 = await page.textContent("#gyro-size");
+  await page.click("#gyro-larger");
+  check("Larger grows the house before placing", parseInt(await page.textContent("#gyro-size")) > parseInt(s0), `${s0} → ${await page.textContent("#gyro-size")}`);
+  await page.click("#gyro-smaller");
   await page.click("#gyro-place");
   check("Place here stands the house on the floor", await page.evaluate(() => window.__lastCall.view.placed === true && Math.abs(window.__lastCall.view.boardY + 1.2) < 1e-6) && await page.$eval(".gyro-place-bar", (b) => b.hidden));
   // Recenter while level, then place: floats ahead (old behaviour)
