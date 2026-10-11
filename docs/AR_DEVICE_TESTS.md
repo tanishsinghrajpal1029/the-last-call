@@ -1,8 +1,9 @@
 # AR device tests
 
 **Status (11 Oct 2026):** first real-device checks by Tanish. WebXR AR on an Android phone in
-Chrome worked. Look-around AR on an iPad showed the house turned sideways; a fix is in and needs a
-retest. iPhone and the printed marker have not been tried on a device yet.
+Chrome worked (house placed on the floor). Look-around AR on an iPad works after a fix: the iPad
+reported a landscape screen angle (90°) on a portrait page, which turned the house sideways. iPhone
+and the printed marker have not been tried on a device yet.
 
 ## What has been tested (desktop only)
 
@@ -63,9 +64,15 @@ Camera and WebXR need a secure context; `http://<laptop-ip>:8080` is not one.
 
 | 11 Oct 2026 | iPad (retest after the first fix) | iPadOS | Chrome (WebKit) | Look-around | as above | still turned ~90° | user screenshot |
 
-**iPad fix, second attempt (needs a retest):** the screen rotation is now taken from gravity (the
-device edge pointing at the floor is the bottom of the picture), the same signal the system uses to
-rotate the page, so it no longer depends on what the browser reports (`gravityScreenAngle` in
-`ar/gyro.ts`; tests check the camera's up vector points up for upright and landscape holds). The
-reported angle (checked against the page's shape) is only used while the device is flat. Add
-`?debug` to the address to show the raw sensor values and the angle in use.
+| 11 Oct 2026 | iPad (after the gravity fix) | iPadOS | Chrome (WebKit) | Look-around | house upright and fixed in the room; readout: β 80, γ −24, screen.orientation 90, window.orientation 0, page 834×1058, using 0° | the house floated in mid-air (rotation-only mode can't see the floor) | user screenshot |
+
+**iPad fix:** the screen rotation is taken from gravity (the device edge pointing at the floor is the
+bottom of the picture), so it no longer depends on the browser's reported angle, which was wrong on
+this iPad (`gravityScreenAngle` in `ar/gyro.ts`; tests check the camera's up vector points up).
+Add `?debug` to the address to show the raw sensor values and the angle in use.
+
+**Floating house:** look-around mode tracks rotation only, so it can't find the floor. When the
+camera aims at least ~10° below the horizon, the house is now placed where that line of sight meets
+a floor assumed 1.2 m below the device (0.7–3 m away, sized to the distance; `placeOnFloor`). Aimed
+level, it still floats ahead and the status line says to aim at the floor and press Recenter. Not
+yet retested on the iPad. Android's WebXR mode finds the real floor and doesn't need this.

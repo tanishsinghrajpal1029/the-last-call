@@ -75,6 +75,20 @@ export function gravityScreenAngle(beta: number, gamma: number, prev: number | n
   return [0, 90, 180, 270].reduce((best, a) => (along(a) > along(best) ? a : best), 0);
 }
 
+/**
+ * Where the house goes when the player aims the camera at the floor. Rotation-only tracking can't
+ * see the floor, so it assumes the device is held `eye` metres above it (chest height) and puts the
+ * house where the camera's line of sight meets that floor, 0.7 to 3 m away, sized to the distance.
+ * Returns null when the camera points level or up (then the house floats ahead, as before).
+ * `f` is the camera's forward direction in world space (y up).
+ */
+export function placeOnFloor(fx: number, fy: number, fz: number, eye = 1.2): { x: number; y: number; z: number; dist: number; width: number } | null {
+  const h = Math.hypot(fx, fz);
+  if (h < 1e-6 || fy > -0.17) return null; // less than ~10 degrees below the horizon
+  const dist = Math.min(3, Math.max(0.7, (eye * h) / -fy));
+  return { x: (fx / h) * dist, y: -eye, z: (fz / h) * dist, dist, width: Math.min(0.9, Math.max(0.35, 0.3 * dist)) };
+}
+
 export function gyroCapable(): boolean {
   return window.isSecureContext && !!navigator.mediaDevices?.getUserMedia && "DeviceOrientationEvent" in window;
 }
@@ -118,8 +132,10 @@ export class GyroView {
   private stopped = false;
   private orient: { alpha: number; beta: number; gamma: number } | null = null;
   private board: Mat4 | null = null;
+  private boardWidth = 0.5;
   private lastEvent = 0;
   private waitStart = 0;
+  private hintUntil = 0;
   /** house width in metres and distance in front of the phone */
   width = 0.5;
   distance = 1.4;
@@ -166,7 +182,7 @@ export class GyroView {
     this.ui = this.mountUi(this.wrap.querySelector<HTMLElement>(".gyro-ui")!);
     this.ui.onExit = () => this.stop();
     this.ui.onReposition = () => { this.board = null; };
-    this.setStatus("Hold the phone up and look ahead. The house appears in front of you.");
+    this.setStatus("Hold the device up and aim at the floor where the house should stand.");
     document.addEventListener("visibilitychange", this.onVisibility);
     this.raf = requestAnimationFrame(this.loop);
   }
@@ -223,7 +239,7 @@ export class GyroView {
     }
     if (this.debug) { /* the status line shows the sensor readout */ }
     else if (performance.now() - this.lastEvent > 1500) this.setStatus("Motion sensors paused. Move the phone a little.");
-    else if (this.board) this.setStatus("");
+    else if (this.board && performance.now() > this.hintUntil) this.setStatus("");
     const camRot = cameraRotation(this.orient.alpha, this.orient.beta, this.orient.gamma, this.screenAngle());
     if (!this.board) {
       // place the house ahead of where the phone points, level, facing the player
@@ -234,7 +250,16 @@ export class GyroView {
         return; // pointing at the floor or ceiling: no reliable heading yet
       }
       const dx = fx / len, dz = fz / len;
-      this.board = multiply(translation(dx * this.distance, -this.drop, dz * this.distance), rotationY(Math.atan2(-dx, -dz)));
+      const floor = placeOnFloor(fx, -camRot[9]!, fz);
+      if (floor) { // aimed at the floor: stand the house there
+        this.board = multiply(translation(floor.x, floor.y, floor.z), rotationY(Math.atan2(-dx, -dz)));
+        this.boardWidth = floor.width;
+      } else { // aimed level: float it ahead, and say how to put it on the floor
+        this.board = multiply(translation(dx * this.distance, -this.drop, dz * this.distance), rotationY(Math.atan2(-dx, -dz)));
+        this.boardWidth = this.width;
+        this.setStatus("To stand the house on the floor: aim at the spot on the floor, then press Recenter.");
+        this.hintUntil = performance.now() + 6000;
+      }
     }
     // view = inverse(camera rotation) = transpose (camera at the origin)
     const view = new Float32Array(16);
@@ -242,7 +267,7 @@ export class GyroView {
     view[15] = 1;
     const proj = perspective(60 * deg, w / h, 0.05, 30);
     this.renderer!.begin(multiply(proj, view));
-    this.painter!.draw(this.board, this.c, this.width, performance.now() / 1000);
+    this.painter!.draw(this.board, this.c, this.boardWidth, performance.now() / 1000);
   };
 
   /** Test hook. */

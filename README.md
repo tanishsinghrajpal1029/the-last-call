@@ -118,9 +118,10 @@ circuits; the point is the rule they teach.
   24-qubit circuit × 100 shots). Results: [docs/VALIDATION.md](docs/VALIDATION.md).
 * **IonQ from the game page does not work:** Qollab's preview frame can't reach IonQ from a
   JavaScript project ("Failed to fetch"), so the IonQ run lives in the Python companion project.
-* **Phone AR: first device checks.** WebXR AR worked on an Android phone in Chrome. Look-around
-  AR on an iPad drew the house sideways; a fix is in and awaits a retest. iPhone and the printed
-  marker are not yet tried on a device. Details: [docs/AR_DEVICE_TESTS.md](docs/AR_DEVICE_TESTS.md).
+* **Phone AR: first device checks.** WebXR AR worked on an Android phone in Chrome (house on the
+  floor). Look-around AR works on an iPad after a fix (its browser reported the wrong screen
+  rotation); being rotation-only, it stands the house on an assumed floor where you aim. iPhone and
+  the printed marker are not yet tried on a device. Details: [docs/AR_DEVICE_TESTS.md](docs/AR_DEVICE_TESTS.md).
 
 ## Build and test
 

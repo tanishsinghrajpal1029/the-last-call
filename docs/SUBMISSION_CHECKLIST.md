@@ -15,7 +15,7 @@ for amendments. Status: ✅ done and evidenced · 🟡 prepared, needs a human a
 | Accessibility | 🟡 | Captions always on, voice/sound/gentle/reduced-motion toggles, keyboard play, labelled controls, ≥ 44 px targets. No screen-reader audit yet. |
 | "This effort is supported by Qollab & IonQ" | ✅ | Qollab page (package check), start screen, README, ATTRIBUTION. |
 | Keep the project on Qollab for 12 months | 🟡 | Owner: don't unpublish before October 2027. |
-| Tracked AR on at least one tested phone | ✅ | WebXR on an Android phone (Chrome), 11 Oct. iPad look-around fix awaits a retest. `docs/AR_DEVICE_TESTS.md`. |
+| Tracked AR on at least one tested phone | ✅ | WebXR on an Android phone (Chrome) and look-around on an iPad, 11 Oct. `docs/AR_DEVICE_TESTS.md`. |
 
 Theme at submission: **Quantum Playground**. Only one of The Last Call / Dark Sweeper should be
 submitted as the main entry unless the team deliberately submits both (up to 5 projects per team);

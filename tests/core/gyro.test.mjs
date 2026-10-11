@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const { cameraRotation, resolveScreenAngle, gravityScreenAngle } = await import(path.join(root, "build/js/apps/web/src/ar/gyro.js"));
+const { cameraRotation, resolveScreenAngle, gravityScreenAngle, placeOnFloor } = await import(path.join(root, "build/js/apps/web/src/ar/gyro.js"));
 const fwd = (m) => [-m[8], -m[9], -m[10]].map((v) => Math.round(v * 1e6) / 1e6 + 0);
 const up = (m) => [m[4], m[5], m[6]].map((v) => Math.round(v * 1e6) / 1e6 + 0);
 
@@ -63,4 +63,15 @@ test("gravity angle keeps the house upright: camera's up vector points up when h
     const m = cameraRotation(30, b, g, a);
     assert.ok(m[5] > 0.5, `camera up has positive world-y for beta ${b} gamma ${g} (angle ${a}): ${m[5]}`);
   }
+});
+
+test("look-around placement: aiming at the floor stands the house on it", () => {
+  const down = (deg) => [0, -Math.sin(deg * Math.PI / 180), -Math.cos(deg * Math.PI / 180)]; // facing -z
+  const p = placeOnFloor(...down(40));
+  assert.ok(p && Math.abs(p.y + 1.2) < 1e-9, "on the floor 1.2 m below the device");
+  assert.ok(Math.abs(p.dist - 1.2 / Math.tan(40 * Math.PI / 180)) < 1e-9 && p.z < 0 && Math.abs(p.x) < 1e-9);
+  assert.equal(placeOnFloor(...down(3)), null);            // aimed level: float ahead instead
+  assert.equal(placeOnFloor(0, 0.3, -0.95), null);         // aimed up
+  assert.equal(placeOnFloor(...down(15)).dist, 3);          // far away: clamped
+  assert.ok(placeOnFloor(...down(15)).width <= 0.9);
 });
