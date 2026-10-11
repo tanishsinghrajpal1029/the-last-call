@@ -38,7 +38,7 @@ export const STAGES: Stage[] = [
   {
     id: "goal", short: "Goal", title: "How to win", voice: "stage_goal", allow: [], next: true,
     doThis: "Read this, then press Next.",
-    body: "Each call, something that sounds like your sister Mira wants to come in. Before the line dies you must answer two questions: <strong>WHO</strong> is calling (Mira, or the thing copying her voice?) and <strong>WHERE</strong> she is (front door or side door?). Then open the right door for Mira, or hang up on the impostor.",
+    body: "Each call, something that sounds like your little sister Mira wants to come in. Before the line dies you must answer two questions: <strong>WHO</strong> is calling (Mira, or the thing copying her voice?) and <strong>WHERE</strong> she is (front door or side door?). Then open the right door for Mira, or hang up on the impostor.",
     quantum: "The call is a <em>qubit</em>: a quantum bit. Its two states are the two doors.",
   },
   {

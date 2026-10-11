@@ -355,7 +355,7 @@ export class Ui {
     a.stopVoice();
     if (res === "letIn") { a.door(); this.later(() => { a.stinger(); void a.voiceLine("mimic_thanks", "Thank you.", true); }, 900); }
     else if (res === "refused") { this.later(() => void a.voiceLine("mimic_next", "Next time.", true), 400); }
-    else if (res === "saved") { a.door(); this.later(() => { a.relief(); void a.voiceLine("res_saved", "Took you long enough."); }, 900); }
+    else if (res === "saved") { a.door(); this.later(() => { a.relief(); void a.voiceLine("res_saved", "You took forever."); }, 900); }
     else if (res === "wrongDoor") { a.door(); this.later(() => void a.voiceLine("res_wrong", "Wrong one."), 900); }
     this.later(() => this.showResult(res), res === "letIn" && !this.c.settings.gentle ? 3000 : 1600);
   }

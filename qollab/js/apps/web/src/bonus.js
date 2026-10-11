@@ -9,10 +9,10 @@ import { rad, simulateEraser } from "../../../packages/core/src/physics.js";
 import { drawFigure, drawMimicFace, drawPorch, postProcess } from "./art.js";
 import { wilson } from "./chart.js";
 const RESULT_TEXT = {
-    saved: "The lock turns. Mira comes in shaking. “How did you know it was me? The line was dead noise.”",
+    saved: "The lock turns. Mira comes in shaking. “How did you know it was me? It was all crackly.”",
     refused: "You hang up. Somewhere outside, something tries her voice one more time, then gives up.",
     letIn: "The door opens on nothing. Then the hallway light goes out behind you.",
-    abandoned: "You hang up on your own sister. The pattern said it was her.",
+    abandoned: "You hang up on your own little sister. The pattern said it was her.",
 };
 export class BonusView {
     cfg;
@@ -86,7 +86,7 @@ export class BonusView {
             else if (res === "saved") {
                 this.audio.door();
                 this.audio.relief();
-                void this.audio.voiceLine("res_saved", "Took you long enough.");
+                void this.audio.voiceLine("res_saved", "You took forever.");
             }
             this.render();
         };

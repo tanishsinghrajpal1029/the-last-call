@@ -415,7 +415,7 @@ export class Ui {
         }
         else if (res === "saved") {
             a.door();
-            this.later(() => { a.relief(); void a.voiceLine("res_saved", "Took you long enough."); }, 900);
+            this.later(() => { a.relief(); void a.voiceLine("res_saved", "You took forever."); }, 900);
         }
         else if (res === "wrongDoor") {
             a.door();

@@ -12,10 +12,10 @@ import { Audio } from "./audio.js";
 import { wilson } from "./chart.js";
 
 const RESULT_TEXT = {
-  saved: "The lock turns. Mira comes in shaking. “How did you know it was me? The line was dead noise.”",
+  saved: "The lock turns. Mira comes in shaking. “How did you know it was me? It was all crackly.”",
   refused: "You hang up. Somewhere outside, something tries her voice one more time, then gives up.",
   letIn: "The door opens on nothing. Then the hallway light goes out behind you.",
-  abandoned: "You hang up on your own sister. The pattern said it was her.",
+  abandoned: "You hang up on your own little sister. The pattern said it was her.",
 } as const;
 
 export class BonusView {
@@ -66,7 +66,7 @@ export class BonusView {
       const res = this.s.result!;
       if (res === "letIn") { this.audio.door(); setTimeout(() => { if (!this.alive) return; this.audio.stinger(); void this.audio.voiceLine("mimic_thanks", "Thank you.", true); }, 900); }
       else if (res === "refused") void this.audio.voiceLine("mimic_next", "Next time.", true);
-      else if (res === "saved") { this.audio.door(); this.audio.relief(); void this.audio.voiceLine("res_saved", "Took you long enough."); }
+      else if (res === "saved") { this.audio.door(); this.audio.relief(); void this.audio.voiceLine("res_saved", "You took forever."); }
       this.render();
     };
     on("b-front", () => decide("front"));

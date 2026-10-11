@@ -9,7 +9,7 @@ placeholder as a fact.
 
 This effort is supported by Qollab & IonQ
 
-Your sister calls and asks you to let her in. The intercom shows her at both doors at once.
+Your little sister Mira is outside in the storm and asks you to let her in. The intercom shows her at both doors at once.
 **Listen** and the two door channels interfere: the pattern across dial settings tells you who is
 calling. **Trace** and you learn which door she is at, but the which-door record destroys the
 interference. Finding *where* she is costs you the evidence of *who* she is.

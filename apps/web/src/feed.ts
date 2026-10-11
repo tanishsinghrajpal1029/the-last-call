@@ -6,7 +6,7 @@
  * or lean before the decision.
  */
 
-import { drawFigure, drawMimicFace, drawPorch, postProcess } from "./art.js";
+import { drawFigure, drawHandprints, drawLensFlash, drawMimicFace, drawPorch, postProcess } from "./art.js";
 import { Controller } from "./controller.js";
 
 export class Feed {
@@ -70,13 +70,18 @@ export class Feed {
       const decided = n.decision === door && v.result && v.result !== "refused" && v.result !== "abandoned";
       const lamp = (calm ? 1 : 0.75 + 0.25 * Math.sin(t * 13 + i * 2) * Math.sin(t * 3.1)) * (Math.random() < 0.004 && !calm ? 0.1 : 1);
       const d = drawPorch(g, x0, y0, w, h, t + i * 3.7, { lamp, open: decided ? (v.result === "letIn" ? "black" : "warm") : "no", seed: 11 + i });
-      let alpha = 1;
+      let alpha = 1, lookUp = 0;
       if (traced) alpha = traced === door ? 1 : 0;
-      if (v.result) {
+      if (v.result === "refused") {
+        // the mimic, refused, slowly lifts its face to the camera (both doors), then is gone
+        lookUp = Math.min(1, resultAge / 1.6);
+        alpha = resultAge < 3.2 ? 1 : Math.max(0, 1 - (resultAge - 3.2));
+      } else if (v.result) {
         const fade = Math.max(0, 1 - resultAge / 2.2);
-        alpha = (n.decision === door || v.result === "refused" || v.result === "abandoned" ? 1 : 0.8) * fade;
+        alpha = (n.decision === door || v.result === "abandoned" ? 1 : 0.8) * fade;
       }
-      if (alpha > 0.01) drawFigure(g, d.doorX + d.doorW / 2, d.doorY + d.doorH + 4, d.doorH * 0.9, t + i * 0.05, alpha, traced === door ? 0.15 : near, calm);
+      if (alpha > 0.01) drawFigure(g, d.doorX + d.doorW / 2, d.doorY + d.doorH + 4, d.doorH * 0.9, t + i * 0.05, alpha, v.result === "refused" ? near + lookUp * 0.5 : traced === door ? 0.15 : near, calm, lookUp);
+      drawHandprints(g, x0, y0, w, h, n.budget - n.callsLeft, 900 + i * 17);
       if (traced && traced !== door) {
         g.fillStyle = "rgba(230,240,235,0.55)";
         g.font = "600 13px ui-monospace, Menlo, monospace";
@@ -86,6 +91,10 @@ export class Feed {
       if (flash) {
         g.fillStyle = "rgba(220,235,255,0.55)";
         g.fillRect(x0, y0, w, h);
+      }
+      // on static, for a split second something is pressed right up against the lens
+      if (!calm && !this.c.settings.gentle && v.last && v.last.line === "static" && since > 0.25 && since < 0.4 && !traced && !v.result) {
+        drawLensFlash(g, x0, y0, w, h, 1);
       }
       // static flash after a static outcome
       if (v.last && v.last.line === "static" && since < 0.9 && !traced) {

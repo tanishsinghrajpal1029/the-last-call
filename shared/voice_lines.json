@@ -1,11 +1,11 @@
 {
- "version": "voices-v1",
+ "version": "voices-v2",
  "model": "Piper en-us-libritts-high (LibriTTS, CC BY 4.0)",
  "voices": {
   "mira": {
    "speaker": 12,
-   "length_scale": 1.08,
-   "noise_scale": 0.75
+   "length_scale": 1.12,
+   "noise_scale": 0.8
   },
   "narrator": {
    "speaker": 90,
@@ -16,171 +16,171 @@
  "lines": [
   {
    "id": "clear_0",
-   "text": "It's me. Open the door.",
+   "text": "It's me. It's Mira. Open the door.",
    "voice": "mira",
-   "fx": "phone"
+   "fx": "child_phone"
   },
   {
    "id": "clear_1",
-   "text": "I'm freezing out here.",
+   "text": "I'm cold. I'm really cold.",
    "voice": "mira",
-   "fx": "phone"
+   "fx": "child_phone"
   },
   {
    "id": "clear_2",
-   "text": "The car wouldn't start.",
+   "text": "I couldn't find the cat.",
    "voice": "mira",
-   "fx": "phone"
+   "fx": "child_phone"
   },
   {
    "id": "clear_3",
-   "text": "Please. It's so dark.",
+   "text": "Please. It's so dark out here.",
    "voice": "mira",
-   "fx": "phone"
+   "fx": "child_phone"
   },
   {
    "id": "clear_4",
    "text": "Why aren't you opening?",
    "voice": "mira",
-   "fx": "phone"
+   "fx": "child_phone"
   },
   {
    "id": "clear_5",
-   "text": "I can hear you on the line.",
+   "text": "I can hear you breathing.",
    "voice": "mira",
-   "fx": "phone"
+   "fx": "child_phone"
   },
   {
    "id": "clear_6",
-   "text": "It's really me. Open the door.",
+   "text": "It's really me. I promise.",
    "voice": "mira",
-   "fx": "phone"
+   "fx": "child_phone"
   },
   {
    "id": "clear_7",
-   "text": "Don't make me wait out here.",
+   "text": "Don't leave me out here.",
    "voice": "mira",
-   "fx": "phone"
+   "fx": "child_phone"
   },
   {
    "id": "clear_8",
    "text": "You know my voice.",
    "voice": "mira",
-   "fx": "phone"
+   "fx": "child_phone"
   },
   {
    "id": "clear_9",
-   "text": "I'm right here.",
+   "text": "I'm right here. Right by the door.",
    "voice": "mira",
-   "fx": "phone"
+   "fx": "child_phone"
   },
   {
    "id": "clear_10",
    "text": "Please.",
    "voice": "mira",
-   "fx": "phone"
+   "fx": "child_phone"
   },
   {
    "id": "clear_11",
-   "text": "Open the door.",
+   "text": "Let me in.",
    "voice": "mira",
-   "fx": "phone"
+   "fx": "child_phone"
   },
   {
    "id": "static_0",
    "text": "—pen th— —oor—",
    "speak": "open the door",
    "voice": "mira",
-   "fx": "static"
+   "fx": "child_static"
   },
   {
    "id": "static_1",
    "text": "—s me— —ssshh—",
    "speak": "it's me",
    "voice": "mira",
-   "fx": "static"
+   "fx": "child_static"
   },
   {
    "id": "static_2",
    "text": "(only static)",
    "speak": "",
    "voice": "mira",
-   "fx": "static"
+   "fx": "child_static"
   },
   {
    "id": "static_3",
    "text": "—old out— —ere—",
    "speak": "cold out here",
    "voice": "mira",
-   "fx": "static"
+   "fx": "child_static"
   },
   {
    "id": "static_4",
    "text": "—hy aren't— —ou—",
    "speak": "why aren't you",
    "voice": "mira",
-   "fx": "static"
+   "fx": "child_static"
   },
   {
    "id": "static_5",
    "text": "—ease—",
    "speak": "please",
    "voice": "mira",
-   "fx": "static"
+   "fx": "child_static"
   },
   {
    "id": "intro_1",
-   "text": "11:52 pm. The storm took the street lights. Mira went out to check the car twenty minutes ago. The intercom crackles: both door cameras show her, at the front door and the side door, at the same time. One call, two entrances.",
+   "text": "11:52 pm. Mum and Dad are stuck across town in the storm, and you're watching your little sister Mira. Twenty minutes ago she slipped outside after the cat. Now the intercom crackles: both door cameras show a small figure in her yellow raincoat, at the front door and the side door, at the same time. One call, two doors.",
    "voice": "narrator",
    "fx": "room"
   },
   {
    "id": "intro_2",
-   "text": "12:20 am. She calls again. Same coat, same voice, both doors. Before she went out she said: “If anything weird happens, don't open until you're sure.”",
+   "text": "12:20 am. She calls again. Same raincoat, same little voice, both doors. Mum's rule, taped to the fridge: “Never open the door at night unless you're sure who it is.”",
    "voice": "narrator",
    "fx": "room"
   },
   {
    "id": "intro_3",
-   "text": "1:05 am. The porch light on one side flickers. Another call. Tonight the call leans toward one of the doors.",
+   "text": "1:05 am. The porch light on one side won't stop flickering. Another call. Tonight the call leans toward one of the doors.",
    "voice": "narrator",
    "fx": "room"
   },
   {
    "id": "intro_4",
-   "text": "3:33 am. The intercom battery is almost gone. One more call, and then the line is dead.",
+   "text": "3:33 am. The intercom battery is almost dead. One more call. Somewhere out in the rain, something has learned exactly how she says your name.",
    "voice": "narrator",
    "fx": "room"
   },
   {
    "id": "res_saved",
-   "text": "Took you long enough.",
+   "text": "You took forever.",
    "voice": "mira",
-   "fx": "room"
+   "fx": "child_room"
   },
   {
    "id": "res_wrong",
    "text": "Wrong one.",
    "voice": "mira",
-   "fx": "distant"
+   "fx": "child_distant"
   },
   {
    "id": "mimic_next",
    "text": "Next time.",
    "voice": "mira",
-   "fx": "eerie"
+   "fx": "child_eerie"
   },
   {
    "id": "mimic_thanks",
    "text": "Thank you.",
    "voice": "mira",
-   "fx": "eerie"
+   "fx": "child_eerie"
   },
   {
    "id": "mimic_letmein",
    "text": "Let me in.",
    "voice": "mira",
-   "fx": "eerie"
+   "fx": "child_eerie"
   },
   {
    "id": "stage_goal",

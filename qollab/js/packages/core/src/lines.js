@@ -4,24 +4,24 @@
  * used whoever is calling, so the text never gives the caller away.
  */
 export const INTRO = {
-    1: "11:52 pm. The storm took the street lights. Mira went out to check the car twenty minutes ago. The intercom crackles: both door cameras show her, at the front door and the side door, at the same time. One call, two entrances.",
-    2: "12:20 am. She calls again. Same coat, same voice, both doors. Before she went out she said: “If anything weird happens, don't open until you're sure.”",
-    3: "1:05 am. The porch light on one side flickers. Another call. Tonight the call leans toward one of the doors.",
-    4: "3:33 am. The intercom battery is almost gone. One more call, and then the line is dead.",
+    1: "11:52 pm. Mum and Dad are stuck across town in the storm, and you're watching your little sister Mira. Twenty minutes ago she slipped outside after the cat. Now the intercom crackles: both door cameras show a small figure in her yellow raincoat, at the front door and the side door, at the same time. One call, two doors.",
+    2: "12:20 am. She calls again. Same raincoat, same little voice, both doors. Mum's rule, taped to the fridge: “Never open the door at night unless you're sure who it is.”",
+    3: "1:05 am. The porch light on one side won't stop flickering. Another call. Tonight the call leans toward one of the doors.",
+    4: "3:33 am. The intercom battery is almost dead. One more call. Somewhere out in the rain, something has learned exactly how she says your name.",
 };
 export const CLEAR_LINES = [
-    "It's me. Open the door.",
-    "I'm freezing out here.",
-    "The car wouldn't start.",
-    "Please. It's so dark.",
+    "It's me. It's Mira. Open the door.",
+    "I'm cold. I'm really cold.",
+    "I couldn't find the cat.",
+    "Please. It's so dark out here.",
     "Why aren't you opening?",
-    "I can hear you on the line.",
-    "It's really me. Open the door.",
-    "Don't make me wait out here.",
+    "I can hear you breathing.",
+    "It's really me. I promise.",
+    "Don't leave me out here.",
     "You know my voice.",
-    "I'm right here.",
+    "I'm right here. Right by the door.",
     "Please.",
-    "Open the door.",
+    "Let me in.",
 ];
 export const STATIC_LINES = [
     "—pen th— —oor—",
@@ -32,20 +32,20 @@ export const STATIC_LINES = [
     "—ease—",
 ];
 export const RESULT_TEXT = {
-    saved: "The lock turns. Mira stumbles in, soaked and furious and alive. “Took you long enough.”",
-    wrongDoor: "You open the door. The step is empty. Her voice, from the other door: “Wrong one.” By the time you get there she has let herself in, shaking.",
-    abandoned: "You hang up. At dawn you find her asleep in the car, coat over her head. She doesn't speak to you for a week.",
-    refused: "You hang up. The intercom stays lit. In Mira's voice, very softly: “Next time.” Your phone buzzes. A text from the real Mira: “Still at the car. DON'T open the door.”",
-    letIn: "The lock turns. Nothing comes in. Then every light in the house goes out, and the voice says, from the hallway behind you: “Thank you.”",
+    saved: "The lock turns. Mira runs in, soaked to the bone, and wraps herself around your legs. “You took forever.”",
+    wrongDoor: "You open the door. The step is empty. A small voice from the other door: “Wrong one.” By the time you get there she has squeezed in through the cat flap, shaking.",
+    abandoned: "You hang up. At dawn you find her asleep in the garden shed, hugging the cat. She won't look at you all day.",
+    refused: "You hang up. The camera stays on. The little figure lifts its head, slowly, much too far, and says in Mira's voice: “Next time.” Then you hear the real Mira knocking at the back window, crying.",
+    letIn: "The lock turns. Nothing comes in. Then every light in the house goes out, and a small wet voice says, from the hallway right behind you: “Thank you.”",
 };
 export function endingText(results) {
     const letIn = results.filter((r) => r === "letIn").length;
     const good = results.filter((r) => r === "saved" || r === "refused").length;
     if (letIn > 0) {
-        return { title: "Something is inside", text: "You let it in. Somewhere in the house, it is practising her laugh." };
+        return { title: "Something is inside", text: "You let it in. Mira is safe in the shed, but somewhere in your house, something small is practising her laugh." };
     }
     if (good === results.length) {
-        return { title: "Morning", text: "The storm passes. Mira makes coffee and refuses to talk about last night. The intercom never rings again." };
+        return { title: "Morning", text: "The storm passes. Mira falls asleep on the sofa with the cat. The intercom never rings again, but the small wet handprints on the camera glass don't wipe off." };
     }
     return { title: "A long night", text: "Nothing got in, but not everyone who needed a door got one. Next time, listen more carefully." };
 }

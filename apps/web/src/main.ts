@@ -66,7 +66,7 @@ function showStart(message = ""): void {
   <main class="start">
     <p class="kicker">A quantum horror game · Qollab × IonQ Global Quantum Hackathon</p>
     <h1>The Last Call</h1>
-    <p class="pitch">Your sister calls and asks you to let her in. The intercom shows her at <em>both</em> doors at once: one call, two entrances. Listen to both doors together and the pattern tells you <strong>who</strong> is calling. Trace the call and you learn <strong>where</strong> she is, but tracing destroys the very interference that told you who she was.</p>
+    <p class="pitch">Your little sister Mira is outside in the storm and asks you to let her in. The intercom shows her at <em>both</em> doors at once: one call, two entrances. Listen to both doors together and the pattern tells you <strong>who</strong> is calling. Trace the call and you learn <strong>where</strong> she is, but tracing destroys the very interference that told you who she was.</p>
     ${message ? `<p class="notice" role="alert">${esc(message)}</p>` : ""}
     <p class="content-note"><strong>Content note:</strong> mild horror, a creepy voice and sudden sounds (turn on Gentle mode below). No gore.</p>
     <form class="start-form" id="start-form">

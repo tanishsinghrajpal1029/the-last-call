@@ -4,7 +4,7 @@
 
 This effort is supported by Qollab & IonQ
 
-Late at night your sister Mira calls and asks you to let her in. The intercom shows her at the
+Late at night, in a storm, your little sister Mira is outside and asks you to let her in. The intercom shows her at the
 front door **and** the side door at the same time: one call, two entrances. Something that sounds
 exactly like her has been calling too.
 
@@ -66,12 +66,16 @@ Sort → Decide. On Qollab the bonus uses 8 extra eraser circuits from the same 
 
 ## Look and sound
 
-Night-vision door cameras with rain, flicker and lightning; an original creature (a hooded figure
-in Mira's raincoat that creeps closer as your calls run out, and a cracked, too-wide-mouthed face
-if you let the wrong caller in), drawn procedurally in code. Voices are neural text-to-speech
-(Piper with a LibriTTS-trained voice, CC BY 4.0), pre-rendered and processed into a phone line,
-broken static and, for the mimic, a slowed, doubled, echoing voice. Captions always carry
-everything; Gentle mode removes loud stingers and the jump scare's intensity.
+Night-vision door cameras with rain, flicker and lightning. Mira is a small child in a yellow
+raincoat; the thing that copies her is an original creature drawn procedurally in code: a child-sized
+hooded figure that creeps closer as your calls run out, tilts its head too far, leaves small wet
+handprints on the camera glass (one per call), presses against the lens on a broken line, lifts its
+face if you hang up on it, and shows a hollow-eyed, too-wide-mouthed face if you let it in. A music
+box plays now and then under the rain. Voices are neural text-to-speech (Piper with a
+LibriTTS-trained voice, CC BY 4.0), pitched up into a child's voice and processed into a phone line,
+broken static and, for the mimic, her voice slowed with something much deeper underneath it.
+Captions always carry everything; Gentle mode removes loud stingers, the lens scare and the jump
+scare's intensity.
 
 ## Where the outcomes come from (honesty)
 

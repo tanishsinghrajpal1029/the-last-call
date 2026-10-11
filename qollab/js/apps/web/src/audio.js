@@ -102,8 +102,22 @@ export class Audio {
             return o;
         });
         this.ambience = [rain, ...oscs, rg, dg];
+        this.boxTimer = window.setInterval(() => { if (Math.random() < 0.5)
+            this.musicBox(); }, 17000);
+    }
+    boxTimer = 0;
+    /** A slightly detuned music-box phrase (original), drifting in now and then. */
+    musicBox() {
+        const notes = [659, 587, 523, 494, 523, 392, 440, 330];
+        notes.forEach((f, i) => {
+            const detune = 1 + (Math.random() - 0.5) * 0.012;
+            this.tone(f * detune, 0.9, 0.028, i * 0.42, "triangle");
+            this.tone(f * 2 * detune, 0.5, 0.008, i * 0.42, "sine");
+        });
     }
     stopAmbience() {
+        clearInterval(this.boxTimer);
+        this.boxTimer = 0;
         for (const n of this.ambience) {
             try {
                 if (n instanceof AudioScheduledSourceNode)
@@ -148,6 +162,9 @@ export class Audio {
         }
         [110, 116.5, 155.6, 233].forEach((f) => this.tone(f, 2.4, 0.09, 0, "sawtooth", f * 0.5));
         this.noise(1.2, 120, 0.8, 0.25, 0, "lowpass");
+        // a shriek: bright noise and a falling scrape
+        this.noise(0.9, 3200, 2.5, 0.22, 0.05);
+        this.tone(1800, 0.9, 0.07, 0.05, "sawtooth", 300);
     }
     relief() {
         [392, 494, 587].forEach((f, i) => this.tone(f, 1.6, 0.05, i * 0.12, "sine"));

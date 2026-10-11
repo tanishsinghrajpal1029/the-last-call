@@ -25,7 +25,21 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PIPER = os.environ.get("PIPER", "piper")
 MODEL = os.environ.get("PIPER_MODEL")
 
+# raise pitch and formants together (a child's voice), keeping the original duration
+CHILD = "asetrate=22050*1.3,aresample=22050,atempo=0.8"
+
 FX = {
+    "child_phone": "[0:a]" + CHILD + ",highpass=f=320,lowpass=f=3500,acompressor=threshold=0.1:ratio=4:attack=5:release=80,volume=1.6[v];"
+                   "anoisesrc=color=pink:amplitude=0.012:sample_rate=22050[n];[v][n]amix=inputs=2:duration=first:normalize=0[o]",
+    "child_static": "[0:a]" + CHILD + ",highpass=f=400,lowpass=f=2900,acrusher=bits=6:mix=0.7,"
+                    "volume='if(lt(mod(t,0.21),0.11),1.3,0.08)':eval=frame[v];"
+                    "anoisesrc=color=white:amplitude=0.09:sample_rate=22050[n];[v][n]amix=inputs=2:duration=first:normalize=0,lowpass=f=5000[o]",
+    "child_room": "[0:a]" + CHILD + ",lowpass=f=7500,aecho=0.85:0.6:45|90:0.18|0.1,volume=1.3[o]",
+    "child_distant": "[0:a]" + CHILD + ",lowpass=f=1100,aecho=0.8:0.7:120|260:0.35|0.25,volume=1.0[o]",
+    # the mimic: her small voice, slowed, with something much deeper speaking underneath it, and a long cold echo
+    "child_eerie": "[0:a]" + CHILD + ",asplit=2[a][b];[a]atempo=0.85,tremolo=f=7:d=0.35[a1];"
+                   "[b]asetrate=22050*0.5,aresample=22050,atempo=1.7,volume=0.7[b1];"
+                   "[a1][b1]amix=inputs=2:duration=longest:normalize=0,aecho=0.8:0.85:340|700:0.45|0.3,lowpass=f=6500,volume=1.5[o]",
     # telephone line: band-limited, compressed, faint hiss
     "phone": "[0:a]highpass=f=320,lowpass=f=3300,acompressor=threshold=0.1:ratio=4:attack=5:release=80,volume=1.6[v];"
              "anoisesrc=color=pink:amplitude=0.012:sample_rate=22050[n];[v][n]amix=inputs=2:duration=first:normalize=0[o]",
