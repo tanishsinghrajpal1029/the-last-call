@@ -1,0 +1,3 @@
+# Python dependencies for the Qollab runtime (the JS / Qiskit wrapper project shape).
+# Qollab provides qiskit; listed here so the project shape matches the template.
+qiskit

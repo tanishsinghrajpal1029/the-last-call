@@ -66,7 +66,7 @@ def build():
 
 def check():
     problems = []
-    for name in ("index.html", "main.js", "main.css", "qollab_api.py", "config.py", "LICENSE"):
+    for name in ("index.html", "main.js", "main.css", "qollab_api.py", "config.py", "LICENSE", "requirements.txt"):
         if not os.path.exists(os.path.join(Q, name)):
             problems.append("missing root file " + name)
     with open(os.path.join(Q, "quantum", "MANIFEST.json")) as f:
