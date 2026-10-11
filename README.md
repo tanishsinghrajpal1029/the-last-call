@@ -109,9 +109,17 @@ The doors, figures and voices are fiction; the circuit never processes audio. Ea
 selects which prepared line is shown and spoken. A classical computer can simulate these small
 circuits; the point is the rule they teach.
 
-**Status:** the three AR modes have **not yet been tested on a physical phone**, and the Qollab project
-has **not yet been run on Qollab** (it was tested with a mocked bridge). See
-[docs/VALIDATION.md](docs/VALIDATION.md) and [docs/AR_DEVICE_TESTS.md](docs/AR_DEVICE_TESTS.md).
+**Status (11 Oct 2026):**
+
+* **Qollab: run and published.** The game page ran on Qollab's Built-in simulator (job
+  `8adea0e2-c31c-4130-9483-2f3250e1a4fe`, 56 circuits × 16 shots). The companion project
+  [The Last Call — IonQ run](https://qollab.xyz/u/tanishsinghrajpal/the-last-call-ionq-run) ran on the IonQ simulator with the Aria 1 noise model
+  (jobs `01a12ae6-1c72-7c0f-a516-6a95468e6d72` and `01a12ae9-7f85-7a0a-b5c5-1998da2674af`, one
+  24-qubit circuit × 100 shots). Results: [docs/VALIDATION.md](docs/VALIDATION.md).
+* **IonQ from the game page does not work:** Qollab's preview frame can't reach IonQ from a
+  JavaScript project ("Failed to fetch"), so the IonQ run lives in the Python companion project.
+* **Phone AR: not yet tested on a physical phone.** The three AR modes pass desktop tests with a
+  simulated camera and orientation only. Device protocol: [docs/AR_DEVICE_TESTS.md](docs/AR_DEVICE_TESTS.md).
 
 ## Build and test
 
@@ -132,7 +140,9 @@ packages.
 
 **Deploy (HTTPS, needed for phone AR):** push to a public GitHub repo and enable
 *Settings → Pages → Source: GitHub Actions*; `.github/workflows/pages.yml` publishes `build/web`.
-Then set `AR_APP_URL` in `qollab/main.js` and run `npm run package:qollab`.
+The live address is https://tanishsinghrajpal.com/the-last-call/ (set as `AR_APP_URL` in `qollab/main.js`).
+
+**On Qollab:** [The Last Call](https://qollab.xyz/u/tanishsinghrajpal/the-last-call) (game, JavaScript + Qiskit) and [The Last Call — IonQ run](https://qollab.xyz/u/tanishsinghrajpal/the-last-call-ionq-run) (Python + Qiskit, source in `qollab_ionq/main.py`).
 
 ## Repository
 
@@ -142,8 +152,12 @@ quantum/             canonical circuits, decoding, NumPy reference model, Qiskit
 packages/core/       pure game rules, exact simulator, evidence meter, outcome providers
 apps/web/            web app: Guide/walkthrough, intercom UI, audio + voice clips, art, WebXR / marker / look-around AR
 qollab/              the uploadable Qollab project (built by scripts/package_qollab.py)
+qollab_ionq/         the Qollab companion project for IonQ (one 24-qubit circuit, Python)
 tests/               unit, Python and browser tests
 docs/                physics, design, validation, device tests, page copy, demo script, checklist
 ```
 
-Origin, reuse and AI assistance: [ATTRIBUTION.md](ATTRIBUTION.md). Licence: MIT.
+Origin, reuse and AI assistance: [ATTRIBUTION.md](ATTRIBUTION.md). In short: the AR renderer,
+marker tracker, dev server, build scripts and test harnesses were adapted from Dark Sweeper, the
+same author's earlier entry in this hackathon; the code and docs were written with Claude
+(Anthropic), directed and reviewed by Tanish Singh Rajpal. Licence: MIT.

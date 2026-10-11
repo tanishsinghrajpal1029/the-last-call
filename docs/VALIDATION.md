@@ -39,12 +39,10 @@ decision.
 
 | Item | Why | How |
 |---|---|---|
-| Qiskit tests and `quantum/qiskit_run.py` | Qiskit not installable here | `pip install qiskit` → `python3 -m unittest discover -s tests/quantum -v`; `python3 quantum/qiskit_run.py --out data/qiskit/ideal.json` |
-| The Qollab project on Qollab's built-in simulator | no Qollab access from here | upload `qollab/` contents, select the built-in simulator, press Run; record the status line and open the data table |
-| The Qollab project on an IonQ simulator (one batched job) | as above | select IonQ (simulator), Run, record job id and the table |
+| Local Qiskit tests and `quantum/qiskit_run.py` (the circuits did run in Qiskit on Qollab, below) | Qiskit not installable here | `pip install qiskit` → `python3 -m unittest discover -s tests/quantum -v`; `python3 quantum/qiskit_run.py --out data/qiskit/ideal.json` |
 | Phone AR (WebXR, look-around, marker) and real voice playback on iOS | no device | `docs/AR_DEVICE_TESTS.md` |
 
-Do not quote Qiskit, Qollab or IonQ numbers until these runs exist.
+The Qollab runs below were made by Tanish on qollab.xyz on 11 Oct 2026; numbers are copied from the run output.
 
 ## Results that exist
 
@@ -55,6 +53,11 @@ Do not quote Qiskit, Qollab or IonQ numbers until these runs exist.
 
 ## Record Qollab runs here
 
-| Date | Backend | Job id | Shots | Night-1 clear rate at dial 0 / dial 4 | Trace clear rate | Notes |
+| Date | Backend | Job id | Shots | Night-1 clear rate at dial 0 / dial 4 | Trace / recorded-door clear rate | Notes |
 |---|---|---|---|---|---|---|
-| | | | | | | |
+| 11 Oct 2026 | Qollab Built-in simulator (ideal) | 8adea0e2-c31c-4130-9483-2f3250e1a4fe | 56 circuits × 16 | 16/16 / 0/16 | 70/128 | fitted contrast: listen 0.94, trace 0.18; call 4 eraser all 0.11, + group 1.09 at 88° (impostor) |
+| 11 Oct 2026 | IonQ simulator, Aria 1 noise model ([companion project](https://qollab.xyz/u/tanishsinghrajpal/the-last-call-ionq-run)) | 01a12ae6-1c72-7c0f-a516-6a95468e6d72 | one 24-qubit circuit × 100 | (see contrasts) | (see contrasts) | fitted contrast: listen 0.99, recorded door 0.20, + group 1.02 |
+| 11 Oct 2026 | IonQ simulator, Aria 1 noise model ([companion project](https://qollab.xyz/u/tanishsinghrajpal/the-last-call-ionq-run)) | 01a12ae9-7f85-7a0a-b5c5-1998da2674af | one 24-qubit circuit × 100 | 100% / 1% | 49% overall (flat) | fitted contrast: listen 1.03 at 0°, recorded door 0.02, + group 1.01 at 6° |
+
+IonQ selected on the JavaScript game page fails with "Failed to fetch" (Qollab's preview frame
+can't reach IonQ); no job is created. The page explains this and links to the companion project.

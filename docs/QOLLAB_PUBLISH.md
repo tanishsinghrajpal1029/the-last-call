@@ -53,8 +53,9 @@ Do not upload `__pycache__`, `node_modules`, `build/`, the voice generator or th
 * Sidebar: **Contributors** (every teammate), **Tags**, **Repositories** (the public GitHub repo),
   **Project Website** (the GitHub Pages address of the AR app, once it exists; also set
   `AR_APP_URL` in `main.js` and re-upload `main.js`).
-* Disclose pre-existing code: none, except the Piper voice clips (MIT) and the LibriTTS voice
-  (CC BY 4.0), already credited in the write-up.
+* Disclose reuse and AI assistance exactly as in `ATTRIBUTION.md` ("One-paragraph summary"): code
+  adapted from Dark Sweeper, Claude as the AI tool, Piper/LibriTTS voices. The write-up's
+  "Credits and disclosure" section already says this.
 
 ## 4. Publish a version
 

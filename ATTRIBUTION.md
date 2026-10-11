@@ -45,12 +45,23 @@ model and tests.
   Claude Opus 5.5) in Claude Cowork**, directed and reviewed by Tanish Singh Rajpal. A second
   Claude agent performed a read-only code review; its findings were fixed (see
   `docs/VALIDATION.md`).
-* If other AI tools were used (for example to write the concept document), the team should list
-  them here.
+* The parallel version that suggested the quantum-eraser call (see above) was made with another
+  AI tool; no code from it was used.
 
 ## People
 
-Tanish Singh Rajpal. (Add teammates here.)
+Tanish Singh Rajpal.
+
+## One-paragraph summary (used on the Qollab page)
+
+Built during the hackathon by Tanish Singh Rajpal. Reused code: the AR renderer, matrix maths,
+marker tracker, WebXR and marker scaffolding, random-number generator, dev server, build scripts
+and test harnesses were adapted from Dark Sweeper, the same author's earlier entry in this
+hackathon (MIT; work on it began shortly before the build window opened). Everything quantum and
+everything specific to this game was written for The Last Call. AI assistance: code, tests, story
+text and documentation were written with Claude (Anthropic) in Claude Cowork, directed and reviewed
+by Tanish Singh Rajpal; the quantum-eraser idea came from a parallel version made with another AI
+tool (no code from it was used).
 
 ## Licence
 

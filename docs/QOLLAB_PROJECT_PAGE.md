@@ -69,7 +69,7 @@ Mira and the impostor differ only in a hidden **phase**, which no single measure
 | 3 · Two entrances | 6 | The call leans toward one door. Split the budget between WHO and WHERE. | Listen, Trace |
 | 4 · The last call | 10 | Every call is recorded, so plain listening is flat. Erase, sort, and identify the caller; trace for the door. | Trace, Erase |
 
-![Call 4 after sorting: the + group (teal) and the flipped − group (purple) both follow Mira's voiceprint](https://raw.githubusercontent.com/tanishsinghrajpal1029/the-last-call/main/artifacts/screen_eraser_sorted.png)
+![Call 4 after sorting: the + group (teal) and the flipped − group (purple) both follow Mira's voiceprint](https://raw.githubusercontent.com/tanishsinghrajpal1029/the-last-call/main/artifacts/screen_eraser_sorted.png?v=2)
 
 ---
 
@@ -159,7 +159,7 @@ With 100 shots per dial each fitted contrast is uncertain by about ±0.05 (±0.0
 * **Small circuits.** One or two qubits each, easy to simulate classically. The project is about making interference and which-path measurement something you feel and decide with, not about speed-up.
 * **One run, one night.** Each Run is 56 circuits × 16 shots; a night of play uses at most 28 of those 896 shots, each once. Press Run again for fresh shots.
 * **Noise.** The browser's noise option is an illustrative channel, not an IonQ calibration; on Qollab, the backend's own behaviour applies.
-* **AR.** iPhone look-around mode follows rotation only; walking around the house needs the printed marker. So far phone AR has been tested only with automated browser tests and a simulated camera; the real-device checks are listed in the repo's `docs/AR_DEVICE_TESTS.md`.
+* **AR.** iPhone look-around mode follows rotation only; walking around the house needs the printed marker. So far phone AR has been tested only with automated browser tests and a simulated camera, not yet on a physical phone; the real-device checks are listed in the repo's `docs/AR_DEVICE_TESTS.md`.
 * **Playtesting.** The walkthrough and difficulty were tuned by the strategy benchmark and our own play, not yet by a study with new players.
 * **IonQ from the game page.** Qollab's preview frame can't reach IonQ, so the game itself plays on the Built-in simulator's shots and the IonQ run lives in a companion Python project.
 * **Next:** a fifth call built on entanglement (two callers sharing one line), a run on IonQ hardware (so far: IonQ's noise-model simulator), and tuning from playtests.
@@ -168,11 +168,15 @@ With 100 shots per dial each fitted contrast is uncertain by about ±0.05 (±0.0
 
 * `config.py`: shots per circuit (16; must cover the largest call budget, 10).
 * `data/nights.json`: the four calls, budgets, offsets and tools. Edit it to design your own night.
-* `qollab_api.py` builds and submits the circuits; `quantum/` holds the canonical circuit and decoding code; `qollab_ionq/main.py` in the repo is the IonQ project.
+* `qollab_api.py` builds and submits the circuits; `quantum/` holds the canonical circuit and decoding code; the IonQ run is a separate project: [The Last Call — IonQ run](https://qollab.xyz/u/tanishsinghrajpal/the-last-call-ionq-run).
 * Full source, tests and the AR app: [github.com/tanishsinghrajpal1029/the-last-call](https://github.com/tanishsinghrajpal1029/the-last-call) (MIT).
 
 ### Credits and disclosure
 
-Built during the hackathon, with no pre-existing code. Voices: Piper TTS (MIT) with a voice trained on LibriTTS (CC BY 4.0). The creature, art, sound effects and story are original. The idea of a quantum-eraser level came from an earlier experiment in the same project folder.
+Built during the hackathon by Tanish Singh Rajpal.
+
+* **Reused code:** the AR renderer, matrix maths, marker tracker, WebXR and marker scaffolding, random-number generator, dev server, build scripts and test harnesses were adapted from **Dark Sweeper**, my earlier entry in this hackathon (MIT; work on it began shortly before the build window opened). Everything quantum and everything specific to this game (circuits, model, rules, evidence meter, intercom UI, story, art, sound, Qollab projects) was written for The Last Call. Full list: [ATTRIBUTION.md](https://github.com/tanishsinghrajpal1029/the-last-call/blob/main/ATTRIBUTION.md).
+* **AI assistance:** code, tests, story text and documentation were written with **Claude (Anthropic)** in Claude Cowork, directed and reviewed by me. The quantum-eraser idea came from a parallel version made with another AI tool; no code from it was used.
+* **Assets:** voices generated with Piper TTS (MIT) and a voice trained on LibriTTS (CC BY 4.0). The creature, art, sound effects and story are original.
 
 The story is fiction: the circuit never processes audio, and outcomes only choose which prepared line is played. These circuits are small enough to simulate classically; the project is about the rule they make you feel, not speed-up: **coherent alternatives interfere, and recording which path destroys that.**
