@@ -8,13 +8,13 @@ It is 3:33 am. Your little sister Mira went outside after the cat, and now the i
 
 The only way to tell Mira from the thing copying her is **interference**. The only way to find the door is **measurement**. And measuring the door destroys the interference.
 
-**Play in AR on your phone:** https://tanishsinghrajpal.com/the-last-call/ · **Source (MIT):** https://github.com/tanishsinghrajpal1029/the-last-call
+**Play in AR on your phone:** https://tanishsinghrajpal.com/the-last-call/ · **IonQ run:** [IonQ project link] · **Source (MIT):** https://github.com/tanishsinghrajpal1029/the-last-call
 
 ---
 
 ### Play it in 30 seconds
 
-1. Open *Select QPU*, pick a simulator (the built-in one, or IonQ's), and press **Run**.
+1. Open *Select QPU*, pick the **Built-in simulator**, and press **Run**. (For IonQ, use the companion project linked above: IonQ accepts one circuit per run, and this game page can't reach IonQ from Qollab's preview frame.)
 2. The page sends **one batched job of 56 small circuits** (16 shots each) and waits for the result.
 3. The game starts. Every in-game call uses one of those measured shots, once. The caption under each line shows which backend it came from.
 4. Call 1 is a short spoken walkthrough. After that you are on your own; press **Hint** only if you want the strategy.
@@ -95,11 +95,44 @@ After playing, open **This run's data** (it reveals the callers).
 * On a noisy backend the fringe contrast shrinks; compare each cell with the ideal value printed beside it.
 * On call 4, the + group's clear rate follows the voiceprint, while all erased calls together stay near 50%.
 
-After a successful run, the page also shows a **This run's results** card: a chart of the measured clear rate per dial (call 1 listen vs trace, call 4 eraser groups) and a text summary with fitted fringe contrast and phase, ready to copy.
+After a successful run, the page also shows a **This run's results** card: a chart of the measured clear rate per dial (call 1 listen vs trace, call 4 eraser groups) and a text summary with fitted fringe contrast and phase.
 
-### Results from a real run
+### Results from real runs
 
-[Paste the text from the "This run's results" card here, and add the chart as an image.]
+**1 · The full game on the Built-in simulator** (ideal) · job 8adea0e2-c31c-4130-9483-2f3250e1a4fe · 56 circuits × 16 shots
+
+Call 1 (Mira, balanced), clear shots out of 16 per dial setting:
+
+| | dial 0 | dial 1 | dial 2 | dial 3 | dial 4 | dial 5 | dial 6 | dial 7 |
+|---|---|---|---|---|---|---|---|---|
+| Listen, measured | 16/16 | 13/16 | 7/16 | 4/16 | 0/16 | 2/16 | 8/16 | 13/16 |
+| Listen, ideal | 100% | 85% | 50% | 15% | 0% | 15% | 50% | 85% |
+| Trace, measured | 10/16 | 6/16 | 8/16 | 9/16 | 10/16 | 11/16 | 9/16 | 7/16 |
+
+* **Listening shows the fringe:** fitted contrast **0.94** (ideal 1.00) at phase 1°.
+* **Tracing erases it:** contrast **0.18** (ideal 0); 70 of 128 traced shots clear.
+* **The eraser identified the caller on call 4:** all erased shots together are flat (contrast **0.11**); sorted into the + group the fringe returns (contrast **1.09**) at phase **88°**, matching the impostor's 90° offset, not Mira's 0°. It was the impostor.
+
+With 16 shots per dial, a perfectly flat signal still shows a fitted contrast of about 0.16 from shot noise, so 0.18 and 0.11 are consistent with no interference.
+
+**2 · IonQ simulator (Aria 1 noise model)** · job 01a12ae9-7f85-7a0a-b5c5-1998da2674af · one 24-qubit circuit × 100 shots · [IonQ project link]
+
+IonQ accepts one circuit per run, so this run packs call 1's experiment into a single circuit: a listen block and an eraser block at each of the 8 dials, with no gate linking two blocks.
+
+| | dial 0 | dial 1 | dial 2 | dial 3 | dial 4 | dial 5 | dial 6 | dial 7 |
+|---|---|---|---|---|---|---|---|---|
+| Listen, measured | 100% | 93% | 46% | 11% | 1% | 14% | 50% | 84% |
+| Listen, ideal | 100% | 85% | 50% | 15% | 0% | 15% | 50% | 85% |
+| Door recorded, all shots | 50% | 43% | 59% | 45% | 47% | 52% | 46% | 49% |
+| + group (record erased) | 100% | 79% | 69% | 10% | 0% | 11% | 43% | 85% |
+
+* **Listening shows the fringe:** fitted contrast **1.03** (ideal 1.00) at phase 0°.
+* **Recording the door flattens it:** contrast **0.02** (ideal 0).
+* **Erasing the record and sorting brings it back:** + group contrast **1.01** (ideal 1.00) at phase 6°.
+
+With 100 shots per dial each fitted contrast is uncertain by about ±0.05 (±0.07 for the + group). An earlier run of the same circuit (job 01a12ae6-1c72-7c0f-a516-6a95468e6d72) gave 0.99, 0.20 and 1.02; its 0.20 for the recorded door did not repeat here, so we read it as a statistical fluctuation, not an effect of the noise model.
+
+*Fitted contrast and phase: least-squares fit of the clear rate across the 8 dial settings to ½(1 + V·cos(θ − φ)).*
 
 ---
 
@@ -124,15 +157,16 @@ After a successful run, the page also shows a **This run's results** card: a cha
 * **Small circuits.** One or two qubits each, easy to simulate classically. The project is about making interference and which-path measurement something you feel and decide with, not about speed-up.
 * **One run, one night.** Each Run is 56 circuits × 16 shots; a night of play uses at most 28 of those 896 shots, each once. Press Run again for fresh shots.
 * **Noise.** The browser's noise option is an illustrative channel, not an IonQ calibration; on Qollab, the backend's own behaviour applies.
-* **AR.** iPhone look-around mode follows rotation only; walking around the house needs the printed marker. Phone AR has been tested with automated browser tests and a simulated camera; real-device results are in the repo's `docs/AR_DEVICE_TESTS.md`.
+* **AR.** iPhone look-around mode follows rotation only; walking around the house needs the printed marker. So far phone AR has been tested only with automated browser tests and a simulated camera; the real-device checks are listed in the repo's `docs/AR_DEVICE_TESTS.md`.
 * **Playtesting.** The walkthrough and difficulty were tuned by the strategy benchmark and our own play, not yet by a study with new players.
-* **Next:** a fifth call built on entanglement (two callers sharing one line), a run on IonQ hardware, and tuning from playtests.
+* **IonQ from the game page.** Qollab's preview frame can't reach IonQ, so the game itself plays on the Built-in simulator's shots and the IonQ run lives in a companion Python project.
+* **Next:** a fifth call built on entanglement (two callers sharing one line), a run on IonQ hardware (so far: IonQ's noise-model simulator), and tuning from playtests.
 
 ### Run, reproduce, extend
 
 * `config.py`: shots per circuit (16; must cover the largest call budget, 10).
 * `data/nights.json`: the four calls, budgets, offsets and tools. Edit it to design your own night.
-* `qollab_api.py` builds and submits the circuits; `quantum/` holds the canonical circuit and decoding code.
+* `qollab_api.py` builds and submits the circuits; `quantum/` holds the canonical circuit and decoding code; `qollab_ionq/main.py` in the repo is the IonQ project.
 * Full source, tests and the AR app: https://github.com/tanishsinghrajpal1029/the-last-call (MIT).
 
 ### Credits and disclosure

@@ -12,6 +12,8 @@ import { simulate, simulateEraser, rad, dialAngle } from "./js/packages/core/src
 
 // Set this to the public HTTPS address of the AR app once it is deployed.
 const AR_APP_URL = "https://tanishsinghrajpal.com/the-last-call/";
+// The companion Qollab project that runs the same experiment on IonQ as one Python circuit.
+const IONQ_PROJECT_URL = "";
 
 const $ = (id) => document.getElementById(id);
 const pct = (x) => (100 * x).toFixed(0) + "%";
@@ -251,7 +253,16 @@ async function main() {
   } else {
     provider = modelProvider(null, rngFromSeed("fallback:" + seed), nights.dialSteps);
     label = "the ideal model sampled in your browser, because the backend run failed (not a quantum result)";
-    $("run-status").textContent = "The run did not complete: " + run.error + ". You can still play on the ideal model (clearly labelled), or fix the problem and press Run again.";
+    const ionqBlocked = run.backendKind === "ionq_noise" && /Failed to fetch|Connection aborted/i.test(String(run.error));
+    if (ionqBlocked) {
+      // IonQ jobs can't be submitted from this game page (the request never reaches IonQ: no job is created).
+      // The same experiment runs as a one-circuit Python project instead.
+      $("run-status").innerHTML = `IonQ can't be reached from this game page (${esc(run.error)}). The same experiment runs on IonQ as one 24-qubit circuit in our companion project` +
+        (IONQ_PROJECT_URL ? `: <a href="${esc(IONQ_PROJECT_URL)}" target="_blank" rel="noopener">The Last Call — IonQ run</a>` : " “The Last Call — IonQ run”") +
+        `. Here, choose the Built-in simulator to play the full game on measured shots; for now you can play on the ideal model (clearly labelled).`;
+    } else {
+      $("run-status").textContent = "The run did not complete: " + run.error + ". You can still play on the ideal model (clearly labelled), or fix the problem and press Run again.";
+    }
   }
   const start = () => {
     const r = startRun($("game"), nights, seed, provider, label, settings, "screen");
