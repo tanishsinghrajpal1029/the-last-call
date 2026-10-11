@@ -151,7 +151,7 @@ With 100 shots per dial each fitted contrast is uncertain by about ±0.05 (±0.0
 
 * **AR on phones and tablets:** WebXR on Android (the house stands on your real floor); look-around AR on iPhone and iPad (aim at the floor, a yellow ring shows where the house will stand, tap Place here; bigger screens get a bigger house); or a printed marker for full table tracking.
 
-![AR on an Android phone (Chrome, WebXR): the house standing on the real floor during the first call](https://raw.githubusercontent.com/tanishsinghrajpal1029/the-last-call/main/artifacts/ar_android.jpg)
+![AR on real devices: an Android phone (Chrome, WebXR) and an iPad (look-around, placed on the floor ring), both on the first call](https://raw.githubusercontent.com/tanishsinghrajpal1029/the-last-call/main/artifacts/ar_devices.jpg)
 * **Accessibility:** captions for every line and sound, Gentle mode without loud scares, reduced motion, keyboard play.
 * **Honesty:** if the backend run fails, the page says why and the game falls back to a clearly labelled ideal model. Backends that return probabilities are sampled in Python and labelled so.
 
