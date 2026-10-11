@@ -109,7 +109,7 @@ From [artifacts/strategy_ideal.md](../artifacts/strategy_ideal.md): correct deci
 | Policy | Call 2 | Call 3 | Call 4 |
 |---|---|---|---|
 | guess | 51% | 40% | 40% |
-| trace every call | — | 49% | 49% |
+| trace every call | — (no Trace on call 2) | 50% | 50% |
 | WHO calls at Mira's dial 0 (+2 traces) | 97% | 86% | 80% |
 | WHO calls at the most informative dial, 3 traces | 95% | 87% | 89% |
 | adaptive: WHO calls until sure, then trace | 94% | 87% | 90% |

@@ -14,7 +14,7 @@ const RUNS = Number(process.env.RUNS || 2000);
 // "WHO calls" are listens, or erase calls on a night where every call is recorded (call 4).
 const policies = {
   "guess (no calls)": { traces: () => 0, dial: () => 0, meter: false },
-  "trace every call": { traces: (b) => b, dial: () => 0, meter: true },
+  "trace every call": { traces: (b) => b, dial: () => 0, meter: true, needsTrace: true },
   "WHO calls at Mira's dial 0 (+2 traces)": { traces: (b, lean) => (lean ? 2 : 0), dial: () => 0, meter: true },
   "WHO calls at the most informative dial (+1 trace)": { traces: (b, lean) => (lean ? 1 : 0), dial: (info) => info.indexOf(Math.max(...info)), meter: true },
   "WHO calls at the most informative dial (+2 traces)": { traces: (b, lean) => (lean ? 2 : 0), dial: (info) => info.indexOf(Math.max(...info)), meter: true },
@@ -38,6 +38,12 @@ for (const [name, pol] of Object.entries(policies)) {
       const info = E.dialInformation(nights, cfg, p.alphaDeg);
       const who = E.whoKind(cfg);
       const canTrace = cfg.tools.includes("trace");
+      if (pol.needsTrace && !canTrace) { // the policy cannot be played on this call: report "—", never a fallback
+        perNight[k].na = true;
+        s = G.applyAction(s, { type: "decide", id: `${k}x`, choice: "hangup" }, null).state;
+        s = G.applyAction(s, { type: "next", id: `${k}n` }, null).state;
+        continue;
+      }
       const traces = canTrace ? Math.min(cfg.budget, pol.traces(cfg.budget, lean)) : 0;
       let id = 0;
       s = G.applyAction(s, { type: "dial", id: `${k}d`, dial: pol.dial(info) }, null).state;
@@ -75,13 +81,13 @@ for (const [name, pol] of Object.entries(policies)) {
       s = G.applyAction(step.state, { type: "next", id: `${k}n` }, null).state;
     }
   }
-  results[name] = perNight.map((x) => ({ correct: x.good / x.n, letIn: x.letIn / x.n }));
+  results[name] = perNight.map((x) => (x.na ? null : { correct: x.good / x.n, letIn: x.letIn / x.n }));
 }
 const lines = [`# Strategy benchmark (${noisy ? "illustrative noise" : "ideal"} model, ${RUNS} runs, seeds bench-0..)`, "",
   "Correct decision rate per night (saved Mira through the right door, or hung up on the mimic). ± is the 95% normal interval.", "",
   "| Policy | " + nights.nights.map((n) => `Night ${n.id}`).join(" | ") + " |", "|---|" + nights.nights.map(() => "---|").join("")];
 for (const [name, rows] of Object.entries(results)) {
-  lines.push(`| ${name} | ` + rows.map((r) => `${(100 * r.correct).toFixed(1)}% ±${(196 * Math.sqrt(r.correct * (1 - r.correct) / RUNS)).toFixed(1)}`).join(" | ") + " |");
+  lines.push(`| ${name} | ` + rows.map((r) => (r ? `${(100 * r.correct).toFixed(1)}% ±${(196 * Math.sqrt(r.correct * (1 - r.correct) / RUNS)).toFixed(1)}` : "— (Trace not available on this call)")).join(" | ") + " |");
 }
 console.log(lines.join("\n"));
 if (process.env.OUT) { mkdirSync(path.dirname(process.env.OUT), { recursive: true }); writeFileSync(process.env.OUT, lines.join("\n") + "\n"); }
