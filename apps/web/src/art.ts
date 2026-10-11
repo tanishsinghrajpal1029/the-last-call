@@ -271,15 +271,16 @@ export function drawLensFlash(g: G, x: number, y: number, w: number, h: number, 
   g.restore();
 }
 
-/** Full-frame close-up of the mimic, for the reveal (jump scare). */
-export function drawMimicFace(g: G, w: number, h: number, t: number, intensity = 1): void {
+/** Full-frame close-up of the mimic, for the reveal (jump scare). `size` scales the face. */
+export function drawMimicFace(g: G, w: number, h: number, t: number, intensity = 1, size = h): void {
   const rnd = prng(1337);
   g.save();
   g.fillStyle = "#000";
   g.fillRect(0, 0, w, h);
   const shake = intensity > 0.5 ? (Math.random() - 0.5) * 8 * intensity : 0;
-  const cx = w / 2 + shake, cy = h * 0.58;
-  const fw = h * 0.5, fh = h * 0.95;
+  // `size` sets the face scale (defaults to the frame height); a portrait phone passes a smaller one
+  const cx = w / 2 + shake, cy = h / 2 + size * 0.08;
+  const fw = size * 0.5, fh = size * 0.95;
   g.translate(cx, cy);
   g.rotate(0.14 + Math.sin(t * 3) * 0.01);
   // hood and wet hair

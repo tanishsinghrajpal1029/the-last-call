@@ -115,15 +115,17 @@ export class HousePainter {
       // figure: equal at both doors (one call, two entrances); a trace shows it at the traced door only
       let a = 0.55;
       if (traced) a = traced === door ? 0.95 : 0;
-      if (v.result) {
+      const rush = v.result === "letIn" && n.decision === door ? Math.min(1, resAge / 0.9) : 0;
+      if (rush > 0) a = resAge < 1 ? 0.95 : 0; // let in: it comes out of the door at you, then the screen scare takes over
+      else if (v.result) {
         const fade = Math.max(0, 1 - resAge / 2.5);
         a = (n.decision === door ? 0.9 : 0.55) * fade;
       }
       if (a > 0.01) {
         const sway = c.settings.reducedMotion ? 0 : Math.sin(now * 0.8 + x * 40) * 0.002;
-        const fz = v.result === "letIn" && n.decision === door ? -0.012 - Math.min(0.02, resAge * 0.02) : -0.008;
+        const fz = -0.008 + rush * rush * 0.15;
         if (!this.figTex) this.figTex = r.texture(figureSprite(256));
-        const fh = 0.095, fw = fh / 2;
+        const fh = 0.095 * (1 + rush * 0.8), fw = fh / 2;
         r.drawTextured(this.figTex, at(multiply(translation(x + sway, fh / 2, fz), multiply(rotationX(Math.PI / 2), scaling(fw, 1, fh)))), [1, 1, 1, a]);
       }
     }

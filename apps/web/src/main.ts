@@ -1,5 +1,6 @@
 /** The Last Call — web entry point: load the nights, pick a mode, run. */
 
+import { ScareLayer } from "./scare.js";
 import { NightsFile, validateNights } from "../../../packages/core/src/nights.js";
 import { modelProvider } from "../../../packages/core/src/providers.js";
 import { rngFromSeed } from "../../../packages/core/src/rng.js";
@@ -156,6 +157,7 @@ function launch(mode: Mode, source: Source, seed: string): void {
   const controller = new Controller(nights, seed, provider(source, seed), SOURCE_LABEL[source], settings);
   const mountUi = (parent: HTMLElement) => {
     const ui = new Ui(parent, controller, mode, audio);
+    new ScareLayer(parent, controller); // full-screen jump scares (removes itself with the AR view)
     // AR sessions need a fresh user gesture to start, so "Play again" returns to the start screen
     ui.onRestart = () => void view.stop();
     return ui;

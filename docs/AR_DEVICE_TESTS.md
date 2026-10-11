@@ -45,7 +45,10 @@ Camera and WebXR need a secure context; `http://<laptop-ip>:8080` is not one.
 6. Trace once; confirm the confirmation sheet, the red record pulse and only one door's figure.
 7. Cover the camera or marker for 2 s; confirm the "lost" message and recovery.
 8. Rotate portrait ↔ landscape; lock the screen and return (iPhone: camera must resume).
-9. Play all four calls to the ending. Note smoothness (subjective).
+9. Play all four calls to the ending. Note smoothness (subjective). Open a door on a call you
+   believe is the mimic at least once: the figure should come out of the door at you, then its face
+   should fill the whole phone screen for about 2.5 s, then SIGNAL LOST. Hang up on the mimic once:
+   a split-second close-up of the hood looking at you.
 10. *Move house* (WebXR) and re-place; exit and re-enter AR three times.
 11. Turn voice and sound off and on in Settings; confirm captions carry everything.
 12. Deny camera permission once: confirm a clear message and that screen mode still works.

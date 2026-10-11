@@ -238,3 +238,5 @@ input[type="radio"], input[type="checkbox"] { width: 22px; height: 22px; accent-
 .skip-line { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
 .bonus .chart { max-width: 560px; }
 
+.scare-layer { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 50; pointer-events: none; display: none; }
+

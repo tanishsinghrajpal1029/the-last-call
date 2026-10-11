@@ -60,6 +60,17 @@ try {
   await page.click("#listen-btn");
   await page.waitForTimeout(200);
   check("listen works from the look-around overlay", (await page.$$("#log li")).length === 1);
+  // the let-in jump scare fills the whole phone screen in AR (simulated result, as the end of a call)
+  check("no full-screen scare during normal play", await page.$eval(".gyro-view .scare-layer", (c) => c.style.display === "none"));
+  await page.evaluate(() => { const c = window.__lastCall.controller; c.visual = { ...c.visual, result: "letIn", resultAt: performance.now() / 1000 - 1.3 }; });
+  await page.waitForTimeout(250);
+  const scare = await page.$eval(".gyro-view .scare-layer", (c) => {
+    const r = c.getBoundingClientRect();
+    const px = c.getContext("2d").getImageData(c.width / 2, c.height * 0.45, 1, 1).data;
+    return { shown: c.style.display === "block", full: r.width >= innerWidth - 1 && r.height >= innerHeight - 1, lit: px[0] + px[1] + px[2] > 60 };
+  });
+  check("let-in jump scare covers the whole AR screen", scare.shown && scare.full && scare.lit, JSON.stringify(scare));
+  await page.evaluate(() => { const c = window.__lastCall.controller; c.visual = { ...c.visual, result: null, resultAt: -1e9 }; });
   await page.click("#exit-btn");
   await page.waitForSelector("#start-form");
   check("exit returns to start and removes the view", (await page.$$(".gyro-view")).length === 0);

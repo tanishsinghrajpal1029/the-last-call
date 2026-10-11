@@ -75,7 +75,8 @@ too-wide-mouthed face if you let it in. A music
 box plays now and then under the rain. Voices are neural text-to-speech (Piper with a
 LibriTTS-trained voice, CC BY 4.0), pitched up into a child's voice and processed into a phone line,
 broken static and, for the mimic, her voice slowed with something much deeper underneath it.
-Captions always carry everything; Gentle mode removes loud stingers, the lens scare and the jump
+In the AR modes the reveal fills the whole phone screen (the house on the table is small), and the
+figure comes out of the opened door at you first. Captions always carry everything; Gentle mode removes loud stingers, the lens scare and the jump
 scare's intensity.
 
 ## Where the outcomes come from (honesty)
