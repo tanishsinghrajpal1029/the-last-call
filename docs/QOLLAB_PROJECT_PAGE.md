@@ -14,7 +14,7 @@ Your little sister Mira is outside in the storm and asks you to let her in. The 
 calling. **Trace** and you learn which door she is at, but the which-door record destroys the
 interference. Finding *where* she is costs you the evidence of *who* she is.
 
-**Press Run.** The page submits one batched job to the backend in *Select QPU* (64 circuits of 1–2
+**Press Run.** The page submits one batched job to the backend in *Select QPU* (56 circuits of 1–2
 qubits) and the game plays on those shots: every listen or trace uses one shot, once.
 
 **Play in AR:** [AR app URL] · **Tested phones:** [none yet] · **Video:** [link]
@@ -29,7 +29,7 @@ measurement can answer, sharing one small budget of calls.
 ### The circuit
 `q0`: Ry(α) · P(θ) · P(−φ) · [CNOT q0→q1 if tracing] · H · measure.
 P(clear) = ½(1 + sin α cos(θ − φ)); traced: P(clear) = ½ at every φ, P(front) = cos²(α/2).
-θ = 0 for Mira; the mimic is out of step by 180°, 90°, then 45°.
+θ = 0 for Mira; the mimic is out of step by 180°, 90°, 135°, then 90° on the eraser call.
 
 ### What to look for in your run
 Open *This run's data* after playing (it reveals the callers). On an ideal simulator, call 1 should

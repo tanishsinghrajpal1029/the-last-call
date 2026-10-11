@@ -96,7 +96,7 @@ export class Controller {
     this.emit({ type: "state" });
   }
 
-  call(kind: "listen" | "trace"): CallRecord | null {
+  call(kind: "listen" | "trace" | "erase"): CallRecord | null {
     if (this.phase !== "play") return null;
     const step = this.act({ type: "call", id: this.id(), kind });
     if (step.record) {

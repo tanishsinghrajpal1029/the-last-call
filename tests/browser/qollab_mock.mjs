@@ -22,8 +22,7 @@ cpSync(path.join(root, "qollab"), dir, { recursive: true });
 const SEED = "04242";
 const N = await import(path.join(root, "build/js/packages/core/src/nights.js"));
 const nights = JSON.parse(readFileSync(path.join(root, "shared/nights.json"), "utf8"));
-const B = await import(path.join(root, "build/js/packages/core/src/bonus.js"));
-const plan = { nights: N.planRun(nights, SEED), bonus: { alphaDeg: nights.bonus.alphaDeg, thetaDeg: B.createBonus(nights.bonus, SEED + ":bonus").thetaDeg } };
+const plan = N.planRun(nights, SEED);
 const mode = process.argv[2] === "broken" ? "broken" : "ok";
 const py = `
 import sys, json, os
@@ -82,7 +81,7 @@ try {
     check("fallback outcomes are labelled as the ideal model, not quantum results", /ideal model/.test(await page.textContent("#caption")));
     check("spoiler data table stays hidden", await page.$eval("#raw-details", (d) => d.hidden));
   } else {
-    check("run status names backend, 72 circuits and job", /built-in simulator \(test double\).*72 circuits × 24 shots.*fake-job-1/.test(status), status);
+    check("run status names backend, 56 circuits and job", /built-in simulator \(test double\).*56 circuits × 16 shots.*fake-job-1/.test(status), status);
     check("circuit drawings shown", /stub drawing: 2 qubits/.test(await page.textContent("#circuit")));
     check("spoiler data table available but collapsed", !(await page.$eval("#raw-details", (d) => d.hidden || d.open)));
     await page.waitForSelector(".sheet-intro");
@@ -99,17 +98,19 @@ try {
     check("all 7 listens at dial 4 are static (destructive interference in measured data)", log.slice(0, 7).every((t) => /dial 4 → static/.test(t)), log.slice(0, 7).join(" | "));
     check("budget exhausted after 8 calls", (await page.$eval("#listen-btn", (b) => b.disabled)));
     await page.screenshot({ path: path.join(root, "artifacts", "qollab_mock.png"), fullPage: false });
-    // finish the night, then the bonus scene must play on this run's eraser shots
+    // finish the night; on call 4 the erase calls must replay this run's eraser shots
     await page.click("#hangup"); await page.click("#yes"); await page.waitForSelector(".sheet-result");
-    for (let k = 2; k <= 4; k++) { await page.click("#next"); await page.waitForSelector(".sheet-intro"); await page.click("#answer"); await page.click("#hangup"); await page.click("#yes"); await page.waitForSelector(".sheet-result"); }
-    await page.click("#next");
-    await page.waitForSelector("#bonus");
-    await page.click("#bonus");
-    await page.waitForSelector(".bonus #b-sweep");
-    for (let i = 0; i < 3; i++) await page.click("#b-sweep");
-    check("bonus scene: 3 sweeps from the run's eraser shots (24 per dial)", (await page.textContent("#b-sweeps")) === "Sweeps left 0" && /fresh shots from/.test(await page.textContent(".bonus")));
-    await page.click("#b-sort");
-    check("bonus scene: ideal fake backend gives a near-certain verdict after sorting", /(over 99%|under 1%)/.test(await page.textContent("#b-meter")), await page.textContent("#b-meter"));
+    for (let k = 2; k <= 3; k++) { await page.click("#next"); await page.waitForSelector(".sheet-intro"); await page.click("#answer"); await page.click("#hangup"); await page.click("#yes"); await page.waitForSelector(".sheet-result"); }
+    await page.click("#next"); await page.waitForSelector(".sheet-intro"); await page.click("#answer");
+    await page.waitForSelector("#sheet-wrap", { state: "hidden" });
+    check("call 4 on Qollab: trace and erase only", await page.$eval("#listen-btn", (b) => b.hidden) && !(await page.$eval("#erase-btn", (b) => b.hidden)));
+    for (let i = 0; i < 6; i++) await page.click("#erase-btn");
+    const elog = await page.$$eval("#log li", (l) => l.map((x) => x.textContent));
+    check("erased calls come from the measured eraser bag with a + / − reading", elog.slice(0, 6).every((t) => /Erase dial 0 → (clear|static) · eraser read [+−]/.test(t)) && /measured shot|fresh shots/.test(await page.textContent("#caption")), elog.slice(0, 2).join(" | "));
+    await page.click("#sort-btn");
+    await page.waitForTimeout(100);
+    const meter = await page.evaluate(() => ({ html: document.querySelector("#meter").innerHTML, status: document.querySelector("#case-status")?.textContent }));
+    check("sorted eraser groups from measured shots move the meter", /Chance it's Mira: <strong>(over 99%|under 1%|\d+%)<\/strong> after 6 sorted erased calls/.test(meter.html), meter.html.replace(/<[^>]+>/g, "").slice(0, 160));
   }
   check("no page errors", errors.length === 0, errors.join(" | ").slice(0, 400));
 } finally {

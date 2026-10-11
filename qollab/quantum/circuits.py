@@ -44,7 +44,7 @@ def call_gate_list(alpha, theta, phi, trace, eraser=False):
     if trace or eraser:
         gates.append(("cx", None, (0, 1)))
     gates.append(("h", None, (0,)))
-    if eraser:  # bonus scene: read the door record in the X basis
+    if eraser:  # the eraser (last call): read the door record in the X basis
         gates.append(("h", None, (1,)))
     return gates
 
@@ -58,7 +58,7 @@ def logical_gate_counts(trace):
 
 def build_call(alpha, theta, phi, trace, name=None, eraser=False):
     """Qiskit QuantumCircuit for one call. Classical bit i holds qubit i.
-    eraser=True: the bonus scene (trace, then H on the record before measuring)."""
+    eraser=True: the quantum eraser (trace, then H on the record before measuring)."""
     from qiskit import QuantumCircuit
 
     width = call_width(trace or eraser)

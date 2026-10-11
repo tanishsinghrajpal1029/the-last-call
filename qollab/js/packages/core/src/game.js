@@ -65,19 +65,24 @@ export function applyAction(s, a, provider) {
             return { state: s, error: "No calls left. Decide: open a door or hang up." };
         if (!provider)
             return { state: s, error: "No quantum outcomes are available." };
-        const trace = a.kind === "trace";
+        const cfg = s.nights.nights[s.index];
+        if (!cfg.tools.includes(a.kind))
+            return { state: s, error: `${a.kind} is not available on this call.` };
+        const eraser = a.kind === "erase", trace = a.kind === "trace" || eraser;
         let out;
         try {
-            out = provider({ nightId: plan.nightId, alphaDeg: plan.alphaDeg, thetaDeg: plan.thetaDeg, dial: n.dial, trace });
+            out = provider({ nightId: plan.nightId, alphaDeg: plan.alphaDeg, thetaDeg: plan.thetaDeg, dial: n.dial, trace, eraser });
         }
         catch (e) {
             return { state: s, error: "The call could not be completed: " + (e instanceof Error ? e.message : String(e)) };
         }
         if (out.line !== "clear" && out.line !== "static")
             throw new Error("invalid outcome");
-        if (trace && out.door !== "front" && out.door !== "side")
+        if (a.kind === "trace" && out.door !== "front" && out.door !== "side")
             throw new Error("trace outcome without a door");
-        const base = { n: n.log.length + 1, kind: a.kind, dial: n.dial, line: out.line, source: out.source, ...(trace ? { door: out.door } : {}) };
+        if (eraser && out.sign !== "plus" && out.sign !== "minus")
+            throw new Error("erase outcome without a sign");
+        const base = { n: n.log.length + 1, kind: a.kind, dial: n.dial, line: out.line, source: out.source, ...(a.kind === "trace" ? { door: out.door } : {}), ...(eraser ? { sign: out.sign } : {}) };
         const record = { ...base, text: lineText(s, base) };
         const night = { ...n, callsLeft: n.callsLeft - 1, log: [...n.log, record] };
         return { state: mark({ ...s, night }), record };

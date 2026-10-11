@@ -6,24 +6,29 @@
  * shotBagProvider: replays measured shots from a Qollab backend run, one shot
  *   per call, each shot used at most once, in a seeded random order.
  */
-import { dialAngle, rad, sampleOutcome, simulate } from "./physics.js";
+import { dialAngle, rad, sampleOutcome, simulate, simulateEraser } from "./physics.js";
 import { shuffled } from "./rng.js";
 export function modelProvider(noise, rng, steps = 8) {
     const source = noise ? "illustrative noise model, sampled in your browser" : "ideal model, sampled in your browser";
     return (req) => {
-        const probs = simulate(rad(req.alphaDeg), rad(req.thetaDeg), dialAngle(req.dial, steps), req.trace, noise);
+        const phi = dialAngle(req.dial, steps);
+        const probs = req.eraser ? simulateEraser(rad(req.alphaDeg), rad(req.thetaDeg), phi, noise) : simulate(rad(req.alphaDeg), rad(req.thetaDeg), phi, req.trace, noise);
         return toOutcome(sampleOutcome(probs, rng()), source);
     };
 }
 export function toOutcome(key, source) {
     if (key === "clear" || key === "static")
         return { line: key, source };
-    const [door, line] = key.split("|");
-    if ((door === "front" || door === "side") && (line === "clear" || line === "static"))
-        return { line, door, source };
+    const [tag, line] = key.split("|");
+    if (line !== "clear" && line !== "static")
+        throw new Error("unknown outcome " + key);
+    if (tag === "front" || tag === "side")
+        return { line, door: tag, source };
+    if (tag === "plus" || tag === "minus")
+        return { line, sign: tag, source };
     throw new Error("unknown outcome " + key);
 }
-export const bagKey = (nightId, dial, trace) => `${nightId}|${dial}|${trace ? "trace" : "listen"}`;
+export const bagKey = (nightId, dial, kind) => `${nightId}|${dial}|${kind}`;
 export function shotBagProvider(data, rng) {
     const queues = new Map();
     for (const [k, v] of Object.entries(data.bags))
@@ -32,7 +37,7 @@ export function shotBagProvider(data, rng) {
         ? "shot sampled from " + data.backendName + "'s returned probabilities"
         : "measured shot from " + data.backendName;
     const p = ((req) => {
-        const q = queues.get(bagKey(req.nightId, req.dial, req.trace));
+        const q = queues.get(bagKey(req.nightId, req.dial, req.eraser ? "erase" : req.trace ? "trace" : "listen"));
         if (!q || !q.length)
             throw new Error("no measured shots left for this setting; press Run again on Qollab");
         return toOutcome(q.shift(), source);

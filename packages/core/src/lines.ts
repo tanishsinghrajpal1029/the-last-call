@@ -6,9 +6,9 @@
 
 export const INTRO: Record<number, string> = {
   1: "11:52 pm. Mum and Dad are stuck across town in the storm, and you're watching your little sister Mira. Twenty minutes ago she slipped outside after the cat. Now the intercom crackles: both door cameras show the same dark, hooded shape, at the front door and the side door, at the same time. The night vision can't make out a face. One call, two doors.",
-  2: "12:20 am. She calls again. Same dark shape, same little voice, both doors. Mum's rule, taped to the fridge: “Never open the door at night unless you're sure who it is.”",
-  3: "1:05 am. The porch light on one side won't stop flickering. Another call. Tonight the call leans toward one of the doors.",
-  4: "3:33 am. The intercom battery is almost dead. One more call. Somewhere out in the rain, something has learned exactly how she says your name.",
+  2: "12:20 am. She calls again. Same dark shape, same little voice, both doors. Mum's rule, taped to the fridge: “Never open the door at night unless you're sure who it is.” Whatever is copying her has learned her voice better: its pattern is closer to hers now, and the line will only hold four calls.",
+  3: "1:05 am. The porch light on one side won't stop flickering, and tonight the call leans toward one of the doors. Six calls, and two questions to answer with them.",
+  4: "3:33 am. The intercom battery is almost dead, and the damaged handset now records the door on every call. Her voiceprint is gone: every listen is a coin flip. Unless you erase the record. Somewhere out in the rain, something has learned exactly how she says your name.",
 };
 
 export const CLEAR_LINES: string[] = [

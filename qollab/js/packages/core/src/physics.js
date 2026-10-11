@@ -97,7 +97,7 @@ export function simulate(alpha, theta, phi, trace, noise) {
     return { ...out };
 }
 /**
- * The eraser (bonus scene): trace (CNOT onto q1), then read the record q1 in
+ * The eraser (call 4): trace (CNOT onto q1), then read the record q1 in
  * the X basis (a Hadamard on q1) instead of asking "which door". Outcomes are
  * "plus|clear", "plus|static", "minus|clear", "minus|static".
  * Ideal, alpha = 90°: P(plus, clear) = (1 + cos(theta - phi)) / 4; the minus

@@ -1,5 +1,5 @@
 {
- "version": "voices-v3",
+ "version": "voices-v4",
  "model": "Piper en-us-libritts-high (LibriTTS, CC BY 4.0)",
  "voices": {
   "mira": {
@@ -136,19 +136,19 @@
   },
   {
    "id": "intro_2",
-   "text": "12:20 am. She calls again. Same dark shape, same little voice, both doors. Mum's rule, taped to the fridge: “Never open the door at night unless you're sure who it is.”",
+   "text": "12:20 am. She calls again. Same dark shape, same little voice, both doors. Mum's rule, taped to the fridge: “Never open the door at night unless you're sure who it is.” Whatever is copying her has learned her voice better: its pattern is closer to hers now, and the line will only hold four calls.",
    "voice": "narrator",
    "fx": "room"
   },
   {
    "id": "intro_3",
-   "text": "1:05 am. The porch light on one side won't stop flickering. Another call. Tonight the call leans toward one of the doors.",
+   "text": "1:05 am. The porch light on one side won't stop flickering, and tonight the call leans toward one of the doors. Six calls, and two questions to answer with them.",
    "voice": "narrator",
    "fx": "room"
   },
   {
    "id": "intro_4",
-   "text": "3:33 am. The intercom battery is almost dead. One more call. Somewhere out in the rain, something has learned exactly how she says your name.",
+   "text": "3:33 am. The intercom battery is almost dead, and the damaged handset now records the door on every call. Her voiceprint is gone: every listen is a coin flip. Unless you erase the record. Somewhere out in the rain, something has learned exactly how she says your name.",
    "voice": "narrator",
    "fx": "room"
   },

@@ -6,8 +6,8 @@ for amendments. Status: ✅ done and evidenced · 🟡 prepared, needs a human a
 | Requirement | Status | Evidence / next action |
 |---|---|---|
 | Qiskit; runs on Qollab's free simulators incl. the IonQ simulator path | 🟡 | `qollab/` builds Qiskit circuits and submits one batched job to the injected `backend`. **Run on Qollab (built-in + IonQ simulator); record in `docs/VALIDATION.md`.** |
-| Quick credential-free run on a free simulator | 🟡 | 64 circuits × 16 shots, ≤ 2 qubits. Tested with a stub backend only. |
-| Public runnable project on Qollab, MIT | 🟡 | Upload the *contents* of `qollab/` (24 files); publish a version; set it as the public default; check signed out. |
+| Quick credential-free run on a free simulator | 🟡 | 56 circuits × 16 shots, ≤ 2 qubits. Tested with a stub backend only. |
+| Public runnable project on Qollab, MIT | 🟡 | Upload the *contents* of `qollab/` (28 files, `python3 scripts/package_qollab.py --check`); publish a version; set it as the public default; check signed out. |
 | Separate public repo, MIT, dependencies listed, no secrets | 🟡 | Ready. Push to a public GitHub repo; enable Pages (workflow included). |
 | Project page: purpose, problem, run/reproduce/extend | 🟡 | `docs/QOLLAB_PROJECT_PAGE.md`; fill in URLs and real results. |
 | 2–3 min public demo video | ❌ | Script in `docs/DEMO_SCRIPT.md`. |

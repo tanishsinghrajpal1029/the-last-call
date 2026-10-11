@@ -43,10 +43,11 @@ def _kind(name):
     return "ideal"
 
 
-def _key(night, dial, trace, eraser=False):
-    if eraser:
-        return "bonus|%d|eraser" % dial
-    return "%d|%d|%s" % (night, dial, "trace" if trace else "listen")
+def _key(night, dial, kind):
+    return "%d|%d|%s" % (night, dial, kind)
+
+
+KINDS = {"listen": (False, False), "trace": (True, False), "erase": (True, True)}
 
 
 def _integer_counts(totals, shots, rng):
@@ -72,8 +73,9 @@ def _integer_counts(totals, shots, rng):
 
 def run_calls(backend, plan_json, seed):
     """plan_json: [{"nightId", "alphaDeg", "thetaDeg"}, ...] chosen by main.js.
-    Builds 8 dial settings x (listen, trace) per night, submits them in ONE
-    backend.run call, decodes the counts. Returns JSON."""
+    Builds 8 dial settings x each tool the night allows (listen, trace, erase;
+    see data/nights.json) per night, submits them in ONE backend.run call and
+    decodes the counts. Returns JSON."""
     started = time.perf_counter()
     name = _backend_name(backend)
     kind = _kind(name)
@@ -83,28 +85,23 @@ def run_calls(backend, plan_json, seed):
            "bags": {}, "sampledFromProbabilities": False, "jobId": None, "error": None}
     try:
         plan = json.loads(str(plan_json))
-        bonus = None
         if isinstance(plan, dict):
-            bonus = plan.get("bonus")
             plan = plan["nights"]
         with open("data/nights.json") as f:
             nights_cfg = json.load(f)
         steps = nights_cfg["dialSteps"]
-        need = max(12, nights_cfg["bonus"]["sweeps"] * nights_cfg["bonus"]["shotsPerDial"]) if bonus else 12
-        if config.SHOTS < need:
-            raise ValueError("SHOTS must be at least %d" % need)
+        tools_by_night = {n["id"]: n["tools"] for n in nights_cfg["nights"]}
+        if config.SHOTS < max(n["budget"] for n in nights_cfg["nights"]):
+            raise ValueError("SHOTS must cover the largest call budget")
         specs, circuits = [], []
         for p in plan:
+            night = int(p["nightId"])
             for k in range(steps):
-                for trace in (False, True):
-                    specs.append((int(p["nightId"]), k, trace, False))
+                for kind in tools_by_night[night]:
+                    trace, eraser = KINDS[kind]
+                    specs.append((night, k, kind))
                     circuits.append(build_call(math.radians(float(p["alphaDeg"])), math.radians(float(p["thetaDeg"])),
-                                               dial_angle(k, steps), trace, name="n%d-d%d-%s" % (p["nightId"], k, "t" if trace else "l")))
-        if bonus:
-            for k in range(steps):
-                specs.append((0, k, True, True))
-                circuits.append(build_call(math.radians(float(bonus["alphaDeg"])), math.radians(float(bonus["thetaDeg"])),
-                                           dial_angle(k, steps), True, name="bonus-d%d-eraser" % k, eraser=True))
+                                               dial_angle(k, steps), trace, name="n%d-d%d-%s" % (night, k, kind[0]), eraser=eraser))
         # Map to the backend's gate set when possible (needed for device-noise
         # backends, whose noise is attached to native gates). If the backend
         # cannot be targeted by transpile, submit the circuits as built.
@@ -122,12 +119,13 @@ def run_calls(backend, plan_json, seed):
             pass
         result = job.result()
         rng = random.Random(str(seed))
-        for i, (night, k, trace, eraser) in enumerate(specs):
+        for i, (night, k, kind) in enumerate(specs):
+            trace, eraser = KINDS[kind]
             raw = {str(key): float(v) for key, v in dict(result.get_counts(i)).items()}
             totals = decode_counts(raw, trace, eraser)
             counts, sampled = _integer_counts(totals, config.SHOTS, rng)
             out["sampledFromProbabilities"] = out["sampledFromProbabilities"] or sampled
-            out["bags"][_key(night, k, trace, eraser)] = {"raw": raw, "totals": counts}
+            out["bags"][_key(night, k, kind)] = {"raw": raw, "totals": counts}
         out["circuits"] = len(circuits)
         out["ok"] = True
     except Exception as e:  # report; never substitute other data

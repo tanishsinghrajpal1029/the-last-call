@@ -10,36 +10,66 @@
 
 import { CallRecord } from "./game.js";
 import { NightConfig, NightsFile } from "./nights.js";
-import { dialAngle, rad, simulate } from "./physics.js";
+import { dialAngle, rad, simulate, simulateEraser } from "./physics.js";
+
+/** Outcome probabilities for one call kind under one hypothesis. */
+export function outcomeProbs(f: NightsFile, alphaDeg: number, thetaDeg: number, dial: number, kind: "listen" | "trace" | "erase"): Record<string, number> {
+  const phi = dialAngle(dial, f.dialSteps);
+  return kind === "erase" ? simulateEraser(rad(alphaDeg), rad(thetaDeg), phi, f.noise) : simulate(rad(alphaDeg), rad(thetaDeg), phi, kind === "trace", f.noise);
+}
+
+export function outcomeKey(r: CallRecord): string {
+  return r.kind === "trace" ? `${r.door}|${r.line}` : r.kind === "erase" ? `${r.sign}|${r.line}` : r.line;
+}
 
 export function posteriorSister(f: NightsFile, cfg: NightConfig, alphaDeg: number, log: CallRecord[], prior = 0.5): number {
   let llr = Math.log(prior / (1 - prior));
   for (const r of log) {
-    const phi = dialAngle(r.dial, f.dialSteps);
-    const trace = r.kind === "trace";
-    const key = trace ? `${r.door}|${r.line}` : r.line;
-    const ps = simulate(rad(alphaDeg), rad(f.sisterPhaseDeg), phi, trace, f.noise)[key]!;
-    const pm = simulate(rad(alphaDeg), rad(cfg.mimicPhaseDeg), phi, trace, f.noise)[key]!;
+    const key = outcomeKey(r);
+    const ps = outcomeProbs(f, alphaDeg, f.sisterPhaseDeg, r.dial, r.kind)[key]!;
+    const pm = outcomeProbs(f, alphaDeg, cfg.mimicPhaseDeg, r.dial, r.kind)[key]!;
     llr += Math.log(ps) - Math.log(pm);
   }
   return 1 / (1 + Math.exp(-llr));
 }
 
-/** Expected evidence (nats) one listen at each dial gives, averaged over both hypotheses. */
+/**
+ * Expected evidence (nats) one WHO call at each dial gives, averaged over both
+ * hypotheses (Jensen–Shannon divergence). The WHO call is listen, or erase on a
+ * night where every call is recorded.
+ */
 export function dialInformation(f: NightsFile, cfg: NightConfig, alphaDeg: number): number[] {
+  const kind = whoKind(cfg);
   const out: number[] = [];
   for (let k = 0; k < f.dialSteps; k++) {
-    const phi = dialAngle(k, f.dialSteps);
-    const s = simulate(rad(alphaDeg), rad(f.sisterPhaseDeg), phi, false, f.noise);
-    const m = simulate(rad(alphaDeg), rad(cfg.mimicPhaseDeg), phi, false, f.noise);
+    const s = outcomeProbs(f, alphaDeg, f.sisterPhaseDeg, k, kind);
+    const m = outcomeProbs(f, alphaDeg, cfg.mimicPhaseDeg, k, kind);
     let js = 0;
-    for (const key of ["clear", "static"]) {
+    for (const key of Object.keys(s)) {
       const a = s[key]!, b = m[key]!, mid = (a + b) / 2;
-      js += 0.5 * (a * Math.log(a / mid) + b * Math.log(b / mid));
+      if (a > 0) js += 0.5 * a * Math.log(a / mid);
+      if (b > 0) js += 0.5 * b * Math.log(b / mid);
     }
     out.push(js);
   }
   return out;
+}
+
+/** The call that identifies the caller on this night. */
+export function whoKind(cfg: NightConfig): "listen" | "erase" {
+  return cfg.tools.includes("listen") ? "listen" : "erase";
+}
+
+/** Clear-line counts per dial for the sorted eraser groups and for all erased calls together. */
+export function eraserTally(log: CallRecord[], steps: number) {
+  return Array.from({ length: steps }, (_, dial) => {
+    const list = log.filter((r) => r.kind === "erase" && r.dial === dial);
+    const grp = (sign: "plus" | "minus") => {
+      const g = list.filter((r) => r.sign === sign);
+      return { clear: g.filter((r) => r.line === "clear").length, total: g.length };
+    };
+    return { dial, all: { clear: list.filter((r) => r.line === "clear").length, total: list.length }, plus: grp("plus"), minus: grp("minus") };
+  });
 }
 
 export function doorTally(log: CallRecord[]): { front: number; side: number } {

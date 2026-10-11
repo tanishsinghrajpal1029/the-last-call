@@ -5,7 +5,7 @@
  * the figure at the traced door only. Nothing here depends on the hidden caller
  * or lean before the decision.
  */
-import { drawFigure, drawHandprints, drawLensFlash, drawMimicFace, drawPorch, postProcess } from "./art.js";
+import { drawFigure, drawHandprints, drawPorch, postProcess } from "./art.js";
 import { dialAngle, rad, simulate } from "../../../packages/core/src/physics.js";
 const PANE_H = 340;
 export class Feed {
@@ -45,17 +45,10 @@ export class Feed {
         if (!calm && Math.random() < 0.0016)
             this.flashAt = t;
         const flash = !calm && t - this.flashAt < 0.12 ? 1 : 0;
-        // the reveal for the mimic when it is let in: the face, then nothing
+        // the mimic let in: the cameras die (the reveal itself fills the whole screen, see scare.ts)
         if (v.result === "letIn" && resultAge > 0.9) {
-            if (resultAge < 2.6)
-                drawMimicFace(g, W, FH, t, this.c.settings.gentle ? 0.3 : 1);
-            else {
-                g.fillStyle = "#000";
-                g.fillRect(0, 0, W, FH);
-                g.fillStyle = "rgba(230,60,50,0.9)";
-                g.font = "600 18px ui-monospace, Menlo, monospace";
-                g.fillText("SIGNAL LOST", W / 2 - 60, H / 2);
-            }
+            g.fillStyle = "#000";
+            g.fillRect(0, 0, W, FH);
             return;
         }
         g.fillStyle = "#000";
@@ -93,10 +86,6 @@ export class Feed {
             if (flash) {
                 g.fillStyle = "rgba(220,235,255,0.55)";
                 g.fillRect(x0, y0, w, h);
-            }
-            // on static, for a split second something is pressed right up against the lens
-            if (!calm && !this.c.settings.gentle && v.last && v.last.line === "static" && since > 0.25 && since < 0.4 && !traced && !v.result) {
-                drawLensFlash(g, x0, y0, w, h, 1);
             }
             // static flash after a static outcome
             if (v.last && v.last.line === "static" && since < 0.9 && !traced) {

@@ -8,7 +8,7 @@
 import { CallRecord } from "../../../packages/core/src/game.js";
 import { NightConfig } from "../../../packages/core/src/nights.js";
 
-export type Action = "dial" | "listen" | "trace" | "front" | "side" | "hangup";
+export type Action = "dial" | "listen" | "trace" | "erase" | "front" | "side" | "hangup";
 
 export interface Stage {
   id: string;
@@ -92,17 +92,40 @@ export const STAGES: Stage[] = [
   },
 ];
 
+/** The WHO / WHERE / DECIDE checklist for this call, from its tools. No strategy is given away here (see hintFor). */
 export function guideForCase(cfg: NightConfig, leans: boolean): string {
+  const erase = !cfg.tools.includes("listen");
+  const who = erase
+    ? `<strong>WHO is calling?</strong> Every call is recorded tonight, so a plain line is a coin flip. <strong>Erase</strong> at a few dial settings, then <strong>sort</strong> the erased calls by what the eraser read (+ / −): the voiceprint comes back in two mirror-image halves. <span class="sub">If it isn't Mira, its voiceprint is shifted by <strong>${cfg.mimicPhaseDeg}°</strong> (${cfg.mimicPhaseDeg / 45} dial steps).</span>`
+    : `<strong>WHO is calling?</strong> Listen at a few dial settings and compare your dots with the two voiceprints. <span class="sub">If it isn't Mira, its voiceprint is shifted by <strong>${cfg.mimicPhaseDeg}°</strong> (${cfg.mimicPhaseDeg / 45} dial steps).</span>`;
+  const where = !leans
+    ? "Tonight she's balanced between both doors, so either door is right."
+    : cfg.tools.includes("trace") ? "The call leans toward one door. Trace to find out which (a lean is a probability, so one trace can mislead)." : "The call leans toward one door.";
   return `<ol class="goal-list">
-    <li><strong>WHO is calling?</strong> Listen at a few dial settings until the WHO meter is sure. <span class="sub">Tip: listen where the two voiceprint lines are furthest apart. If it isn't Mira, its voiceprint is shifted by <strong>${cfg.mimicPhaseDeg}°</strong> (${cfg.mimicPhaseDeg / 45} dial steps).</span></li>
-    <li><strong>WHERE is she?</strong> ${leans ? "The call leans toward one door. Trace it a few times (an odd number breaks ties)." : "Tonight she's balanced between both doors, so either door is right. No need to trace."}</li>
+    <li>${who}</li>
+    <li><strong>WHERE is she?</strong> ${where}</li>
     <li><strong>DECIDE.</strong> Mira → open the door she leans toward. Impostor → hang up.</li>
   </ol>`;
+}
+
+/** The optional hint: where the evidence per call is strongest (asked for, never shown by default). */
+export function hintFor(cfg: NightConfig, bestDials: number[], who: "listen" | "erase"): string {
+  const verb = who === "erase" ? "Erase" : "Listen";
+  return `<strong>Hint:</strong> ${verb} where the two voiceprint lines are furthest apart. Tonight that is dial <strong>${bestDials.join(" or ")}</strong>, not necessarily Mira's own dial 0.` +
+    (cfg.tools.includes("trace") && cfg.alphaChoicesDeg.some((a) => a !== 90) ? " For the door, an odd number of traces avoids a tie." : "");
 }
 
 /** Plain-language + quantum explanation of the call that just happened. */
 export function explainCall(r: CallRecord, sisterClear: number, mimicClear: number): { game: string; quantum: string } {
   const p = (x: number) => (x > 0.99 ? "over 99%" : x < 0.01 ? "under 1%" : Math.round(100 * x) + "%");
+  if (r.kind === "erase") {
+    const grp = r.sign === "plus" ? "+" : "−";
+    const sc = r.sign === "plus" ? sisterClear : 1 - sisterClear, mc = r.sign === "plus" ? mimicClear : 1 - mimicClear;
+    return {
+      game: `Erased at dial ${r.dial}: the eraser read <strong>${grp}</strong>, line <strong>${r.line}</strong>. On its own that is a coin flip. Sorted into the ${grp} group, Mira comes through clear ${p(sc)} of the time here; the impostor ${p(mc)}.`,
+      quantum: "The door was recorded on a second qubit, then that record was read in the X basis, which carries no door information. Conditioned on + the line shows Mira's full fringe; on −, the opposite fringe; both together are flat. Nothing was undone: the pattern exists only in the sorted data.",
+    };
+  }
   if (r.kind === "trace") {
     return {
       game: `Traced: the call came through the <strong>${r.door} door</strong>. The line was ${r.line}, but after a trace that's a coin flip, so it says nothing about who is calling.`,
@@ -152,10 +175,12 @@ export interface Status { who: string; where: string; options: string[] }
  * Plain-language state of the case: how sure the evidence is, never more sure
  * than it is. `pMira` is null when the WHO meter is switched off.
  */
-export function caseStatus(pMira: number | null, listens: number, front: number, side: number, leans: boolean, callsLeft: number, bestDials: number[]): Status {
+export function caseStatus(pMira: number | null, whoCalls: number, front: number, side: number, leans: boolean, callsLeft: number, bestDials: number[] | null, kind: "listen" | "erase" = "listen", sorted = true): Status {
   let who: string;
-  if (pMira === null) who = "WHO: read the voiceprint chart";
-  else if (!listens) who = "WHO: unknown, no listens yet";
+  const noun = kind === "erase" ? "erased calls" : "listens";
+  if (kind === "erase" && !sorted) who = whoCalls ? `WHO: ${whoCalls} erased call${whoCalls === 1 ? "" : "s"}, unsorted (a coin flip until sorted)` : "WHO: unknown, nothing erased yet";
+  else if (pMira === null) who = "WHO: read the voiceprint chart";
+  else if (!whoCalls) who = `WHO: unknown, no ${noun} yet`;
   else if (pMira > 0.97) who = "Almost certainly Mira";
   else if (pMira > 0.8) who = "Mira likely";
   else if (pMira >= 0.2) who = "Caller still unclear";
@@ -170,7 +195,9 @@ export function caseStatus(pMira: number | null, listens: number, front: number,
   else where = `leans ${lead}`;
   const options: string[] = [];
   if (callsLeft > 0) {
-    options.push(`Listen (at dial ${bestDials.join(" or ")} tells you most) for more WHO evidence`);
+    const verb = kind === "erase" ? "Erase" : "Listen";
+    options.push(`${verb}${bestDials ? ` (dial ${bestDials.join(" or ")} tells you most)` : ""} for more WHO evidence`);
+    if (kind === "erase" && whoCalls && !sorted) options.push("Sort the erased calls");
     if (leans) options.push("Trace for more WHERE evidence");
   }
   options.push(callsLeft > 0 ? "Decide now" : "Decide: the line is dead");
@@ -178,20 +205,21 @@ export function caseStatus(pMira: number | null, listens: number, front: number,
 }
 
 /** After a wrong decision: what happened and a better plan for next time. */
-export function lossAdvice(res: "letIn" | "abandoned" | "wrongDoor", pMira: number, listens: number, front: number, side: number, bestDials: number[], leanDoor: string): string {
+export function lossAdvice(res: "letIn" | "abandoned" | "wrongDoor", pMira: number, whoCalls: number, front: number, side: number, bestDials: number[], leanDoor: string, kind: "listen" | "erase" = "listen"): string {
   const pc = (x: number) => (x > 0.99 ? "over 99%" : x < 0.01 ? "under 1%" : Math.round(100 * x) + "%");
   const dials = `dial ${bestDials.join(" or ")}`;
+  const ing = kind === "erase" ? "erasing (and sorting)" : "listening", noun = kind === "erase" ? "sorted erased calls" : "listens";
   if (res === "letIn") {
-    if (!listens) return `You opened without listening, so you had no evidence of who was calling. Next time, listen a few times first, at ${dials}, where the two voiceprints differ most.`;
+    if (!whoCalls) return `You opened without ${ing}, so you had no evidence of who was calling. Next time, gather a few ${noun} first, at ${dials}, where the two voiceprints differ most.`;
     return pMira >= 0.5
-      ? `Your listens made Mira look ${pc(pMira)} likely: a hint, not proof. Random shots can mislead you. Next time, spend more calls listening at ${dials} until the meter is near the end before you open.`
+      ? `Your ${noun} made Mira look ${pc(pMira)} likely: a hint, not proof. Random shots can mislead you. Next time, spend more calls ${ing} at ${dials} until the meter is near the end before you open.`
       : `Your evidence already favoured the impostor (Mira only ${pc(pMira)}) when you opened. When the WHO meter leans to the impostor, hang up.`;
   }
   if (res === "abandoned") {
-    if (!listens) return `You hung up without listening. Listen first: Mira's voiceprint is clear at 0 and static at 4, shifted for the impostor.`;
+    if (!whoCalls) return `You hung up without ${ing}. ${kind === "erase" ? "Erase a few calls and sort them first." : "Listen first: Mira's voiceprint is clear at 0 and static at 4, shifted for the impostor."}`;
     return pMira >= 0.5
       ? `Your evidence favoured Mira (${pc(pMira)}) but you hung up. When the meter leans to Mira, open the door she leans toward.`
-      : `Your listens made the impostor look likely (Mira ${pc(pMira)}), but it was really her: a run of unlucky shots. Listening at ${dials} separates the two fastest.`;
+      : `Your ${noun} made the impostor look likely (Mira ${pc(pMira)}), but it was really her: a run of unlucky shots. ${kind === "erase" ? "Erasing" : "Listening"} at ${dials} separates the two fastest.`;
   }
   const t = front + side;
   if (!t) return `You chose a door without tracing. Listening can't tell the doors apart; only Trace can. Save two or three calls for tracing.`;

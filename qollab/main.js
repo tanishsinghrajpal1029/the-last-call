@@ -9,9 +9,6 @@ import { planRun, validateNights } from "./js/packages/core/src/nights.js";
 import { shotBagProvider, expandCounts, modelProvider } from "./js/packages/core/src/providers.js";
 import { rngFromSeed } from "./js/packages/core/src/rng.js";
 import { simulate, rad, dialAngle } from "./js/packages/core/src/physics.js";
-import { createBonus, bagBonusProvider, modelBonusProvider } from "./js/packages/core/src/bonus.js";
-import { BonusView } from "./js/apps/web/src/bonus.js";
-import { Audio } from "./js/apps/web/src/audio.js";
 
 // Set this to the public HTTPS address of the AR app once it is deployed.
 const AR_APP_URL = "";
@@ -37,21 +34,28 @@ function rawTable(nights, plan, run) {
   return plan.map((p, i) => {
     const cfg = nights.nights[i];
     const cells = [];
+    const erase = !cfg.tools.includes("listen");
     for (let k = 0; k < nights.dialSteps; k++) {
-      const t = run.bags[`${p.nightId}|${k}|listen`].totals;
-      const n = t.clear + t.static;
       const ideal = simulate(rad(p.alphaDeg), rad(p.thetaDeg), dialAngle(k, nights.dialSteps), false, null).clear;
-      cells.push(`<td>${pct(t.clear / n)} <span class="fine">(${t.clear}/${n}; ideal ${pct(ideal)})</span></td>`);
+      if (!erase) {
+        const t = run.bags[`${p.nightId}|${k}|listen`].totals;
+        const n = t.clear + t.static;
+        cells.push(`<td>${pct(t.clear / n)} <span class="fine">(${t.clear}/${n}; ideal ${pct(ideal)})</span></td>`);
+      } else { // eraser night: the + group's clear rate follows the same voiceprint
+        const t = run.bags[`${p.nightId}|${k}|erase`].totals;
+        const n = t["plus|clear"] + t["plus|static"], all = n + t["minus|clear"] + t["minus|static"];
+        cells.push(`<td>${pct(t["plus|clear"] / n)} <span class="fine">(+ group ${t["plus|clear"]}/${n}; ideal ${pct(ideal)}; all ${(t["plus|clear"] + t["minus|clear"])}/${all})</span></td>`);
+      }
     }
     let tc = 0, tn = 0, tf = 0;
-    for (let k = 0; k < nights.dialSteps; k++) {
+    if (cfg.tools.includes("trace")) for (let k = 0; k < nights.dialSteps; k++) {
       const t = run.bags[`${p.nightId}|${k}|trace`].totals;
       tc += t["front|clear"] + t["side|clear"];
       tf += t["front|clear"] + t["front|static"];
       tn += t["front|clear"] + t["front|static"] + t["side|clear"] + t["side|static"];
     }
-    return `<tr><th scope="row">${cfg.id}. ${esc(cfg.title)}<br><span class="fine">${p.caller === "sister" ? "Mira" : "mimic"}, θ = ${p.thetaDeg}°, α = ${p.alphaDeg}°</span></th>${cells.join("")}
-      <td>${pct(tc / tn)} clear · ${pct(tf / tn)} front <span class="fine">(n=${tn}; ideal 50% · ${pct(Math.cos(rad(p.alphaDeg) / 2) ** 2)})</span></td></tr>`;
+    return `<tr><th scope="row">${cfg.id}. ${esc(cfg.title)}<br><span class="fine">${p.caller === "sister" ? "Mira" : "mimic"}, θ = ${p.thetaDeg}°, α = ${p.alphaDeg}°${erase ? "; eraser" : ""}</span></th>${cells.join("")}
+      <td>${tn ? `${pct(tc / tn)} clear · ${pct(tf / tn)} front <span class="fine">(n=${tn}; ideal 50% · ${pct(Math.cos(rad(p.alphaDeg) / 2) ** 2)})</span>` : "—"}</td></tr>`;
   }).join("");
 }
 
@@ -67,49 +71,31 @@ async function main() {
   }
   const seed = randomSeed();
   const plan = planRun(nights, seed);
-  $("run-status").textContent = "Submitting one batched job (72 circuits) to the selected backend…";
-  const bonusSeed = seed + ":bonus";
-  const bonusState = createBonus(nights.bonus, bonusSeed);
-  const fullPlan = { nights: plan, bonus: { alphaDeg: nights.bonus.alphaDeg, thetaDeg: bonusState.thetaDeg } };
-  const run = JSON.parse(String(await run_calls.callPromising(backend, JSON.stringify(fullPlan), seed)));
+  const nCircuits = nights.nights.reduce((a, n) => a + n.tools.length * nights.dialSteps, 0);
+  $("run-status").textContent = `Submitting one batched job (${nCircuits} circuits) to the selected backend…`;
+  const run = JSON.parse(String(await run_calls.callPromising(backend, JSON.stringify(plan), seed)));
   const settings = defaultSettings();
   let provider, label;
   if (run.ok) {
     const bags = {};
     for (const [k, v] of Object.entries(run.bags)) {
-      if (k.startsWith("bonus|")) continue; // the eraser shots belong to the bonus scene
       const t = v.totals;
-      bags[k] = expandCounts(k.endsWith("trace") ? t : { clear: t.clear, static: t.static });
+      bags[k] = expandCounts(k.endsWith("listen") ? { clear: t.clear, static: t.static } : t);
     }
     provider = shotBagProvider({ backendName: run.backendName, bags, sampledFromProbabilities: run.sampledFromProbabilities }, rngFromSeed("shots:" + seed));
     label = `fresh shots from “${run.backendName}” in this Qollab run` + (run.jobId ? ` (job ${run.jobId})` : "") +
       (run.sampledFromProbabilities ? "; this backend returned probabilities, so shots were sampled from them in Python" : "");
     $("run-status").textContent = `Done in ${run.seconds} s on “${run.backendName}”: ${run.circuits} circuits × ${run.shots} shots` +
       (run.jobId ? `, job ${run.jobId}` : "") + (run.sampledFromProbabilities ? " (probabilities returned; shots sampled from them)" : "") + ". The game below plays on these measured shots.";
-    $("raw").innerHTML = `<table class="score-table raw-table"><caption class="fine">Clear-line rate per dial for each call in this run${run.sampledFromProbabilities ? " (shots sampled from the backend's probabilities)" : ""}, with the ideal model for comparison.</caption><thead><tr><th scope="col">Call</th>${Array.from({ length: nights.dialSteps }, (_, k) => `<th scope="col">Listen, dial ${k}</th>`).join("")}<th scope="col">Trace (all dials)</th></tr></thead><tbody>${rawTable(nights, plan, run)}</tbody></table>`;
+    $("raw").innerHTML = `<table class="score-table raw-table"><caption class="fine">Clear-line rate per dial for each call in this run${run.sampledFromProbabilities ? " (shots sampled from the backend's probabilities)" : ""}, with the ideal model for comparison.</caption><thead><tr><th scope="col">Call</th>${Array.from({ length: nights.dialSteps }, (_, k) => `<th scope="col">WHO call, dial ${k}</th>`).join("")}<th scope="col">Trace (all dials)</th></tr></thead><tbody>${rawTable(nights, plan, run)}</tbody></table>`;
     $("raw-details").hidden = false;
   } else {
     provider = modelProvider(null, rngFromSeed("fallback:" + seed), nights.dialSteps);
     label = "the ideal model sampled in your browser, because the backend run failed (not a quantum result)";
     $("run-status").textContent = "The run did not complete: " + run.error + ". You can still play on the ideal model (clearly labelled), or fix the problem and press Run again.";
   }
-  // bonus scene provider: this run's eraser shots (or the labelled ideal model if the run failed)
-  let bonusProvider;
-  if (run.ok) {
-    const bb = {};
-    for (let k = 0; k < nights.dialSteps; k++) bb[k] = expandCounts(run.bags[`bonus|${k}|eraser`].totals);
-    bonusProvider = () => bagBonusProvider(bb, rngFromSeed("bonus-shots:" + seed));
-  } else bonusProvider = (state) => modelBonusProvider(nights.bonus, state, null, rngFromSeed("bonus-fallback:" + seed));
-  const startBonus = () => {
-    $("game").innerHTML = "";
-    const audio = new Audio();
-    audio.unlock();
-    const view = new BonusView($("game"), nights.bonus, bonusSeed, bonusProvider, label, null, audio, settings.gentle, settings.reducedMotion);
-    view.onExit = () => { view.dispose(); audio.dispose(); $("game").innerHTML = `<p>Press Run again for a fresh job and a new night.</p>`; };
-  };
   const start = () => {
     const r = startRun($("game"), nights, seed, provider, label, settings, "screen");
-    r.ui.onBonus = () => { r.dispose(); startBonus(); };
     r.ui.onExit = () => { r.dispose(); $("game").innerHTML = `<p>Run ended. Press Run again for a fresh job and a new night.</p>`; };
     r.ui.onRestart = () => { r.dispose(); $("game").innerHTML = `<p>Each Run measures fresh shots for one night of calls. Press Run again to play another.</p>`; };
   };

@@ -8,25 +8,28 @@
  */
 
 import { CallOutcome, CallRequest, Provider } from "./game.js";
-import { dialAngle, Noise, rad, sampleOutcome, simulate } from "./physics.js";
+import { dialAngle, Noise, rad, sampleOutcome, simulate, simulateEraser } from "./physics.js";
 import { Rng, shuffled } from "./rng.js";
 
 export function modelProvider(noise: Noise | null, rng: Rng, steps = 8): Provider {
   const source = noise ? "illustrative noise model, sampled in your browser" : "ideal model, sampled in your browser";
   return (req: CallRequest): CallOutcome => {
-    const probs = simulate(rad(req.alphaDeg), rad(req.thetaDeg), dialAngle(req.dial, steps), req.trace, noise);
+    const phi = dialAngle(req.dial, steps);
+    const probs = req.eraser ? simulateEraser(rad(req.alphaDeg), rad(req.thetaDeg), phi, noise) : simulate(rad(req.alphaDeg), rad(req.thetaDeg), phi, req.trace, noise);
     return toOutcome(sampleOutcome(probs, rng()), source);
   };
 }
 
 export function toOutcome(key: string, source: string): CallOutcome {
   if (key === "clear" || key === "static") return { line: key, source };
-  const [door, line] = key.split("|");
-  if ((door === "front" || door === "side") && (line === "clear" || line === "static")) return { line, door, source };
+  const [tag, line] = key.split("|");
+  if (line !== "clear" && line !== "static") throw new Error("unknown outcome " + key);
+  if (tag === "front" || tag === "side") return { line, door: tag, source };
+  if (tag === "plus" || tag === "minus") return { line, sign: tag, source };
   throw new Error("unknown outcome " + key);
 }
 
-export const bagKey = (nightId: number, dial: number, trace: boolean) => `${nightId}|${dial}|${trace ? "trace" : "listen"}`;
+export const bagKey = (nightId: number, dial: number, kind: "listen" | "trace" | "erase") => `${nightId}|${dial}|${kind}`;
 
 export interface ShotBags {
   backendName: string;
@@ -43,7 +46,7 @@ export function shotBagProvider(data: ShotBags, rng: Rng): Provider & { remainin
     ? "shot sampled from " + data.backendName + "'s returned probabilities"
     : "measured shot from " + data.backendName;
   const p = ((req: CallRequest): CallOutcome => {
-    const q = queues.get(bagKey(req.nightId, req.dial, req.trace));
+    const q = queues.get(bagKey(req.nightId, req.dial, req.eraser ? "erase" : req.trace ? "trace" : "listen"));
     if (!q || !q.length) throw new Error("no measured shots left for this setting; press Run again on Qollab");
     return toOutcome(q.shift()!, source);
   }) as Provider & { remaining: (k: string) => number };

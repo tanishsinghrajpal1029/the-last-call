@@ -24,12 +24,13 @@ outcome providers, intercom UI, generated audio, 2D feed, AR diorama, Qollab pro
 benchmark and documentation, written on 10–11 October 2026. The git history records the actual
 commit times.
 
-## The bonus eraser scene
+## The quantum-eraser call
 
 The idea of adding a quantum-eraser level came from a parallel version of this project that was
 made in the same folder with another AI tool. That version is kept unchanged in
-`the-last-call_parallel-version-backup` next to this folder. The bonus scene here is a new
-implementation built on this project's own circuits, model and tests.
+`the-last-call_parallel-version-backup` next to this folder. The eraser here (call 4, and the
+earlier bonus scene it replaced) is a new implementation built on this project's own circuits,
+model and tests.
 
 ## Generated assets
 

@@ -45,9 +45,18 @@ what happened from your own evidence and suggests a better plan. Under the door 
 halves of the call visibly travel to the handset: in step they add up, out of step they cancel,
 and a trace records the door and flattens the pattern.
 
-Four calls make one night: the walkthrough, then three calls where the caller is Mira or the mimic
-(50/50, fixed before the first call), with the mimic's phase offset shrinking from 180° to 45°
-and the call leaning toward one door on the last two.
+Four calls make one night, and each one changes the game, not just the numbers:
+
+| Call | What is new | Tools | Calls |
+|---|---|---|---|
+| 1 · The first call | the spoken walkthrough: Mira, balanced, an obvious pattern | Listen, Trace | 8 |
+| 2 · Same voice | the impostor's pattern is closer (90° off) and the line holds four calls: choose your dials | Listen | 4 |
+| 3 · Two entrances | the call leans toward one door: split six calls between WHO and WHERE | Listen, Trace | 6 |
+| 4 · The last call | every call is recorded, so plain listening is flat: **Erase** the record, sort by its reading, and the voiceprint comes back in two halves (the quantum eraser); trace for the door | Trace, Erase | 10 |
+
+The caller on calls 2–4 is Mira or the mimic (50/50, fixed before the first call). Strategy is
+yours: the Guide shows the state of the evidence and your options, and the most telling dial
+settings are only revealed by the **Hint** button.
 
 ## The physics in one paragraph
 
@@ -58,17 +67,20 @@ Tracing adds a CNOT that copies the door onto a second qubit before the Hadamard
 P(clear) = ½ at every dial and P(front) = cos²(α/2). See [docs/PHYSICS.md](docs/PHYSICS.md).
 
 The interesting part is strategy, not the circuit size: the most telling dial is *not* Mira's own
-setting once the mimic is only 45° off, and calls spent on traces are calls not spent on
-listening. On the last call, listening at Mira's dial wins 64% of the time; listening at the
-most informative dial wins 78% ([artifacts/strategy_ideal.md](artifacts/strategy_ideal.md)).
+setting once the mimic is only 90° off, and calls spent on traces are calls not spent on
+identifying the caller. On the last call, erasing at Mira's dial wins about 80% of the time;
+erasing at the most informative dial and tracing three times, about 89%; nothing wins always
+([artifacts/strategy_ideal.md](artifacts/strategy_ideal.md)).
 
-## Bonus: The Eraser
+## The last call: the quantum eraser
 
-After the four calls, the ending offers a bonus scene. Every call is traced, so the voiceprint is
-flat. The **eraser** reads the door record in a way that can't tell front from side (the X basis)
-and gives each call a + or −. Sorting the calls you already have into those two groups brings back
-two opposite voiceprints; the + group's pattern says who is calling. Three guided steps: Sweep →
-Sort → Decide. On Qollab the bonus uses 8 extra eraser circuits from the same job (72 circuits).
+On call 4 the dying intercom records the door on every call, so an ordinary line is a coin flip
+whoever calls. **Erase** reads that record in a way that can't tell front from side (the X basis)
+and gives the call a + or −. On their own the erased calls are still flat; the Case file says so
+and offers **Sort by the eraser's reading**. Sorted, the + group follows the caller's full
+voiceprint and the − group its mirror image, and only then does the WHO meter speak. Nothing is
+undone: the pattern exists only in the sorted data. On Qollab the eraser circuits are part of the
+same batched job.
 
 ## Look and sound
 

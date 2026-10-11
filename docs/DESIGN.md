@@ -58,20 +58,25 @@ each call's budget, and if the player hesitates (about 20 s) the caller speaks *
 Mira and the mimic. The strongest scare comes only after letting the mimic in (full-screen in AR).
 Gentle mode removes loud stingers and the quick scares.
 
-## Bonus scene
+## A night: four calls, four mechanics
 
-After the ending: Sweep (8 traced calls at each of 8 dials, 3 sweeps) → Sort by the eraser's
-reading → Decide (open a door for Mira, hang up on the impostor). Decisions unlock only after
-sorting. Correct: +100 (+20 per unused sweep); letting the impostor in: −100.
+| Call | Calls | Lean (α) | Mimic offset | Tools | What changes |
+|---|---|---|---|---|---|
+| 1 · The first call (tutorial) | 8 | balanced | 180° | Listen, Trace | learn an obvious interference pattern; always Mira |
+| 2 · Same voice | 4 | balanced | 90° | Listen | a closer pattern and a tight budget: which dials to listen at |
+| 3 · Two entrances | 6 | 60° or 120° (75% one door) | 135° | Listen, Trace | divide the budget between WHO and WHERE |
+| 4 · The last call | 10 | 60° or 120° | 90° | Trace, Erase | every call is recorded; the quantum eraser's sorted groups identify the caller |
 
-## A night
+Each call's intro states its new rule in one line (shown and spoken). A tool that a call does not
+allow is not shown. The Guide never prints the best dial settings unless the player presses
+**Hint**; the result sheet names them afterwards.
 
-| Call | Calls | Lean (α) | Mimic offset | Caller |
-|---|---|---|---|---|
-| 1 · The first call (tutorial) | 8 | balanced | 180° | always Mira |
-| 2 · Same voice | 6 | balanced | 180° | Mira or mimic, 50/50 |
-| 3 · Porch light | 8 | 60° or 120° (75% one door) | 90° | Mira or mimic |
-| 4 · The last call | 12 | 60° or 120° | 45° | Mira or mimic |
+### Call 4 in detail
+
+Erase = trace, then read the record in the X basis: the outcome is (+ or −, clear or static).
+The Case file keeps the WHO meter closed until the player presses *Sort by the eraser's reading*:
+unsorted, all erased calls together are plotted and are flat; sorted, the + group is plotted as it
+is and the − group flipped, and both follow the two voiceprints. Trace still finds the door.
 
 The run seed fixes the caller and the lean for every call before the first call. Measurement never
 changes who is calling. The intel line before each call says how far out of step the mimic would
@@ -89,7 +94,7 @@ be, so the player is always testing two known hypotheses.
 
 ## Fairness and integrity
 
-* Turning the dial is free; every listen and trace costs one call and consumes exactly one fresh
+* Turning the dial is free; every listen, trace and erase costs one call and consumes exactly one fresh
   outcome (one fresh preparation). Duplicate inputs are ignored; nothing is re-rolled.
 * Trace asks for confirmation the first time per call and states its cost.
 * The evidence meter and chart compare the player's data with both hypotheses. They use
@@ -101,16 +106,19 @@ be, so the player is always testing two known hypotheses.
 
 From [artifacts/strategy_ideal.md](../artifacts/strategy_ideal.md): correct decisions per call.
 
-| Policy | Call 3 | Call 4 |
-|---|---|---|
-| guess | 40% | 40% |
-| trace every call | 49% | 51% |
-| listen at Mira's dial 0, 2 traces | 81% | 64% |
-| listen at the most informative dial, 3 traces | 88% | 78% |
+| Policy | Call 2 | Call 3 | Call 4 |
+|---|---|---|---|
+| guess | 51% | 40% | 40% |
+| trace every call | — | 49% | 49% |
+| WHO calls at Mira's dial 0 (+2 traces) | 97% | 86% | 80% |
+| WHO calls at the most informative dial, 3 traces | 95% | 87% | 89% |
+| adaptive: WHO calls until sure, then trace | 94% | 87% | 90% |
 
-Two lessons the numbers support: on the last call the best dial is not Mira's own, and an odd
-number of traces avoids ties when choosing the door. The noisy model gives similar figures
-([strategy_noisy.md](../artifacts/strategy_noisy.md)).
+"WHO calls" are listens, or erase calls on call 4. Lessons the numbers support: on the eraser
+call the best dial is not Mira's own; on call 2 Mira's own dial is good because one static there
+is proof; an odd number of traces avoids ties; and no policy wins every time, so a loss is part
+of the game, with the result sheet explaining what a better plan would have been. The noisy
+model gives similar figures ([strategy_noisy.md](../artifacts/strategy_noisy.md)).
 
 ## Accessibility
 

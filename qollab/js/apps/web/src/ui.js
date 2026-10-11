@@ -7,14 +7,15 @@
  * quantum terms; the first call is a gated, staged walkthrough. The Case file
  * shows the two answers being built: WHO (from listens) and WHERE (from traces).
  */
-import { posteriorSister, doorTally, dialInformation } from "../../../packages/core/src/evidence.js";
+import { posteriorSister, doorTally, dialInformation, eraserTally, whoKind } from "../../../packages/core/src/evidence.js";
 import { resultText } from "../../../packages/core/src/game.js";
 import { CLEAR_LINES, endingText, INTRO, STATIC_LINES } from "../../../packages/core/src/lines.js";
 import { correctDoor } from "../../../packages/core/src/nights.js";
 import { dialAngle, rad, simulate } from "../../../packages/core/src/physics.js";
 import { evidenceChart } from "./chart.js";
 import { Feed } from "./feed.js";
-import { caseStatus, explainCall, guideForCase, HESITATE, lossAdvice, reactionFor, STAGES, TUT_REACT } from "./guide.js";
+import { ScareLayer } from "./scare.js";
+import { caseStatus, explainCall, guideForCase, HESITATE, hintFor, lossAdvice, reactionFor, STAGES, TUT_REACT } from "./guide.js";
 const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const pct = (x) => Math.round(100 * x) + "%";
 /** Never show 0% or 100% for a statistical judgement. */
@@ -28,7 +29,8 @@ function loadCompact(mode) {
             return v === "1";
     }
     catch { /* storage unavailable: use the default */ }
-    return mode !== "screen";
+    // phones: the compact guide keeps the action and its result on one screen
+    return mode !== "screen" || (typeof matchMedia === "function" && matchMedia("(max-width: 700px)").matches);
 }
 function saveCompact(mode, on) {
     try {
@@ -62,11 +64,14 @@ export class Ui {
     idleTimer = 0;
     /** Guide shown in full, or as one compact line (remembered per screen/AR, per browser) */
     guideCompact = false;
+    scare = null;
+    /** eraser night: the player has sorted the erased calls by the eraser's reading */
+    sorted = false;
+    /** the optional strategy hint (most telling dials) was asked for this call */
+    hintShown = false;
     onExit = null;
     onRestart = null;
     onReposition = null;
-    /** set by the host to offer the bonus eraser scene after the ending */
-    onBonus = null;
     /** the player chose to skip the walkthrough (call 1 is then played freely) */
     skipped = false;
     /** AR views may need to show/hide their own placement UI; called when the sheet state changes. */
@@ -80,8 +85,10 @@ export class Ui {
         parent.appendChild(this.root);
         this.guideCompact = loadCompact(mode);
         this.root.innerHTML = this.skeleton();
-        if (mode === "screen")
+        if (mode === "screen") {
             this.feed = new Feed(this.q("#feed-slot"), c);
+            this.scare = new ScareLayer(this.root, c); // the reveal fills the whole screen, in every mode
+        }
         this.bind();
         void this.audio.loadVoices();
         this.off = c.on((e) => {
@@ -95,6 +102,8 @@ export class Ui {
                 this.stage = 0;
                 this.lastExplain = null;
                 this.reaction = null;
+                this.sorted = false;
+                this.hintShown = false;
                 this.showIntro();
             }
             if (e.type === "over")
@@ -134,7 +143,7 @@ export class Ui {
         const st = STAGES[this.stage];
         if (!st.allow.includes(a))
             return false;
-        if (a !== "listen" && a !== "trace")
+        if (a !== "listen" && a !== "trace" && a !== "erase")
             return true;
         // never let optional calls use up the calls the remaining steps need
         const n = this.c.state.night;
@@ -168,7 +177,7 @@ export class Ui {
       </aside>
       <section class="casefile" id="casefile" aria-label="Case file">
         ${ar ? `<details id="ev-details"><summary>Case file</summary>` : `<h2 class="ev-h">Case file</h2>`}
-        <div class="answer"><div class="answer-h"><span class="q">WHO</span> is calling? <span class="sub">built by listening</span></div><div id="meter"></div></div>
+        <div class="answer"><div class="answer-h"><span class="q">WHO</span> is calling? <span class="sub" id="who-how">built by listening</span></div><div id="meter"></div></div>
         <div class="answer"><div class="answer-h"><span class="q">WHERE</span> is she? <span class="sub">built by tracing</span></div><div id="doors"></div></div>
         <details class="vp" id="vp-details" ${ar ? "" : "open"}><summary>Voiceprint chart</summary>
           <p class="sub">How often the line came through clear at each dial setting. If your dots follow the solid line, it's Mira; the dashed line, it's the impostor.</p>
@@ -191,6 +200,7 @@ export class Ui {
         <div class="call-row">
           <button type="button" class="btn btn-primary" id="listen-btn">Listen <span class="sub">→ WHO is it?</span></button>
           <button type="button" class="btn btn-trace" id="trace-btn">Trace <span class="sub">→ WHERE is she?</span></button>
+          <button type="button" class="btn btn-erase" id="erase-btn">Erase <span class="sub">→ WHO, once sorted</span></button>
         </div>
         <div class="decide-row">
           <button type="button" class="btn btn-door" id="open-front">Open front door</button>
@@ -219,6 +229,8 @@ export class Ui {
             c.call("listen"); });
         click("trace-btn", () => { if (this.allowed("trace"))
             this.askTrace(); });
+        click("erase-btn", () => { if (this.allowed("erase"))
+            c.call("erase"); });
         click("open-front", () => { if (this.allowed("front"))
             this.askDecide("front"); });
         click("open-side", () => { if (this.allowed("side"))
@@ -255,6 +267,22 @@ export class Ui {
                 this.audio.unlock();
                 c.setDial(Number(t.dataset.k));
                 this.audio.dial();
+            }
+        });
+        this.root.addEventListener("click", (e) => {
+            const t = e.target;
+            if (t.closest("#sort-btn")) {
+                e.preventDefault();
+                this.audio.unlock();
+                this.sorted = !this.sorted;
+                this.lastActive = performance.now();
+                this.audio.dial();
+                this.render();
+            }
+            if (t.closest("#hint-btn")) {
+                e.preventDefault();
+                this.hintShown = true;
+                this.render();
             }
         });
         this.q("#guide-card").addEventListener("click", (e) => {
@@ -296,6 +324,10 @@ export class Ui {
         else if (k === "t" && this.allowed("trace")) {
             this.audio.unlock();
             this.askTrace();
+        }
+        else if (k === "e" && this.allowed("erase")) {
+            this.audio.unlock();
+            this.c.call("erase");
         }
         else if (e.key === "ArrowLeft" && this.allowed("dial")) {
             this.c.setDial(this.c.state.night.dial - 1);
@@ -358,16 +390,19 @@ export class Ui {
             const alpha = c.meterAlphaDeg(), t = doorTally(n.log), listens = n.log.filter((r) => r.kind === "listen").length;
             const info = dialInformation(c.nights, cfg, alpha);
             const best = info.map((x, k) => [x, k]).sort((a, b) => b[0] - a[0]).slice(0, 2).map(([, k]) => k).sort((a, b) => a - b);
-            const st = caseStatus(c.settings.meter ? posteriorSister(c.nights, cfg, alpha, n.log) : null, listens, t.front, t.side, leans, n.callsLeft, best);
+            const who = whoKind(cfg), whoCalls = n.log.filter((r) => r.kind === who).length;
+            const pM = c.settings.meter && (who === "listen" || this.sorted) ? posteriorSister(c.nights, cfg, alpha, n.log) : null;
+            const st = caseStatus(pM, whoCalls, t.front, t.side, leans, n.callsLeft, this.hintShown ? best : null, who, this.sorted);
+            const hint = this.hintShown ? `<p class="sub hint">${hintFor(cfg, best, who)}</p>` : `<button type="button" class="btn btn-ghost btn-hint" id="hint-btn">Hint</button>`;
             const status = !n.result && c.phase === "play" && !(cfg.tutorial && !this.skipped)
-                ? `<div class="status" id="case-status"><p><strong>${esc(st.who)}</strong> · ${esc(st.where)} · ${n.callsLeft} call${n.callsLeft === 1 ? "" : "s"} left</p>${this.mode === "screen" ? `<p class="sub">Your options: ${st.options.map(esc).join(" · ")}</p>` : ""}</div>`
+                ? `<div class="status" id="case-status"><p><strong>${esc(st.who)}</strong> · ${esc(st.where)} · ${n.callsLeft} call${n.callsLeft === 1 ? "" : "s"} left</p>${this.mode === "screen" ? `<p class="sub">Your options: ${st.options.map(esc).join(" · ")}</p>` : ""}${hint}</div>`
                 : "";
             card.innerHTML = cfg.tutorial && !this.skipped && n.result
                 ? `<h2>Walkthrough complete</h2><p>That's the whole game: <strong>listen</strong> to find out who, <strong>trace</strong> to find out where, then decide.</p>`
                 : this.mode !== "screen"
-                    ? status + `<details class="why"><summary>Goal: find out WHO (listen) and WHERE (trace), then decide</summary>${guideForCase(cfg, leans)}</details>` +
+                    ? status + `<details class="why"><summary>${esc(cfg.rule)}</summary>${guideForCase(cfg, leans)}</details>` +
                         (this.lastExplain ? `<p class="ex-ar">${this.lastExplain.game}</p>` : "")
-                    : `<h2>${esc(cfg.title)}</h2>${status}${guideForCase(cfg, leans)}` +
+                    : `<h2>${esc(cfg.title)}</h2><p class="rule">${esc(cfg.rule)}</p>${status}${guideForCase(cfg, leans)}` +
                         (this.lastExplain ? `<div class="explain"><p class="ex-h">What just happened</p><p>${this.lastExplain.game}</p><p class="quantum"><span class="qtag">Quantum</span> ${this.lastExplain.quantum}</p></div>` : "") +
                         `<details class="win"><summary>How scoring works</summary><ul><li>Mira, right door: +100 (+5 per unused call)</li><li>Mira, wrong door: +20</li><li>Hang up on Mira: 0</li><li>Hang up on the impostor: +100 (+5 per unused call)</li><li>Let the impostor in: −100</li></ul></details>`;
             return;
@@ -418,7 +453,9 @@ export class Ui {
         const alpha = c.meterAlphaDeg(), t = doorTally(n.log), listens = n.log.filter((r) => r.kind === "listen").length;
         const info = dialInformation(c.nights, cfg, alpha);
         const best = info.map((x, k) => [x, k]).sort((a, b) => b[0] - a[0]).slice(0, 2).map(([, k]) => k).sort((a, b) => a - b);
-        const st = caseStatus(c.settings.meter ? posteriorSister(c.nights, cfg, alpha, n.log) : null, listens, t.front, t.side, leans, n.callsLeft, best);
+        const who = whoKind(cfg), whoCalls = n.log.filter((r) => r.kind === who).length;
+        const pM = c.settings.meter && (who === "listen" || this.sorted) ? posteriorSister(c.nights, cfg, alpha, n.log) : null;
+        const st = caseStatus(pM, whoCalls, t.front, t.side, leans, n.callsLeft, this.hintShown ? best : null, who, this.sorted);
         card.innerHTML = `<p class="mini" id="case-status"><strong>${esc(st.who)}</strong> · ${esc(st.where)} · ${n.callsLeft} call${n.callsLeft === 1 ? "" : "s"} left</p>`;
     }
     // ---------- rendering ----------
@@ -430,8 +467,11 @@ export class Ui {
         const playing = c.phase === "play";
         const ended = !!n.result;
         const can = (a) => playing && !ended && this.allowed(a);
-        this.q("#listen-btn").disabled = !can("listen") || n.callsLeft <= 0;
-        this.q("#trace-btn").disabled = !can("trace") || n.callsLeft <= 0;
+        for (const [id, a] of [["listen-btn", "listen"], ["trace-btn", "trace"], ["erase-btn", "erase"]]) {
+            const b = this.q("#" + id);
+            b.hidden = !cfg.tools.includes(a); // each call has its own tools: only those are shown
+            b.disabled = !can(a) || n.callsLeft <= 0;
+        }
         for (const [id, a] of [["open-front", "front"], ["open-side", "side"], ["hangup", "hangup"], ["dial-down", "dial"], ["dial-up", "dial"]]) {
             this.q("#" + id).disabled = !can(a);
         }
@@ -453,20 +493,28 @@ export class Ui {
         // case file
         const alpha = c.meterAlphaDeg();
         const t = doorTally(n.log);
-        if (c.settings.meter) {
+        const who = whoKind(cfg), eraserNight = who === "erase";
+        this.q("#who-how").textContent = eraserNight ? "built by erasing, then sorting" : "built by listening";
+        const erased = n.log.filter((r) => r.kind === "erase").length;
+        const sortBtn = eraserNight && erased ? `<button type="button" class="btn ${this.sorted ? "btn-ghost" : "btn-erase"}" id="sort-btn">${this.sorted ? "Unsort (all calls together)" : "Sort by the eraser's reading (+ / −)"}</button>` : "";
+        if (eraserNight && !this.sorted) {
+            const all = eraserTally(n.log, f.dialSteps).reduce((a, r) => ({ clear: a.clear + r.all.clear, total: a.total + r.all.total }), { clear: 0, total: 0 });
+            this.q("#meter").innerHTML = `<p class="sub">${erased ? `Unsorted, your ${erased} erased call${erased === 1 ? "" : "s"} together are a coin flip: ${all.clear} clear of ${all.total}. The pattern only appears when you sort them by what the eraser read.` : "Every call tonight is recorded, so unsorted calls are a coin flip. Erase a few at different dials, then sort."}</p>${sortBtn}`;
+        }
+        else if (c.settings.meter) {
             const p = posteriorSister(f, cfg, alpha, n.log);
-            const listens = n.log.filter((r) => r.kind === "listen").length;
+            const k = n.log.filter((r) => r.kind === who).length, noun = who === "erase" ? "sorted erased call" : "listen";
             this.q("#meter").innerHTML = `<div class="tug" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(100 * p)}" aria-label="Chance it is Mira">
           <span class="end-l">Mira</span><span class="bar"><span class="fill" style="width:${(100 * p).toFixed(1)}%"></span><span class="mid"></span></span><span class="end-r">Impostor</span></div>
-        <p class="sub">${listens ? `Chance it's Mira: <strong>${pctMeter(p)}</strong> after ${listens} listen${listens === 1 ? "" : "s"}.` : "No listens yet: 50/50."} Traces never move this.</p>`;
+        <p class="sub">${k ? `Chance it's Mira: <strong>${pctMeter(p)}</strong> after ${k} ${noun}${k === 1 ? "" : "s"}.` : `No ${noun}s yet: 50/50.`} Traces never move this.</p>${sortBtn}`;
         }
         else
-            this.q("#meter").innerHTML = `<p class="sub">WHO meter is off (Settings). Use the voiceprint chart.</p>`;
+            this.q("#meter").innerHTML = `<p class="sub">WHO meter is off (Settings). Use the voiceprint chart.</p>${sortBtn}`;
         const leans = cfg.alphaChoicesDeg.some((a) => a !== 90);
         this.q("#doors").innerHTML = `<p class="tally"><span>Front <strong>${"●".repeat(t.front) || "–"}</strong></span><span>Side <strong>${"●".repeat(t.side) || "–"}</strong></span></p>
       <p class="sub">${leans ? (t.front + t.side ? `Leans ${t.front === t.side ? "— tied, trace again" : t.front > t.side ? "front" : "side"} so far.` : "Trace to see which door the call leans toward.") : "Balanced tonight: either door works."}</p>`;
-        this.q("#chart").innerHTML = evidenceChart(f, cfg, alpha, n.log, n.dial);
-        this.q("#log").innerHTML = n.log.slice().reverse().map((r) => `<li><span class="lg-kind ${r.kind}">${r.kind === "trace" ? "Trace" : "Listen"}</span> dial ${r.dial} → <strong>${r.line}</strong>${r.door ? ` · ${r.door} door` : ""} <span class="lg-text">“${esc(r.text)}”</span></li>`).join("");
+        this.q("#chart").innerHTML = evidenceChart(f, cfg, alpha, n.log, n.dial, this.sorted);
+        this.q("#log").innerHTML = n.log.slice().reverse().map((r) => `<li><span class="lg-kind ${r.kind}">${r.kind === "trace" ? "Trace" : r.kind === "erase" ? "Erase" : "Listen"}</span> dial ${r.dial} → <strong>${r.line}</strong>${r.door ? ` · ${r.door} door` : ""}${r.sign ? ` · eraser read ${r.sign === "plus" ? "+" : "−"}` : ""} <span class="lg-text">“${esc(r.text)}”</span></li>`).join("");
         this.renderGuide();
     }
     // ---------- events ----------
@@ -477,7 +525,9 @@ export class Ui {
         cap.classList.add(r.line === "clear" ? "flash-clear" : "flash-static");
         const meta = r.kind === "trace"
             ? `Traced at dial ${r.dial}: the call came through the <strong>${r.door} door</strong>. Line: ${r.line} (a coin flip once traced).`
-            : `Listened at dial ${r.dial}: <strong>${r.line === "clear" ? "clear line" : "static"}</strong>.`;
+            : r.kind === "erase"
+                ? `Erased at dial ${r.dial}: the eraser read <strong>${r.sign === "plus" ? "+" : "−"}</strong>, line <strong>${r.line}</strong>. Unsorted this is a coin flip; it counts once you sort.`
+                : `Listened at dial ${r.dial}: <strong>${r.line === "clear" ? "clear line" : "static"}</strong>.`;
         this.q("#caption").innerHTML = `<p class="cap-line">“${esc(r.text)}”</p><p class="cap-meta">${meta} <span class="sub">Source: ${esc(r.source)}.</span></p>`;
         // explanation for the Guide
         const plan = this.c.state.plan[this.c.state.index], cfg = this.c.view().night, f = this.c.nights;
@@ -613,6 +663,7 @@ export class Ui {
         const v = this.c.view(), cfg = v.night;
         this.openSheet("intro", `<p class="tag">Call ${cfg.id} of ${this.c.nights.nights.length}</p><h2>${esc(cfg.title)}</h2>
       <p class="story">${esc(INTRO[cfg.id] ?? "")}</p>
+      <p class="rule"><strong>New this call:</strong> ${esc(cfg.rule)}</p>
       <p class="intel"><strong>What you know:</strong> ${esc(cfg.intel)}</p>
       <p class="sub">${cfg.budget} calls before the line dies. Listening and tracing each use one call. Turning the dial is free.</p>
       <div class="sheet-buttons"><button type="button" class="btn btn-ghost" id="hear">▶ Hear it read</button><button type="button" class="btn btn-primary" id="answer">${cfg.tutorial ? "Start the walkthrough" : "Answer the call"}</button></div>
@@ -684,7 +735,7 @@ export class Ui {
         <li>The call leaned ${lean}.</li>
         ${rev.caller === "mimic" ? `<li>Its line ran ${cfg.mimicPhaseDeg}° out of step with Mira's.</li>` : ""}
         <li>You listened ${listens}× and traced ${traces}×, with ${n.callsLeft} call${n.callsLeft === 1 ? "" : "s"} to spare. ${cfg.id > 1 ? `The most telling dial settings tonight were ${best.join(" and ")}.` : ""}</li>
-        ${good ? "" : `<li class="advice"><strong>What went wrong, and a better plan:</strong> ${lossAdvice(res, posteriorSister(this.c.nights, cfg, this.c.meterAlphaDeg(), n.log), listens, doorTally(n.log).front, doorTally(n.log).side, best, door)}</li>`}
+        ${good ? "" : `<li class="advice"><strong>What went wrong, and a better plan:</strong> ${lossAdvice(res, posteriorSister(this.c.nights, cfg, this.c.meterAlphaDeg(), n.log), n.log.filter((r) => r.kind === whoKind(cfg)).length, doorTally(n.log).front, doorTally(n.log).side, best, door, whoKind(cfg))}</li>`}
         <li>Points: <strong>${n.points >= 0 ? "+" : ""}${n.points}</strong></li>
       </ul>
       <div class="sheet-buttons"><button type="button" class="btn btn-primary" id="next">${this.c.state.index + 1 >= this.c.nights.nights.length ? "See how the night ends" : "Next call"}</button></div>`, "#next", () => this.showResult(res));
@@ -702,8 +753,8 @@ export class Ui {
       <table class="score-table"><thead><tr><th scope="col">Call</th><th scope="col">Caller</th><th scope="col">You</th><th scope="col">Points</th></tr></thead><tbody>${rows}</tbody>
       <tfoot><tr><th scope="row" colspan="3">Total</th><td><strong>${s.score}</strong></td></tr></tfoot></table>
       <p class="sub">Outcomes came from: ${esc(this.c.sourceLabel)}.</p>
-      <div class="sheet-buttons">${this.onBonus ? `<button type="button" class="btn btn-trace" id="bonus">Bonus: The Eraser</button>` : ""}<button type="button" class="btn btn-primary" id="again">Play again</button><button type="button" class="btn btn-ghost" id="how2">How it works</button><button type="button" class="btn btn-ghost" id="exit2">Exit</button></div>`, "#again", () => this.showEnding());
-        this.sheetButtons(this.q("#sheet"), { again: () => this.onRestart?.(), how2: () => this.showHow(), exit2: () => this.onExit?.(), bonus: () => this.onBonus?.() });
+      <div class="sheet-buttons"><button type="button" class="btn btn-primary" id="again">Play again</button><button type="button" class="btn btn-ghost" id="how2">How it works</button><button type="button" class="btn btn-ghost" id="exit2">Exit</button></div>`, "#again", () => this.showEnding());
+        this.sheetButtons(this.q("#sheet"), { again: () => this.onRestart?.(), how2: () => this.showHow(), exit2: () => this.onExit?.() });
         this.audio.stopAmbience();
     }
     showHow() {
@@ -757,6 +808,7 @@ q1 (trace record):  ────────────────────
         this.off();
         document.removeEventListener("keydown", this.onKey);
         this.feed?.dispose();
+        this.scare?.dispose();
         this.root.remove();
     }
 }

@@ -1,5 +1,5 @@
 {
-  "version": "last-call-nights-v1",
+  "version": "last-call-nights-v2",
   "dialSteps": 8,
   "sisterPhaseDeg": 0,
   "noise": {
@@ -19,24 +19,51 @@
       "mimicPhaseDeg": 180,
       "identity": "sister",
       "tutorial": true,
+      "tools": [
+        "listen",
+        "trace"
+      ],
+      "rule": "Learn the two tools: Listen finds out who, Trace finds out where.",
       "intel": "It's Mira. Tonight she stands evenly between both doors, so either door is right if it's really her."
     },
     {
       "id": 2,
       "title": "Same voice",
-      "budget": 6,
+      "budget": 4,
       "alphaChoicesDeg": [
         90
       ],
-      "mimicPhaseDeg": 180,
+      "mimicPhaseDeg": 90,
       "identity": "random",
       "tutorial": false,
-      "intel": "Balanced between both doors again. If it isn't Mira, its line runs half a turn (180°) out of step with hers."
+      "tools": [
+        "listen"
+      ],
+      "rule": "The impostor's pattern is closer to Mira's now, and the line will only hold four calls. Choose your dial settings well: Mira's own dial is not always the most telling.",
+      "intel": "Balanced between both doors, so either door is right if it's her. If it isn't Mira, its line runs a quarter turn (90°) out of step with hers."
     },
     {
       "id": 3,
-      "title": "Porch light",
-      "budget": 8,
+      "title": "Two entrances",
+      "budget": 6,
+      "alphaChoicesDeg": [
+        60,
+        120
+      ],
+      "mimicPhaseDeg": 135,
+      "identity": "random",
+      "tutorial": false,
+      "tools": [
+        "listen",
+        "trace"
+      ],
+      "rule": "Tonight the call leans toward one door, and the wrong door lets the cold in. Six calls to split between finding out who and finding out where.",
+      "intel": "The call leans toward one door (three traces in four would land there). If it isn't Mira, its line runs 135° out of step: three dial steps."
+    },
+    {
+      "id": 4,
+      "title": "The last call",
+      "budget": 10,
       "alphaChoicesDeg": [
         60,
         120
@@ -44,28 +71,12 @@
       "mimicPhaseDeg": 90,
       "identity": "random",
       "tutorial": false,
-      "intel": "The call leans toward one door: open the wrong one and you let the cold in. If it isn't Mira, its line runs a quarter turn (90°) out of step."
-    },
-    {
-      "id": 4,
-      "title": "The last call",
-      "budget": 12,
-      "alphaChoicesDeg": [
-        60,
-        120
+      "tools": [
+        "trace",
+        "erase"
       ],
-      "mimicPhaseDeg": 45,
-      "identity": "random",
-      "tutorial": false,
-      "intel": "It leans toward one door. If it isn't Mira, its line is only an eighth of a turn (45°) out of step. Listen carefully."
+      "rule": "The dying intercom now records the door on every call, so plain listening is gone: the line is a coin flip whoever calls. Erase the record instead: read it sideways (+ or −), then sort your calls by that reading, and her voiceprint comes back in two halves.",
+      "intel": "It leans toward one door. If it isn't Mira, its line runs a quarter turn (90°) out of step. Erased calls only tell you who after you sort them."
     }
-  ],
-  "bonus": {
-    "title": "Bonus: The Eraser",
-    "alphaDeg": 90,
-    "mimicPhaseDeg": 180,
-    "sweeps": 3,
-    "shotsPerDial": 8,
-    "intel": "Mira or the impostor (half a turn out of step). Every call tonight is traced, so the ordinary voiceprint is gone."
-  }
+  ]
 }

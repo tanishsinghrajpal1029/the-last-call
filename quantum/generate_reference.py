@@ -28,24 +28,17 @@ def main():
         for a_deg in night["alphaChoicesDeg"]:
             for who, t_deg in (("sister", cfg["sisterPhaseDeg"]), ("mimic", night["mimicPhaseDeg"])):
                 for k in range(cfg["dialSteps"]):
-                    for trace in (False, True):
-                        a, t, p = math.radians(a_deg), math.radians(t_deg), dial_angle(k, cfg["dialSteps"])
+                    a, t, p = math.radians(a_deg), math.radians(t_deg), dial_angle(k, cfg["dialSteps"])
+                    # every tool, whether or not this night allows it: the evidence meter compares hypotheses with all of them
+                    for kind in ("listen", "trace", "erase"):
+                        trace, eraser = kind != "listen", kind == "erase"
                         rows.append({
                             "night": night["id"], "alphaDeg": a_deg, "caller": who, "thetaDeg": t_deg,
-                            "dial": k, "trace": trace,
-                            "ideal": ideal(a, t, p, trace),
-                            "idealDensityMatrix": density_matrix_probabilities(a, t, p, trace),
-                            "noisy": density_matrix_probabilities(a, t, p, trace, noise),
+                            "dial": k, "kind": kind, "trace": trace,
+                            "ideal": ideal_eraser(a, t, p) if eraser else ideal(a, t, p, trace),
+                            "idealDensityMatrix": density_matrix_probabilities(a, t, p, trace, None, eraser),
+                            "noisy": density_matrix_probabilities(a, t, p, trace, noise, eraser),
                         })
-    b = cfg["bonus"]
-    bonus_rows = []
-    for who, t_deg in (("sister", cfg["sisterPhaseDeg"]), ("mimic", b["mimicPhaseDeg"])):
-        for k in range(cfg["dialSteps"]):
-            a, t, p = math.radians(b["alphaDeg"]), math.radians(t_deg), dial_angle(k, cfg["dialSteps"])
-            bonus_rows.append({"caller": who, "thetaDeg": t_deg, "dial": k,
-                               "ideal": ideal_eraser(a, t, p),
-                               "idealDensityMatrix": density_matrix_probabilities(a, t, p, True, None, True),
-                               "noisy": density_matrix_probabilities(a, t, p, True, noise, True)})
     out = {
         "schemaVersion": 1,
         "sourceMode": "local_reference_model",
@@ -56,7 +49,6 @@ def main():
         "noise": noise,
         "generatedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         "rows": rows,
-        "bonusEraserRows": bonus_rows,
     }
     os.makedirs(os.path.join(ROOT, "data", "reference"), exist_ok=True)
     path = os.path.join(ROOT, "data", "reference", "model_table.json")

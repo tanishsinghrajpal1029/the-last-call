@@ -40,10 +40,11 @@ recombines the doors, giving
 ### Which dial is most telling?
 
 For hypotheses θ = 0 and θ = δ the per-listen difference is
-½ sin α [cos φ − cos(δ − φ)], largest at φ = δ/2 ± 90°, not at Mira's own φ = 0. With δ = 45°
-(the last call), listening at dial 0 separates the hypotheses by only 0.13 per shot; dials 2, 3, 6
-or 7 give 0.31. The game's end-of-call summary names the most informative dials, computed as the
-Jensen–Shannon divergence between the two predicted outcome distributions.
+½ sin α [cos φ − cos(δ − φ)], largest at φ = δ/2 ± 90°, not at Mira's own φ = 0. With δ = 90°
+(calls 2 and 4), dials 1 and 5 tell nothing (both callers give the same rate there) and dials 3
+and 7 tell most on average, while dial 0 is where one static is proof it isn't Mira. The optional
+Hint and the end-of-call summary name the most informative dials, computed as the Jensen–Shannon
+divergence between the two predicted outcome distributions (over the four eraser outcomes on call 4).
 
 ## Trace: which-door information destroys interference
 
@@ -60,17 +61,20 @@ measurement basis and recombination; it is not a claim that every measurement gi
 The game's evidence meter uses the full likelihood of every call (including traces), and the tests
 check that traces leave it unchanged exactly.
 
-## Bonus: the quantum eraser
+## The last call: the quantum eraser
 
-Trace as before (CNOT onto q1), then apply H to q1 before measuring: the record is read in the X
-basis, which carries no door information. For α = 90°:
+On call 4 every call carries a which-door record (the intercom is damaged), so a plain line is flat.
+**Erase** = trace as before (CNOT onto q1), then apply H to q1 before measuring: the record is
+read in the X basis, which carries no door information. For general α:
 
-  P(+, clear) = P(−, static) = (1 + cos(θ − φ)) / 4,  P(+, static) = P(−, clear) = (1 − cos(θ − φ)) / 4.
+  P(+, clear) = P(−, static) = (1 + sin α cos(θ − φ)) / 4,  P(+, static) = P(−, clear) = (1 − sin α cos(θ − φ)) / 4.
 
-Within the + group the clear rate is (1 + cos(θ − φ))/2, Mira's full voiceprint; the − group shows
-the opposite fringe; together they are flat (½ at every dial). Nothing is changed in the past: the
-patterns appear only when the shots are sorted by the eraser's result. Formula = density matrix
-(Python) = TypeScript simulator to 1e-12, ideal and noisy (`bonusEraserRows` in the reference table).
+Within the + group the clear rate is ½(1 + sin α cos(θ − φ)), the same voiceprint as listening;
+the − group shows the opposite fringe; together they are flat (½ at every dial), so the evidence
+meter stays closed until the player sorts. Nothing is changed in the past: the patterns appear
+only when the shots are sorted by the eraser's result, and a trace on the next (fresh) call still
+finds the door. Formula = density matrix (Python) = TypeScript simulator to 1e-12, ideal and noisy
+(the `erase` rows of the reference table).
 
 ## Noise
 

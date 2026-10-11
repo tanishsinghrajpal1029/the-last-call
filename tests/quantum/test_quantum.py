@@ -97,12 +97,13 @@ class TestModel(unittest.TestCase):
         self.assertEqual(table["noise"], NOISE)
         for r in table["rows"]:
             a, t, p = math.radians(r["alphaDeg"]), math.radians(r["thetaDeg"]), dial_angle(r["dial"])
-            for o, v in density_matrix_probabilities(a, t, p, r["trace"], NOISE).items():
+            for o, v in density_matrix_probabilities(a, t, p, r["trace"], NOISE, r["kind"] == "erase").items():
                 self.assertAlmostEqual(v, r["noisy"][o], places=12)
+            self.assertEqual(set(r["ideal"]), set(r["noisy"]))
 
 
 class TestEraser(unittest.TestCase):
-    """Bonus scene: trace, then read the record in the X basis."""
+    """The quantum eraser (last call): trace, then read the record in the X basis."""
 
     def test_formula_matches_density_matrix(self):
         from quantum.model import ideal_eraser

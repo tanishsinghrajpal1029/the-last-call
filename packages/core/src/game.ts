@@ -9,19 +9,31 @@ import { CLEAR_LINES, ResultKind, RESULT_TEXT, STATIC_LINES } from "./lines.js";
 import { correctDoor, NightPlan, NightsFile } from "./nights.js";
 import { Door, ListenOutcome } from "./physics.js";
 
-export type CallKind = "listen" | "trace";
+/**
+ * listen: recombine the two door halves and measure (interference).
+ * trace:  record which door on a second qubit, then measure both (door, flat line).
+ * erase:  record which door, then read the record in the X basis (+/−) instead
+ *         of asking which door; sorted by that reading, the line shows two
+ *         opposite interference patterns (the quantum eraser).
+ */
+export type CallKind = "listen" | "trace" | "erase";
+export type Sign = "plus" | "minus";
 
 export interface CallRequest {
   nightId: number;
   alphaDeg: number;
   thetaDeg: number;
   dial: number;
+  /** a which-door record is made (trace and erase) */
   trace: boolean;
+  /** the record is read in the X basis (erase) */
+  eraser: boolean;
 }
 
 export interface CallOutcome {
   line: ListenOutcome;
   door?: Door;
+  sign?: Sign;
   /** human-readable source, e.g. "ideal model, sampled in browser" or a backend name */
   source: string;
 }
@@ -35,6 +47,7 @@ export interface CallRecord {
   dial: number;
   line: ListenOutcome;
   door?: Door;
+  sign?: Sign;
   text: string;
   source: string;
 }
@@ -132,16 +145,19 @@ export function applyAction(s: GameState, a: Action, provider: Provider | null):
     if (n.result) return { state: s, error: "This call has ended." };
     if (n.callsLeft <= 0) return { state: s, error: "No calls left. Decide: open a door or hang up." };
     if (!provider) return { state: s, error: "No quantum outcomes are available." };
-    const trace = a.kind === "trace";
+    const cfg = s.nights.nights[s.index]!;
+    if (!cfg.tools.includes(a.kind)) return { state: s, error: `${a.kind} is not available on this call.` };
+    const eraser = a.kind === "erase", trace = a.kind === "trace" || eraser;
     let out: CallOutcome;
     try {
-      out = provider({ nightId: plan.nightId, alphaDeg: plan.alphaDeg, thetaDeg: plan.thetaDeg, dial: n.dial, trace });
+      out = provider({ nightId: plan.nightId, alphaDeg: plan.alphaDeg, thetaDeg: plan.thetaDeg, dial: n.dial, trace, eraser });
     } catch (e) {
       return { state: s, error: "The call could not be completed: " + (e instanceof Error ? e.message : String(e)) };
     }
     if (out.line !== "clear" && out.line !== "static") throw new Error("invalid outcome");
-    if (trace && out.door !== "front" && out.door !== "side") throw new Error("trace outcome without a door");
-    const base = { n: n.log.length + 1, kind: a.kind, dial: n.dial, line: out.line, source: out.source, ...(trace ? { door: out.door } : {}) };
+    if (a.kind === "trace" && out.door !== "front" && out.door !== "side") throw new Error("trace outcome without a door");
+    if (eraser && out.sign !== "plus" && out.sign !== "minus") throw new Error("erase outcome without a sign");
+    const base = { n: n.log.length + 1, kind: a.kind, dial: n.dial, line: out.line, source: out.source, ...(a.kind === "trace" ? { door: out.door } : {}), ...(eraser ? { sign: out.sign } : {}) };
     const record: CallRecord = { ...base, text: lineText(s, base) };
     const night: NightState = { ...n, callsLeft: n.callsLeft - 1, log: [...n.log, record] };
     return { state: mark({ ...s, night }), record };

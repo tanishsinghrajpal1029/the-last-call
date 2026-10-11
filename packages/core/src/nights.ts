@@ -11,6 +11,10 @@ export interface NightConfig {
   mimicPhaseDeg: number;
   identity: "sister" | "mimic" | "random";
   tutorial: boolean;
+  /** which calls the intercom can make this night (see game.ts CallKind) */
+  tools: ("listen" | "trace" | "erase")[];
+  /** what is new on this call, in one line (shown and spoken before it starts) */
+  rule: string;
   intel: string;
 }
 
@@ -40,6 +44,9 @@ export function validateNights(f: NightsFile): string[] {
     if (!(n.budget >= 1)) e.push("budget " + n.id);
     if (!n.alphaChoicesDeg.length || n.alphaChoicesDeg.some((a) => !(a > 0 && a < 180))) e.push("alpha " + n.id);
     if (!["sister", "mimic", "random"].includes(n.identity)) e.push("identity " + n.id);
+    if (!Array.isArray(n.tools) || !n.tools.length || n.tools.some((t) => !["listen", "trace", "erase"].includes(t))) e.push("tools " + n.id);
+    // a call whose lean matters must be traceable, or the right door could never be found
+    if (n.alphaChoicesDeg.some((a) => Math.abs(a - 90) > 1e-9) && !n.tools.includes("trace")) e.push("leaning call without trace " + n.id);
     // the meter and chart use |sin(alpha)|; every choice in a night must share it, or the curves would reveal the lean
     const vis = n.alphaChoicesDeg.map((a) => Math.abs(Math.sin((a * Math.PI) / 180)));
     if (vis.some((v) => Math.abs(v - vis[0]!) > 1e-9)) e.push("alpha choices must share |sin(alpha)| " + n.id);

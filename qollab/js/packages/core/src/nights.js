@@ -14,6 +14,11 @@ export function validateNights(f) {
             e.push("alpha " + n.id);
         if (!["sister", "mimic", "random"].includes(n.identity))
             e.push("identity " + n.id);
+        if (!Array.isArray(n.tools) || !n.tools.length || n.tools.some((t) => !["listen", "trace", "erase"].includes(t)))
+            e.push("tools " + n.id);
+        // a call whose lean matters must be traceable, or the right door could never be found
+        if (n.alphaChoicesDeg.some((a) => Math.abs(a - 90) > 1e-9) && !n.tools.includes("trace"))
+            e.push("leaning call without trace " + n.id);
         // the meter and chart use |sin(alpha)|; every choice in a night must share it, or the curves would reveal the lean
         const vis = n.alphaChoicesDeg.map((a) => Math.abs(Math.sin((a * Math.PI) / 180)));
         if (vis.some((v) => Math.abs(v - vis[0]) > 1e-9))

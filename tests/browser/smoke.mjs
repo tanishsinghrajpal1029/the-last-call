@@ -130,8 +130,26 @@ try {
     await page.click("#answer");
     await page.waitForSelector("#sheet-wrap", { state: "hidden" });
     check(`night ${k}: guide shows the goal checklist, no stepper`, /WHO is calling\?/.test(await page.textContent("#guide-card")) && await page.$eval("#stepper", (c) => c.hidden));
-    check(`night ${k}: plain status before any evidence`, /WHO: unknown, no listens yet/.test(await page.textContent("#case-status")) && /calls left/.test(await page.textContent("#case-status")) && /Decide now/.test(await page.textContent("#case-status")));
-    for (let i = 0; i < 3; i++) await page.click("#listen-btn");
+    check(`night ${k}: plain status before any evidence`, /WHO: unknown, (no listens|nothing erased) yet/.test(await page.textContent("#case-status")) && /calls left/.test(await page.textContent("#case-status")) && /Decide now/.test(await page.textContent("#case-status")));
+    check(`night ${k}: the rule for this call is shown`, /\S/.test(await page.textContent("#guide-card .rule")));
+    check(`night ${k}: no strategy given away until Hint is pressed`, !/tells you most/.test(await page.textContent("#case-status")) && !!(await page.$("#hint-btn")));
+    // each call has its own tools: call 2 listen only, call 3 listen + trace, call 4 trace + erase
+    const vis = await page.$$eval("#listen-btn, #trace-btn, #erase-btn", (bs) => bs.filter((b) => !b.hidden).map((b) => b.id));
+    check(`night ${k}: tools shown match the call`, JSON.stringify(vis) === JSON.stringify(k === 2 ? ["listen-btn"] : k === 3 ? ["listen-btn", "trace-btn"] : ["trace-btn", "erase-btn"]), vis.join(","));
+    if (k < 4) for (let i = 0; i < 3; i++) await page.click("#listen-btn");
+    else {
+      for (let i = 0; i < 4; i++) await page.click("#erase-btn");
+      check("call 4: erased calls are logged with the eraser's reading", /eraser read [+−]/.test(await page.textContent("#log")));
+      check("call 4: unsorted, the meter refuses to judge (a coin flip until sorted)", /unsorted/.test(await page.textContent("#case-status")) && /coin flip/.test(await page.textContent("#meter")) && !!(await page.$("#sort-btn")));
+      check("call 4: unsorted chart plots all erased calls together", /all erased calls together/.test(await page.textContent("#chart")));
+      await page.click("#sort-btn");
+      check("call 4: sorting reveals the + and − groups and the meter", /\+ group/.test(await page.textContent("#chart")) && /Chance it's Mira/.test(await page.textContent("#meter")));
+      await page.screenshot({ path: path.join(root, "artifacts", "screen_eraser_sorted.png") });
+      await page.click("#trace-btn"); await page.click("#do-trace");
+      check("call 4: trace still records the door", /(front|side) door/.test(await page.textContent("#log")));
+    }
+    await page.click("#hint-btn");
+    check(`night ${k}: Hint reveals the most telling dials`, /Hint:.*dial <strong>\d( or \d)?/.test(await page.innerHTML("#guide-card")));
     const stat = await page.textContent("#case-status");
     check(`night ${k}: status states the evidence without certainty words it hasn't earned`, /(Almost certainly Mira|Mira likely|Caller still unclear|Impostor likely|Almost certainly the impostor)/.test(stat) && !/\b(is Mira|definitely)\b/.test(stat), stat);
     if (k === 2) {
@@ -148,6 +166,7 @@ try {
     await page.click("#yes");
     await page.waitForSelector(".sheet-result", { timeout: 5000 });
     const rs = await page.textContent(".sheet-result");
+    if (k === 4) check("call 4: the full-screen reveal layer exists in screen mode", !!(await page.$(".ui .scare-layer")));
     if (/It was Mira/.test(rs)) check(`night ${k}: a wrong hang-up explains what happened and a better plan`, /a better plan/.test(rs), rs.slice(0, 200));
     else check(`night ${k}: a right call shows no loss advice`, !/a better plan/.test(rs));
   }
@@ -156,24 +175,6 @@ try {
   const end = await page.textContent(".sheet-ending");
   check("ending sheet with score table and data source", /Total/.test(end) && /ideal model/.test(end));
   await page.screenshot({ path: path.join(root, "artifacts", "screen_ending.png") });
-  // bonus: the quantum eraser
-  check("ending offers the bonus eraser scene", !!(await page.$("#bonus")));
-  await page.click("#bonus");
-  await page.waitForSelector(".bonus #b-sweep");
-  check("bonus step 1 asks to sweep; decisions locked", /Sweep all dials/.test(await page.textContent("#b-card")) && await page.$eval("#b-front", (b) => b.disabled));
-  await page.click("#b-sweep");
-  check("after a traced sweep the guide explains it is flat and asks to sort", /Sort by the eraser/.test(await page.textContent("#b-card")));
-  await page.screenshot({ path: path.join(root, "artifacts", "bonus_flat.png") });
-  await page.click("#b-sort");
-  check("sorting reveals two groups and unlocks the decision", /\+ group/.test(await page.textContent("#b-chart")) && !(await page.$eval("#b-hang", (b) => b.disabled)));
-  check("meter uses the sorted groups", /Chance it's Mira from the sorted groups/.test(await page.textContent("#b-meter")));
-  await page.screenshot({ path: path.join(root, "artifacts", "bonus_sorted.png") });
-  const mira = /Chance it's Mira from the sorted groups: <strong>(over 99%|9\d%)/.test(await page.innerHTML("#b-meter"));
-  await page.click(mira ? "#b-front" : "#b-hang");
-  await page.waitForTimeout(300);
-  check("bonus decision resolves with a result", /You chose right|Wrong call/.test(await page.textContent("#b-card")));
-  await page.click("#b-done");
-  await page.waitForSelector("#start-form");
   await page.goto(`http://localhost:${port}/?seed=4242`);
   await page.waitForSelector("#start-form");
   await page.click('button[data-mode="screen"]');
