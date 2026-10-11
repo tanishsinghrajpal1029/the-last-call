@@ -54,11 +54,30 @@ export function resolveScreenAngle(reported: number | undefined, legacy: number 
   return gamma < 0 ? 90 : 270;
 }
 
+const deg = Math.PI / 180;
+
+/**
+ * The screen rotation that keeps the picture upright, worked out from gravity. While the device is
+ * held up (not flat), the screen's "down" is whichever device edge points at the floor. This is
+ * what the system itself uses to rotate the page, and it doesn't depend on the browser reporting
+ * the rotation correctly (an iPad drew the house on its side even with the reported angle fixed).
+ * Returns null when the device is too close to flat to tell; keeps `prev` until another edge is
+ * clearly lower (no flicker near 45°).
+ */
+export function gravityScreenAngle(beta: number, gamma: number, prev: number | null): number | null {
+  const b = beta * deg, g = gamma * deg;
+  const gx = Math.cos(b) * Math.sin(g), gy = -Math.sin(b); // gravity in the device's screen plane
+  const mag = Math.hypot(gx, gy);
+  if (mag < 0.5) return null;
+  const down: Record<number, [number, number]> = { 0: [0, -1], 90: [-1, 0], 180: [0, 1], 270: [1, 0] };
+  const along = (a: number) => (down[a]![0] * gx + down[a]![1] * gy) / mag;
+  if (prev !== null && along(prev) > 0.6) return prev;
+  return [0, 90, 180, 270].reduce((best, a) => (along(a) > along(best) ? a : best), 0);
+}
+
 export function gyroCapable(): boolean {
   return window.isSecureContext && !!navigator.mediaDevices?.getUserMedia && "DeviceOrientationEvent" in window;
 }
-
-const deg = Math.PI / 180;
 
 /**
  * Camera-to-world rotation (column-major 4x4, GL world: x east, y up, z south)
@@ -168,10 +187,21 @@ export class GyroView {
     this.status.hidden = !msg;
   }
 
+  private angle: number | null = null;
+  private readonly debug = new URLSearchParams(location.search).has("debug");
+
   private screenAngle(): number {
     const so = screen.orientation as ScreenOrientation | undefined;
     const wo = (window as unknown as { orientation?: number }).orientation;
-    return resolveScreenAngle(so?.angle, wo, window.innerWidth, window.innerHeight, this.orient?.gamma ?? 0);
+    const fromGravity = this.orient ? gravityScreenAngle(this.orient.beta, this.orient.gamma, this.angle) : null;
+    if (fromGravity !== null) this.angle = fromGravity;
+    else if (this.angle === null) this.angle = resolveScreenAngle(so?.angle, wo, window.innerWidth, window.innerHeight, this.orient?.gamma ?? 0);
+    if (this.debug && this.orient && this.status) {
+      const o = this.orient;
+      this.status.hidden = false;
+      this.status.textContent = `α ${o.alpha.toFixed(0)} β ${o.beta.toFixed(0)} γ ${o.gamma.toFixed(0)} · screen.orientation ${so?.angle ?? "–"} · window.orientation ${wo ?? "–"} · page ${window.innerWidth}×${window.innerHeight} · using ${this.angle}°`;
+    }
+    return this.angle;
   }
 
   private loop = (): void => {
@@ -191,7 +221,8 @@ export class GyroView {
         : "Waiting for the motion sensors… (allow Motion & Orientation access)");
       return;
     }
-    if (performance.now() - this.lastEvent > 1500) this.setStatus("Motion sensors paused. Move the phone a little.");
+    if (this.debug) { /* the status line shows the sensor readout */ }
+    else if (performance.now() - this.lastEvent > 1500) this.setStatus("Motion sensors paused. Move the phone a little.");
     else if (this.board) this.setStatus("");
     const camRot = cameraRotation(this.orient.alpha, this.orient.beta, this.orient.gamma, this.screenAngle());
     if (!this.board) {

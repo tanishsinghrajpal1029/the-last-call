@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const { cameraRotation, resolveScreenAngle } = await import(path.join(root, "build/js/apps/web/src/ar/gyro.js"));
+const { cameraRotation, resolveScreenAngle, gravityScreenAngle } = await import(path.join(root, "build/js/apps/web/src/ar/gyro.js"));
 const fwd = (m) => [-m[8], -m[9], -m[10]].map((v) => Math.round(v * 1e6) / 1e6 + 0);
 const up = (m) => [m[4], m[5], m[6]].map((v) => Math.round(v * 1e6) / 1e6 + 0);
 
@@ -44,4 +44,23 @@ test("screen angle: trusted only when it matches the page's shape (iPad reported
   assert.equal(resolveScreenAngle(0, undefined, 1100, 800, 85), 270);
   assert.equal(resolveScreenAngle(undefined, -90, 1100, 800, 85), 270);      // iOS window.orientation -90 = 270
   assert.equal(resolveScreenAngle(undefined, undefined, 390, 844, 0), 0);
+});
+
+test("screen angle from gravity: the edge pointing at the floor is the bottom", () => {
+  assert.equal(gravityScreenAngle(90, 0, null), 0);        // upright portrait
+  assert.equal(gravityScreenAngle(70, 10, null), 0);       // tilted back a bit
+  assert.equal(gravityScreenAngle(0, -90, null), 90);      // landscape, right edge up (as in the landscape test above)
+  assert.equal(gravityScreenAngle(0, 90, null), 270);
+  assert.equal(gravityScreenAngle(-90, 0, null), 180);     // upside down
+  assert.equal(gravityScreenAngle(5, 5, null), null);      // flat on a table: can't tell
+  assert.equal(gravityScreenAngle(45, -50, 0), 0);         // near 45°: keep the previous angle
+  assert.equal(gravityScreenAngle(20, -80, 0), 90);        // clearly landscape now: switch
+});
+
+test("gravity angle keeps the house upright: camera's up vector points up when held upright", () => {
+  for (const [b, g] of [[90, 0], [0, -90], [0, 90], [80, 5], [10, -75]]) {
+    const a = gravityScreenAngle(b, g, null);
+    const m = cameraRotation(30, b, g, a);
+    assert.ok(m[5] > 0.5, `camera up has positive world-y for beta ${b} gamma ${g} (angle ${a}): ${m[5]}`);
+  }
 });

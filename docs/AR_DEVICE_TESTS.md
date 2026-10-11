@@ -61,7 +61,11 @@ Camera and WebXR need a secure context; `http://<laptop-ip>:8080` is not one.
 | 11 Oct 2026 | Android phone | Android | Chrome | WebXR (*Play in AR on your table*) | house placed on the floor, upright, doors and figures visible, controls usable (first call) | none reported | user screenshot |
 | 11 Oct 2026 | iPad | iPadOS | Chrome (WebKit) | Look-around (*no marker*) | camera feed and controls work | house drawn turned ~90° and to the side in portrait | user photo |
 
-**iPad fix (needs a retest):** the screen angle used to turn the motion-sensor reading into the
-camera's orientation is now trusted only when it matches the page's shape; a portrait page uses 0°
-and a landscape page uses gravity to pick 90° or 270° (`resolveScreenAngle` in `ar/gyro.ts`, unit
-tests in `tests/core/gyro.test.mjs`). Not yet confirmed on the iPad.
+| 11 Oct 2026 | iPad (retest after the first fix) | iPadOS | Chrome (WebKit) | Look-around | as above | still turned ~90° | user screenshot |
+
+**iPad fix, second attempt (needs a retest):** the screen rotation is now taken from gravity (the
+device edge pointing at the floor is the bottom of the picture), the same signal the system uses to
+rotate the page, so it no longer depends on what the browser reports (`gravityScreenAngle` in
+`ar/gyro.ts`; tests check the camera's up vector points up for upright and landscape holds). The
+reported angle (checked against the page's shape) is only used while the device is flat. Add
+`?debug` to the address to show the raw sensor values and the angle in use.
