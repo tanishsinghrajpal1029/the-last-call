@@ -76,3 +76,12 @@ camera aims at least ~10° below the horizon, the house is now placed where that
 a floor assumed 1.2 m below the device (0.7–3 m away, sized to the distance; `placeOnFloor`). Aimed
 level, it still floats ahead and the status line says to aim at the floor and press Recenter. Not
 yet retested on the iPad. Android's WebXR mode finds the real floor and doesn't need this.
+
+| 11 Oct 2026 | iPad (after floor placement) | iPadOS | Chrome (WebKit) | Look-around | house stays fixed in the room | still above the floor; no ring like Android's, so no way to see where it would land | user report |
+
+**Placing like Android (needs a retest):** look-around mode no longer places the house by itself.
+A yellow ring is drawn on the assumed floor where the camera aims, and the player taps **Place
+here** (Recenter brings the ring back). Aimed level, there is no ring and Place here floats the
+house ahead. `tests/browser/gyro_e2e.mjs` checks the ring, floor placement and the level fallback
+(`artifacts/gyro_ring.png`). If the ring itself looks above the floor, the assumed 1.2 m device
+height is too high for how the iPad is held.

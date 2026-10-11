@@ -44,6 +44,21 @@ try {
   // phone upright, facing north
   for (let i = 0; i < 5; i++) { await orient(page, 0, 90, 0); await page.waitForTimeout(50); }
   await page.waitForTimeout(300);
+  check("waits for the player to place the house", await page.evaluate(() => window.__lastCall.view.placed === false) && /Tilt down toward the floor/.test(await page.textContent(".gyro-place-msg")));
+  // aim 35° down at the floor: the yellow ring appears; Place here stands the house on the floor
+  for (let i = 0; i < 5; i++) { await orient(page, 0, 55, 0); await page.waitForTimeout(50); }
+  await page.waitForTimeout(300);
+  check("aiming at the floor shows the ring", /ring shows where the house will stand/.test(await page.textContent(".gyro-place-msg")) && (await centreDrawn(page)) > 20);
+  await page.screenshot({ path: path.join(root, "artifacts", "gyro_ring.png") });
+  await page.click("#gyro-place");
+  check("Place here stands the house on the floor", await page.evaluate(() => window.__lastCall.view.placed === true && Math.abs(window.__lastCall.view.boardY + 1.2) < 1e-6) && await page.$eval(".gyro-place-bar", (b) => b.hidden));
+  // Recenter while level, then place: floats ahead (old behaviour)
+  await page.evaluate(() => window.__lastCall.view["ui"].onReposition());
+  for (let i = 0; i < 5; i++) { await orient(page, 0, 90, 0); await page.waitForTimeout(50); }
+  await page.waitForTimeout(200);
+  await page.click("#gyro-place");
+  for (let i = 0; i < 5; i++) { await orient(page, 0, 90, 0); await page.waitForTimeout(50); }
+  await page.waitForTimeout(300);
   check("house placed ahead once orientation arrives", await page.evaluate(() => window.__lastCall.view.placed === true));
   const ahead = await centreDrawn(page);
   check("house drawn in the middle of the view", ahead > 200, String(ahead));

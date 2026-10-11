@@ -12,7 +12,7 @@
 import { Controller } from "../controller.js";
 import { Ui } from "../ui.js";
 import { Renderer } from "./gl.js";
-import { Mat4, multiply, perspective, rotationY, translation } from "./math.js";
+import { Mat4, multiply, perspective, rotationY, scaling, translation } from "./math.js";
 import { HousePainter } from "./scene.js";
 
 type OrientationPermission = { requestPermission?: () => Promise<"granted" | "denied"> };
@@ -135,7 +135,10 @@ export class GyroView {
   private boardWidth = 0.5;
   private lastEvent = 0;
   private waitStart = 0;
-  private hintUntil = 0;
+  private placeBar: HTMLElement | null = null;
+  private placeMsg: HTMLElement | null = null;
+  /** where the house would go right now (while placing) */
+  private aim: { board: Mat4; width: number; floor: boolean } | null = null;
   /** house width in metres and distance in front of the phone */
   width = 0.5;
   distance = 1.4;
@@ -148,11 +151,16 @@ export class GyroView {
     this.wrap = document.createElement("div");
     this.wrap.className = "gyro-view";
     this.wrap.innerHTML = `<video playsinline muted autoplay aria-hidden="true"></video><canvas aria-label="Augmented reality view: the house and its two doors in your room"></canvas>
-      <p class="xr-status" role="status" aria-live="polite"></p><div class="gyro-ui"></div>`;
+      <p class="xr-status" role="status" aria-live="polite"></p><div class="gyro-ui"></div>
+      <div class="place-bar gyro-place-bar"><p class="gyro-place-msg">Aim at the floor until the yellow ring appears where the house should stand, then tap Place here.</p>
+      <div class="place-buttons"><button type="button" class="btn btn-primary" id="gyro-place">Place here</button></div></div>`;
     container.appendChild(this.wrap);
     this.video = this.wrap.querySelector("video")!;
     this.canvas = this.wrap.querySelector("canvas")!;
     this.status = this.wrap.querySelector(".xr-status");
+    this.placeBar = this.wrap.querySelector<HTMLElement>(".gyro-place-bar");
+    this.placeMsg = this.wrap.querySelector<HTMLElement>(".gyro-place-msg");
+    this.wrap.querySelector("#gyro-place")!.addEventListener("click", () => this.placeNow());
     window.addEventListener("deviceorientation", this.onOrient);
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } } });
@@ -181,8 +189,8 @@ export class GyroView {
     this.painter = new HousePainter(this.renderer);
     this.ui = this.mountUi(this.wrap.querySelector<HTMLElement>(".gyro-ui")!);
     this.ui.onExit = () => this.stop();
-    this.ui.onReposition = () => { this.board = null; };
-    this.setStatus("Hold the device up and aim at the floor where the house should stand.");
+    this.ui.onReposition = () => { this.board = null; if (this.placeBar) this.placeBar.hidden = false; };
+    this.setStatus("");
     document.addEventListener("visibilitychange", this.onVisibility);
     this.raf = requestAnimationFrame(this.loop);
   }
@@ -239,27 +247,25 @@ export class GyroView {
     }
     if (this.debug) { /* the status line shows the sensor readout */ }
     else if (performance.now() - this.lastEvent > 1500) this.setStatus("Motion sensors paused. Move the phone a little.");
-    else if (this.board && performance.now() > this.hintUntil) this.setStatus("");
+    else this.setStatus("");
     const camRot = cameraRotation(this.orient.alpha, this.orient.beta, this.orient.gamma, this.screenAngle());
     if (!this.board) {
-      // place the house ahead of where the phone points, level, facing the player
+      // placing: show a yellow ring where the house would stand; the player taps Place here
       const fx = -camRot[8]!, fz = -camRot[10]!;
       const len = Math.hypot(fx, fz);
-      if (len < 0.6) {
-        this.setStatus("Hold the phone up and look ahead to place the house.");
-        return; // pointing at the floor or ceiling: no reliable heading yet
+      this.aim = null;
+      if (len >= 0.6) {
+        const dx = fx / len, dz = fz / len, face = rotationY(Math.atan2(-dx, -dz));
+        const floor = placeOnFloor(fx, -camRot[9]!, fz);
+        this.aim = floor
+          ? { board: multiply(translation(floor.x, floor.y, floor.z), face), width: floor.width, floor: true }
+          : { board: multiply(translation(dx * this.distance, -this.drop, dz * this.distance), face), width: this.width, floor: false };
       }
-      const dx = fx / len, dz = fz / len;
-      const floor = placeOnFloor(fx, -camRot[9]!, fz);
-      if (floor) { // aimed at the floor: stand the house there
-        this.board = multiply(translation(floor.x, floor.y, floor.z), rotationY(Math.atan2(-dx, -dz)));
-        this.boardWidth = floor.width;
-      } else { // aimed level: float it ahead, and say how to put it on the floor
-        this.board = multiply(translation(dx * this.distance, -this.drop, dz * this.distance), rotationY(Math.atan2(-dx, -dz)));
-        this.boardWidth = this.width;
-        this.setStatus("To stand the house on the floor: aim at the spot on the floor, then press Recenter.");
-        this.hintUntil = performance.now() + 6000;
-      }
+      if (this.placeMsg) this.placeMsg.textContent = !this.aim
+        ? "Hold the device up a little: it's pointing too far down or up."
+        : this.aim.floor
+          ? "The ring shows where the house will stand. Tap Place here."
+          : "Tilt down toward the floor until the yellow ring appears, then tap Place here.";
     }
     // view = inverse(camera rotation) = transpose (camera at the origin)
     const view = new Float32Array(16);
@@ -267,8 +273,25 @@ export class GyroView {
     view[15] = 1;
     const proj = perspective(60 * deg, w / h, 0.05, 30);
     this.renderer!.begin(multiply(proj, view));
-    this.painter!.draw(this.board, this.c, this.boardWidth, performance.now() / 1000);
+    if (this.board) this.painter!.draw(this.board, this.c, this.boardWidth, performance.now() / 1000);
+    else if (this.aim?.floor) {
+      const r = this.renderer!;
+      r.draw(r.ring, multiply(this.aim.board, scaling(this.aim.width * 0.6, 1, this.aim.width * 0.6)), [1, 0.8, 0.3, 0.9], 1);
+    }
   };
+
+  /** Put the house where the ring is (or floating ahead if the device is held level). */
+  placeNow(): void {
+    if (!this.aim) return;
+    this.board = this.aim.board;
+    this.boardWidth = this.aim.width;
+    if (this.placeBar) this.placeBar.hidden = true;
+  }
+
+  /** Test hook: the house's height relative to the device (−1.2 when standing on the assumed floor). */
+  get boardY(): number | null {
+    return this.board ? this.board[13]! : null;
+  }
 
   /** Test hook. */
   get placed(): boolean {
