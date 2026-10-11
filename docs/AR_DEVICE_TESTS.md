@@ -79,7 +79,7 @@ yet retested on the iPad. Android's WebXR mode finds the real floor and doesn't 
 
 | 11 Oct 2026 | iPad (after floor placement) | iPadOS | Chrome (WebKit) | Look-around | house stays fixed in the room | still above the floor; no ring like Android's, so no way to see where it would land | user report |
 
-**Placing like Android (needs a retest):** look-around mode no longer places the house by itself.
+**Placing like Android:** look-around mode no longer places the house by itself.
 A yellow ring is drawn on the assumed floor where the camera aims, and the player taps **Place
 here** (Recenter brings the ring back). Aimed level, there is no ring and Place here floats the
 house ahead. `tests/browser/gyro_e2e.mjs` checks the ring, floor placement and the level fallback
@@ -88,4 +88,6 @@ height is too high for how the iPad is held.
 
 **House size on bigger screens:** on the iPad the house felt small. Look-around mode now scales it
 with the screen's shorter side (1× on a phone up to 1.8× on an 834-point iPad;
-`screenSizeFactor`), and the placing bar has **Smaller / Larger** like WebXR. Needs a retest.
+`screenSizeFactor`), and the placing bar has **Smaller / Larger** like WebXR.
+
+| 11 Oct 2026 | iPad (ring, Place here, 1.8× size) | iPadOS | Chrome (WebKit) | Look-around | ring on the floor, house placed on it, upright, fixed in the room, size good | none reported | user report ("looks good") |
