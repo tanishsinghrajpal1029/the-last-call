@@ -11,7 +11,7 @@ import { rngFromSeed } from "./js/packages/core/src/rng.js";
 import { simulate, rad, dialAngle } from "./js/packages/core/src/physics.js";
 
 // Set this to the public HTTPS address of the AR app once it is deployed.
-const AR_APP_URL = "";
+const AR_APP_URL = "https://tanishsinghrajpal.com/the-last-call/";
 
 const $ = (id) => document.getElementById(id);
 const pct = (x) => (100 * x).toFixed(0) + "%";
