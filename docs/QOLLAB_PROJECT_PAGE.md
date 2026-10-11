@@ -8,7 +8,7 @@ It is 3:33 am. Your little sister Mira went outside after the cat, and now the i
 
 The only way to tell Mira from the thing copying her is **interference**. The only way to find the door is **measurement**. And measuring the door destroys the interference.
 
-**Play in AR on your phone:** https://tanishsinghrajpal.com/the-last-call/ · **IonQ run:** [IonQ project link] · **Source (MIT):** https://github.com/tanishsinghrajpal1029/the-last-call
+**Play in AR on your phone:** https://tanishsinghrajpal.com/the-last-call/ · **IonQ run:** https://qollab.xyz/u/tanishsinghrajpal/the-last-call-ionq-run · **Source (MIT):** https://github.com/tanishsinghrajpal1029/the-last-call
 
 ---
 
@@ -115,7 +115,7 @@ Call 1 (Mira, balanced), clear shots out of 16 per dial setting:
 
 With 16 shots per dial, a perfectly flat signal still shows a fitted contrast of about 0.16 from shot noise, so 0.18 and 0.11 are consistent with no interference.
 
-**2 · IonQ simulator (Aria 1 noise model)** · job 01a12ae9-7f85-7a0a-b5c5-1998da2674af · one 24-qubit circuit × 100 shots · [IonQ project link]
+**2 · IonQ simulator (Aria 1 noise model)** · job 01a12ae9-7f85-7a0a-b5c5-1998da2674af · one 24-qubit circuit × 100 shots · https://qollab.xyz/u/tanishsinghrajpal/the-last-call-ionq-run
 
 IonQ accepts one circuit per run, so this run packs call 1's experiment into a single circuit: a listen block and an eraser block at each of the 8 dials, with no gate linking two blocks.
 

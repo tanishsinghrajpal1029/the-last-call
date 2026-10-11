@@ -13,7 +13,7 @@ import { simulate, simulateEraser, rad, dialAngle } from "./js/packages/core/src
 // Set this to the public HTTPS address of the AR app once it is deployed.
 const AR_APP_URL = "https://tanishsinghrajpal.com/the-last-call/";
 // The companion Qollab project that runs the same experiment on IonQ as one Python circuit.
-const IONQ_PROJECT_URL = "";
+const IONQ_PROJECT_URL = "https://qollab.xyz/u/tanishsinghrajpal/the-last-call-ionq-run";
 
 const $ = (id) => document.getElementById(id);
 const pct = (x) => (100 * x).toFixed(0) + "%";

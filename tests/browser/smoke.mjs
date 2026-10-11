@@ -144,7 +144,7 @@ try {
       check("call 4: unsorted chart plots all erased calls together", /all erased calls together/.test(await page.textContent("#chart")));
       await page.click("#sort-btn");
       check("call 4: sorting reveals the + and − groups and the meter", /\+ group/.test(await page.textContent("#chart")) && /Chance it's Mira/.test(await page.textContent("#meter")));
-      await page.screenshot({ path: path.join(root, "artifacts", "screen_eraser_sorted.png") });
+      // the write-up image screen_eraser_sorted.png comes from scripts/shot_eraser.mjs
       await page.click("#trace-btn"); await page.click("#do-trace");
       check("call 4: trace still records the door", /(front|side) door/.test(await page.textContent("#log")));
     }
