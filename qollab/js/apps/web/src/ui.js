@@ -14,7 +14,7 @@ import { correctDoor } from "../../../packages/core/src/nights.js";
 import { dialAngle, rad, simulate } from "../../../packages/core/src/physics.js";
 import { evidenceChart } from "./chart.js";
 import { Feed } from "./feed.js";
-import { explainCall, guideForCase, STAGES } from "./guide.js";
+import { caseStatus, explainCall, guideForCase, HESITATE, lossAdvice, reactionFor, STAGES, TUT_REACT } from "./guide.js";
 const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const pct = (x) => Math.round(100 * x) + "%";
 /** Never show 0% or 100% for a statistical judgement. */
@@ -37,6 +37,12 @@ export class Ui {
     stage = 0;
     stageSpoken = -1;
     lastExplain = null;
+    /** walkthrough: the narrator's reaction to the result the player actually got */
+    reaction = null;
+    /** suspense: when the player last acted, and when the caller last spoke through the door */
+    lastActive = performance.now();
+    lastHesitate = -1e9;
+    idleTimer = 0;
     onExit = null;
     onRestart = null;
     onReposition = null;
@@ -68,6 +74,7 @@ export class Ui {
             if (e.type === "night") {
                 this.stage = 0;
                 this.lastExplain = null;
+                this.reaction = null;
                 this.showIntro();
             }
             if (e.type === "over")
@@ -77,6 +84,23 @@ export class Ui {
         });
         this.render();
         this.showIntro();
+        this.idleTimer = window.setInterval(() => this.hesitation(), 1000);
+    }
+    /** If the player hesitates, the caller speaks through the door (never on the line, never evidence). */
+    hesitation() {
+        const n = this.c.state.night, now = performance.now();
+        if (this.disposed || this.c.phase !== "play" || n.result || this.sheetOpen || this.tutorial || this.c.view().night.tutorial) {
+            this.lastActive = now;
+            return;
+        }
+        if (now - this.lastActive < 22000 || now - this.lastHesitate < 30000)
+            return;
+        this.lastHesitate = now;
+        const ids = Object.keys(HESITATE), id = ids[Math.floor(Math.random() * ids.length)];
+        if (!this.c.settings.gentle)
+            this.audio.footsteps(0.3);
+        this.later(() => void this.audio.voiceLine(id, HESITATE[id]), 1500);
+        this.toast(`Through the door: “${HESITATE[id]}” (not on the line, not evidence)`);
     }
     q(sel) {
         return this.root.querySelector(sel);
@@ -167,7 +191,7 @@ export class Ui {
         // AR: keep taps on the HUD from becoming XR select events
         this.root.addEventListener("beforexrselect", (e) => e.preventDefault());
         const turn = (d) => { if (!this.allowed("dial"))
-            return; c.setDial(c.state.night.dial + d); this.audio.dial(); };
+            return; this.lastActive = performance.now(); c.setDial(c.state.night.dial + d); this.audio.dial(); };
         click("dial-down", () => turn(-1));
         click("dial-up", () => turn(1));
         click("listen-btn", () => { if (this.allowed("listen"))
@@ -214,6 +238,15 @@ export class Ui {
                 this.audio.unlock();
                 this.advanceStage();
             }
+            if (e.target.closest("#stage-replay")) {
+                e.preventDefault();
+                this.audio.unlock();
+                const st = STAGES[this.stage];
+                if (this.stageComplete() && this.reaction)
+                    void this.audio.voiceLine(this.reaction, TUT_REACT[this.reaction] ?? "");
+                else
+                    void this.audio.voiceLine(st.voice, "");
+            }
         });
         if (this.mode === "screen")
             document.addEventListener("keydown", this.onKey);
@@ -253,6 +286,7 @@ export class Ui {
             return;
         if (this.stage < STAGES.length - 1)
             this.stage++;
+        this.reaction = null;
         this.render();
     }
     /** Complete action stages automatically when their condition is met. */
@@ -286,15 +320,20 @@ export class Ui {
             stepper.hidden = true;
         if (!this.tutorial) {
             hl(null);
-            const plan = c.state.plan[c.state.index];
             const leans = cfg.alphaChoicesDeg.some((a) => a !== 90);
-            void plan;
+            const alpha = c.meterAlphaDeg(), t = doorTally(n.log), listens = n.log.filter((r) => r.kind === "listen").length;
+            const info = dialInformation(c.nights, cfg, alpha);
+            const best = info.map((x, k) => [x, k]).sort((a, b) => b[0] - a[0]).slice(0, 2).map(([, k]) => k).sort((a, b) => a - b);
+            const st = caseStatus(c.settings.meter ? posteriorSister(c.nights, cfg, alpha, n.log) : null, listens, t.front, t.side, leans, n.callsLeft, best);
+            const status = !n.result && c.phase === "play" && !(cfg.tutorial && !this.skipped)
+                ? `<div class="status" id="case-status"><p><strong>${esc(st.who)}</strong> · ${esc(st.where)} · ${n.callsLeft} call${n.callsLeft === 1 ? "" : "s"} left</p>${this.mode === "screen" ? `<p class="sub">Your options: ${st.options.map(esc).join(" · ")}</p>` : ""}</div>`
+                : "";
             card.innerHTML = cfg.tutorial && !this.skipped && n.result
                 ? `<h2>Walkthrough complete</h2><p>That's the whole game: <strong>listen</strong> to find out who, <strong>trace</strong> to find out where, then decide.</p>`
                 : this.mode !== "screen"
-                    ? `<details class="why"><summary>Goal: find out WHO (listen) and WHERE (trace), then decide</summary>${guideForCase(cfg, leans)}</details>` +
+                    ? status + `<details class="why"><summary>Goal: find out WHO (listen) and WHERE (trace), then decide</summary>${guideForCase(cfg, leans)}</details>` +
                         (this.lastExplain ? `<p class="ex-ar">${this.lastExplain.game}</p>` : "")
-                    : `<h2>${esc(cfg.title)}</h2>${guideForCase(cfg, leans)}` +
+                    : `<h2>${esc(cfg.title)}</h2>${status}${guideForCase(cfg, leans)}` +
                         (this.lastExplain ? `<div class="explain"><p class="ex-h">What just happened</p><p>${this.lastExplain.game}</p><p class="quantum"><span class="qtag">Quantum</span> ${this.lastExplain.quantum}</p></div>` : "") +
                         `<details class="win"><summary>How scoring works</summary><ul><li>Mira, right door: +100 (+5 per unused call)</li><li>Mira, wrong door: +20</li><li>Hang up on Mira: 0</li><li>Hang up on the impostor: +100 (+5 per unused call)</li><li>Let the impostor in: −100</li></ul></details>`;
             return;
@@ -304,10 +343,11 @@ export class Ui {
         const showNext = st.next || complete;
         card.innerHTML = `<p class="tag">Step ${this.stage + 1} of ${STAGES.length}</p><h2>${st.title}</h2>
       <p class="do">${complete ? "Done. Read what happened, then press Next." : st.doThis}</p>
+      ${complete && this.reaction ? `<p class="narr">“${TUT_REACT[this.reaction]}”</p>` : ""}
       ${complete && this.lastExplain ? `<div class="explain"><p>${this.lastExplain.game}</p></div>` : ""}
       ${this.mode === "screen" ? `<p>${st.body}</p><p class="quantum"><span class="qtag">Quantum</span> ${st.quantum}</p>`
             : `<p class="body-ar">${st.body}</p><details class="why"><summary>The quantum part</summary><p class="quantum"><span class="qtag">Quantum</span> ${st.quantum}</p></details>`}
-      ${showNext && this.stage < STAGES.length - 1 ? `<div class="sheet-buttons"><button type="button" class="btn btn-primary" id="stage-next">Next</button></div>` : ""}`;
+      <div class="sheet-buttons">${showNext && this.stage < STAGES.length - 1 ? `<button type="button" class="btn btn-primary" id="stage-next">Next</button>` : ""}<button type="button" class="btn btn-ghost" id="stage-replay" aria-label="Replay the narrator">▶ Replay</button></div>`;
         hl(complete ? "stage-next" : st.target ? st.target(n.dial) : null);
         if (this.stageSpoken !== this.stage && c.phase === "play") {
             this.stageSpoken = this.stage;
@@ -379,13 +419,24 @@ export class Ui {
         // sound and voice
         this.audio.lineOpen();
         const clearIdx = CLEAR_LINES.indexOf(r.text), staticIdx = STATIC_LINES.indexOf(r.text);
+        this.lastActive = performance.now();
+        // walkthrough: the narrator reacts to the result actually received, once the caller's line has played
+        const react = this.tutorial ? reactionFor(STAGES[this.stage].id, r) : null;
+        if (react)
+            this.reaction = react;
+        const lineId = r.line === "clear" ? "clear_" + clearIdx : "static_" + staticIdx;
         const speak = () => {
             if (r.line === "clear")
-                void this.audio.voiceLine("clear_" + clearIdx, r.text);
+                void this.audio.voiceLine(lineId, r.text);
             else {
                 this.audio.staticBurst();
-                void this.audio.voiceLine("static_" + staticIdx, "");
+                void this.audio.voiceLine(lineId, "");
             }
+            if (react)
+                void this.audio.clipSeconds(lineId).then((sec) => this.later(() => {
+                    if (this.reaction === react)
+                        void this.audio.voiceLine(react, TUT_REACT[react] ?? "");
+                }, 500 + 1000 * Math.min(4, sec)));
         };
         if (r.kind === "trace") {
             this.audio.traceBeeps();
@@ -395,6 +446,10 @@ export class Ui {
             this.later(speak, 200);
         if (!this.c.settings.gentle && Math.random() < 0.18)
             this.later(() => this.audio.knock(), 2600);
+        // suspense: as the line runs out, footsteps on the porch get closer (the same at both doors)
+        const nn = this.c.state.night;
+        if (!this.c.view().night.tutorial && nn.budget && nn.callsLeft <= nn.budget / 2)
+            this.later(() => this.audio.footsteps(1 - nn.callsLeft / nn.budget), 3200);
         if (this.c.state.night.callsLeft === 0) {
             if (this.tutorial)
                 this.stage = STAGES.length - 1; // out of calls: go straight to the decision
@@ -562,6 +617,7 @@ export class Ui {
         <li>The call leaned ${lean}.</li>
         ${rev.caller === "mimic" ? `<li>Its line ran ${cfg.mimicPhaseDeg}° out of step with Mira's.</li>` : ""}
         <li>You listened ${listens}× and traced ${traces}×, with ${n.callsLeft} call${n.callsLeft === 1 ? "" : "s"} to spare. ${cfg.id > 1 ? `The most telling dial settings tonight were ${best.join(" and ")}.` : ""}</li>
+        ${good ? "" : `<li class="advice"><strong>What went wrong, and a better plan:</strong> ${lossAdvice(res, posteriorSister(this.c.nights, cfg, this.c.meterAlphaDeg(), n.log), listens, doorTally(n.log).front, doorTally(n.log).side, best, door)}</li>`}
         <li>Points: <strong>${n.points >= 0 ? "+" : ""}${n.points}</strong></li>
       </ul>
       <div class="sheet-buttons"><button type="button" class="btn btn-primary" id="next">${this.c.state.index + 1 >= this.c.nights.nights.length ? "See how the night ends" : "Next call"}</button></div>`, "#next", () => this.showResult(res));
@@ -627,6 +683,7 @@ q1 (trace record):  ────────────────────
     }
     dispose() {
         this.disposed = true;
+        clearInterval(this.idleTimer);
         for (const h of this.timers)
             clearTimeout(h);
         this.timers = [];

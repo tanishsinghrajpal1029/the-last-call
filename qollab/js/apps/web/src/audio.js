@@ -261,6 +261,21 @@ export class Audio {
             /* ignore */
         }
     }
+    /** Slow wet footsteps on the porch, louder as `k` (0..1) rises; the same at both doors. */
+    footsteps(k) {
+        const n = 3 + Math.round(k * 3), g = 0.06 + 0.22 * k;
+        for (let i = 0; i < n; i++) {
+            const at = i * (0.62 - 0.12 * k) + (i % 2) * 0.05;
+            this.noise(0.12, 180 + 60 * (i % 2), 0.9, g, at, "lowpass");
+            this.tone(70, 0.1, g * 0.6, at, "sine", 45);
+            this.noise(0.05, 2400, 2, g * 0.25, at + 0.04, "bandpass"); // water
+        }
+    }
+    /** Length of a voice clip in seconds (0 if it can't be decoded). */
+    async clipSeconds(id) {
+        const b = await this.clip(id);
+        return b ? b.duration : 0;
+    }
     knock() {
         for (let i = 0; i < 3; i++) {
             this.tone(90, 0.18, 0.22, i * 0.32, "sine", 55);

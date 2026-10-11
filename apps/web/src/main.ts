@@ -73,7 +73,7 @@ function showStart(message = ""): void {
     <form class="start-form" id="start-form">
       <div class="modes">
         <button type="submit" class="btn btn-primary btn-big" data-mode="xr" ${caps.xr ? "" : "disabled"}>Play in AR on your table <span class="sub">${caps.xr ? "Android Chrome (WebXR)" : "needs Chrome on an ARCore Android phone, over HTTPS"}</span></button>
-        <button type="submit" class="btn btn-primary btn-big" data-mode="gyro" ${caps.gyro ? "" : "disabled"}>Play in AR, no marker (iPhone) <span class="sub">${caps.gyro ? "camera + motion sensors: turn to look around; the house stays put" : "needs a phone camera, motion sensors and an HTTPS page"}</span></button>
+        <button type="submit" class="btn btn-primary btn-big" data-mode="gyro" ${caps.gyro ? "" : "disabled"}>Play in AR, no marker (iPhone) <span class="sub">${caps.gyro ? "camera + motion sensors: turn to look around, the house stays put. Rotation only: it follows turning, not walking" : "needs a phone camera, motion sensors and an HTTPS page"}</span></button>
         <button type="submit" class="btn btn-secondary btn-big" data-mode="marker" ${caps.camera ? "" : "disabled"}>Play in AR on a printed marker <span class="sub">${caps.camera ? "full table tracking on iPhone: walk around the house" : "needs a camera and an HTTPS page"}</span></button>
         <button type="submit" class="btn btn-secondary btn-big" data-mode="screen">Play on this screen <span class="sub">desktop or phone, keyboard friendly</span></button>
       </div>

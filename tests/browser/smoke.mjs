@@ -54,6 +54,8 @@ try {
   let log = await page.$$eval("#log li", (l) => l.map((x) => x.textContent));
   check("first listen logged as clear (ideal, Mira, balanced, dial 0)", log.length === 1 && /clear/.test(log[0]), log[0]);
   check("guide explains the result with both voiceprints", /Mira comes through clear over 99%/.test(await guide()));
+  check("narrator reacts to the result actually received (clear at dial 0)", /Clear\. Her voice came through both doors in step/.test(await page.textContent("#guide-card .narr")));
+  check("walkthrough offers a replay of the narrator", !!(await page.$("#stage-replay")));
   check("calls left decremented", /7 of 8/.test(await page.$eval("#calls-chip .pips", (e) => e.getAttribute("aria-label"))));
   check("WHO meter moved toward Mira", /Chance it's Mira: (9\d%|over 99%)/.test(await page.textContent("#meter")), await page.textContent("#meter"));
   await page.click("#stage-next");
@@ -122,7 +124,16 @@ try {
     await page.click("#answer");
     await page.waitForSelector("#sheet-wrap", { state: "hidden" });
     check(`night ${k}: guide shows the goal checklist, no stepper`, /WHO is calling\?/.test(await page.textContent("#guide-card")) && await page.$eval("#stepper", (c) => c.hidden));
+    check(`night ${k}: plain status before any evidence`, /WHO: unknown, no listens yet/.test(await page.textContent("#case-status")) && /calls left/.test(await page.textContent("#case-status")) && /Decide now/.test(await page.textContent("#case-status")));
     for (let i = 0; i < 3; i++) await page.click("#listen-btn");
+    const stat = await page.textContent("#case-status");
+    check(`night ${k}: status states the evidence without certainty words it hasn't earned`, /(Almost certainly Mira|Mira likely|Caller still unclear|Impostor likely|Almost certainly the impostor)/.test(stat) && !/\b(is Mira|definitely)\b/.test(stat), stat);
+    if (k === 2) {
+      await page.evaluate(() => { const u = window.__lastCall.ui; u.lastActive = performance.now() - 30000; u.lastHesitate = -1e9; });
+      await page.waitForTimeout(1300);
+      const toast = await page.textContent("#toast");
+      check("hesitating: the caller speaks through the door, marked as not evidence", /Through the door: .*not on the line, not evidence/.test(toast), toast + JSON.stringify(await page.evaluate(() => { const u = window.__lastCall.ui; return { la: performance.now() - u.lastActive, lh: performance.now() - u.lastHesitate, tut: u.tutorial, res: u.c.state.night.result }; })));
+    }
     if (k === 3) {
       check("after a listen the guide explains it in game and quantum terms", /What just happened/.test(await page.textContent("#guide-card")) && /Quantum/i.test(await page.textContent("#guide-card")));
       await page.screenshot({ path: path.join(root, "artifacts", "screen_case.png") });
@@ -130,6 +141,9 @@ try {
     await page.click("#hangup");
     await page.click("#yes");
     await page.waitForSelector(".sheet-result", { timeout: 5000 });
+    const rs = await page.textContent(".sheet-result");
+    if (/It was Mira/.test(rs)) check(`night ${k}: a wrong hang-up explains what happened and a better plan`, /a better plan/.test(rs), rs.slice(0, 200));
+    else check(`night ${k}: a right call shows no loss advice`, !/a better plan/.test(rs));
   }
   await page.click("#next");
   await page.waitForSelector(".sheet-ending");
@@ -164,6 +178,7 @@ try {
   for (let i = 0; i < 1; i++) await page.click("#hangup");
   await page.click("#yes");
   await page.waitForSelector(".sheet-result");
+  check("hanging up on Mira without listening says why and what to do instead", /hung up without listening/.test(await page.textContent(".sheet-result")));
   for (let k = 2; k <= 4; k++) { await page.click("#next"); await page.waitForSelector(".sheet-intro"); await page.click("#answer"); await page.click("#hangup"); await page.click("#yes"); await page.waitForSelector(".sheet-result"); }
   await page.click("#next");
   await page.waitForSelector(".sheet-ending");

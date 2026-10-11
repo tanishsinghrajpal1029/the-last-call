@@ -239,4 +239,10 @@ input[type="radio"], input[type="checkbox"] { width: 22px; height: 22px; accent-
 .bonus .chart { max-width: 560px; }
 
 .scare-layer { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 50; pointer-events: none; display: none; }
+.status { border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 10px; margin: 6px 0 10px; background: rgba(255,255,255,0.03); }
+.status p { margin: 0; }
+.status .sub { margin-top: 4px; }
+.narr { font-style: italic; border-left: 3px solid var(--line); padding-left: 8px; }
+.goal-line { display: block; margin-bottom: 6px; }
+.advice { margin-top: 6px; }
 

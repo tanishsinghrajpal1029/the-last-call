@@ -4,11 +4,13 @@
  * it means in quantum terms. Stages gate the controls so a new player is never
  * lost.
  */
+/** The whole game in one sentence (also spoken by the narrator). */
+export const GOAL = "Someone is outside. Use the intercom to find out who it is and which door, then let Mira in through the right door, or hang up on the mimic.";
 export const STAGES = [
     {
         id: "goal", short: "Goal", title: "How to win", voice: "stage_goal", allow: [], next: true,
         doThis: "Read this, then press Next.",
-        body: "Each call, something that sounds like your little sister Mira wants to come in. Before the line dies you must answer two questions: <strong>WHO</strong> is calling (Mira, or the thing copying her voice?) and <strong>WHERE</strong> she is (front door or side door?). Then open the right door for Mira, or hang up on the impostor.",
+        body: "<strong class=\"goal-line\">" + GOAL + "</strong> Two questions every call: <strong>WHO</strong> is calling (Mira, or the thing copying her voice?) and <strong>WHERE</strong> is she (front door or side door?). <strong>Listen</strong> answers who. <strong>Trace</strong> answers where. Then decide before the line dies.",
         quantum: "The call is a <em>qubit</em>: a quantum bit. Its two states are the two doors.",
     },
     {
@@ -80,4 +82,97 @@ export function explainCall(r, sisterClear, mimicClear) {
         game: `Listened at dial ${r.dial}: <strong>${r.line === "clear" ? "clear line" : "static"}</strong>. At this setting Mira comes through clear ${p(sisterClear)} of the time; the impostor ${p(mimicClear)}.${rare}`,
         quantum: `The two door halves were recombined and measured once. ${Math.abs(sisterClear - mimicClear) < 0.15 ? "Here both voiceprints predict almost the same thing, so this listen told you little. Try a dial where the lines are far apart." : "The voiceprints differ a lot here, so this listen was good evidence."}`,
     };
+}
+/**
+ * Walkthrough only: the narrator reacts to the result the player actually got.
+ * Texts must match shared/voice_lines.json (checked by the core tests).
+ */
+export const TUT_REACT = {
+    tut_listen_clear: "Clear. Her voice came through both doors in step, and the two halves added up.",
+    tut_listen_static: "Static. At dial zero that's rare: one noisy shot. Each call is random, so one listen is never the whole story.",
+    tut_dial4_static: "Static. Half a turn out of step, the two halves cancel each other out.",
+    tut_dial4_clear: "Clear, by chance. Out of step, she should mostly cancel. Patterns show up over several listens.",
+    tut_trace: "The trace found the door. But now the line is a coin flip, whoever is calling. Knowing where cost you who.",
+};
+export function reactionFor(stageId, r) {
+    if (stageId === "listen" && r.kind === "listen" && r.dial === 0)
+        return r.line === "clear" ? "tut_listen_clear" : "tut_listen_static";
+    if (stageId === "interference" && r.kind === "listen" && r.dial === 4)
+        return r.line === "static" ? "tut_dial4_static" : "tut_dial4_clear";
+    if (stageId === "trace" && r.kind === "trace")
+        return "tut_trace";
+    return null;
+}
+/**
+ * Heard through the door (not on the line) when the player hesitates. The same
+ * pool for Mira and the mimic, chosen at random: never evidence.
+ */
+export const HESITATE = {
+    door_hello: "Hello?",
+    door_still: "Are you still there?",
+    door_light: "I can see your light on.",
+};
+/**
+ * Plain-language state of the case: how sure the evidence is, never more sure
+ * than it is. `pMira` is null when the WHO meter is switched off.
+ */
+export function caseStatus(pMira, listens, front, side, leans, callsLeft, bestDials) {
+    let who;
+    if (pMira === null)
+        who = "WHO: read the voiceprint chart";
+    else if (!listens)
+        who = "WHO: unknown, no listens yet";
+    else if (pMira > 0.97)
+        who = "Almost certainly Mira";
+    else if (pMira > 0.8)
+        who = "Mira likely";
+    else if (pMira >= 0.2)
+        who = "Caller still unclear";
+    else if (pMira >= 0.03)
+        who = "Impostor likely";
+    else
+        who = "Almost certainly the impostor";
+    let where;
+    const margin = Math.abs(front - side), lead = front > side ? "front" : "side";
+    if (!leans)
+        where = "either door works tonight";
+    else if (front + side === 0)
+        where = "door unknown, no traces yet";
+    else if (margin === 0)
+        where = "door uncertain (traces tied)";
+    else if (margin === 1)
+        where = `leans ${lead}, but still uncertain`;
+    else
+        where = `leans ${lead}`;
+    const options = [];
+    if (callsLeft > 0) {
+        options.push(`Listen (at dial ${bestDials.join(" or ")} tells you most) for more WHO evidence`);
+        if (leans)
+            options.push("Trace for more WHERE evidence");
+    }
+    options.push(callsLeft > 0 ? "Decide now" : "Decide: the line is dead");
+    return { who, where, options };
+}
+/** After a wrong decision: what happened and a better plan for next time. */
+export function lossAdvice(res, pMira, listens, front, side, bestDials, leanDoor) {
+    const pc = (x) => (x > 0.99 ? "over 99%" : x < 0.01 ? "under 1%" : Math.round(100 * x) + "%");
+    const dials = `dial ${bestDials.join(" or ")}`;
+    if (res === "letIn") {
+        if (!listens)
+            return `You opened without listening, so you had no evidence of who was calling. Next time, listen a few times first, at ${dials}, where the two voiceprints differ most.`;
+        return pMira >= 0.5
+            ? `Your listens made Mira look ${pc(pMira)} likely: a hint, not proof. Random shots can mislead you. Next time, spend more calls listening at ${dials} until the meter is near the end before you open.`
+            : `Your evidence already favoured the impostor (Mira only ${pc(pMira)}) when you opened. When the WHO meter leans to the impostor, hang up.`;
+    }
+    if (res === "abandoned") {
+        if (!listens)
+            return `You hung up without listening. Listen first: Mira's voiceprint is clear at 0 and static at 4, shifted for the impostor.`;
+        return pMira >= 0.5
+            ? `Your evidence favoured Mira (${pc(pMira)}) but you hung up. When the meter leans to Mira, open the door she leans toward.`
+            : `Your listens made the impostor look likely (Mira ${pc(pMira)}), but it was really her: a run of unlucky shots. Listening at ${dials} separates the two fastest.`;
+    }
+    const t = front + side;
+    if (!t)
+        return `You chose a door without tracing. Listening can't tell the doors apart; only Trace can. Save two or three calls for tracing.`;
+    return `Your traces landed front ${front}, side ${side}, but the call leaned ${leanDoor}. A lean is a probability, so a few traces can point the wrong way. Trace an odd number of times (3 or more) before choosing.`;
 }

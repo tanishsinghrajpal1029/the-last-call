@@ -4,6 +4,9 @@
 
 This effort is supported by Qollab & IonQ
 
+> **The goal, in one sentence:** someone is outside. Use the intercom to find out who it is and
+> which door, then let Mira in through the right door, or hang up on the mimic.
+
 Late at night, in a storm, your little sister Mira is outside and asks you to let her in. The intercom shows her at the
 front door **and** the side door at the same time: one call, two entrances. Something that sounds
 exactly like her has been calling too.
@@ -32,12 +35,15 @@ the evidence of who they are.**
 | Any screen | *Play on this screen* (keyboard: ← → dial, L listen, T trace) |
 | **Qollab** | upload the contents of `qollab/`, choose a backend in *Select QPU*, press **Run**: one batched job measures every circuit the game can need, then you play on those shots |
 
-**New players get a 7-step walkthrough** (call 1), shown in the Guide on the left: How to win →
-Two doors (superposition) → Listen → Turn the dial (interference) → The voiceprint → Trace
-(measurement destroys interference) → Decide. Each step locks the controls except the one to use,
-then explains the result in plain words and in quantum terms. After that, the Guide shows a
-goal checklist (WHO? WHERE? DECIDE) and explains every call you make; the Case file shows the
-two answers building up.
+**New players get a short spoken walkthrough** (call 1, 7 steps, skippable): How to win → Two
+doors (superposition) → Listen → Turn the dial (interference) → The voiceprint → Trace (measurement
+destroys interference) → Decide. Each step unlocks only the control to use; the narrator then
+reacts to the result you actually got, with Replay on every step. After that the Guide shows a
+plain status line, e.g. **"Mira likely · leans front, but still uncertain · 3 calls left"**, and
+your options (listen, trace, or decide now) without choosing for you. A wrong decision explains
+what happened from your own evidence and suggests a better plan. Under the door cameras, the two
+halves of the call visibly travel to the handset: in step they add up, out of step they cancel,
+and a trace records the door and flattens the pattern.
 
 Four calls make one night: the walkthrough, then three calls where the caller is Mira or the mimic
 (50/50, fixed before the first call), with the mimic's phase offset shrinking from 180° to 45°

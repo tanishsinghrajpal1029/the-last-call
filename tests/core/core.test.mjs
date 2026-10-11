@@ -202,6 +202,27 @@ test("every spoken game line has a recorded clip with the same text", async () =
   for (const l of voices.lines) assert.ok(manifest.files[l.id] && manifest.files[l.id].text === l.text, "clip for " + l.id + " is current");
 });
 
+test("walkthrough reactions and door lines have clips with the same text; status never overclaims", async () => {
+  const G = await import(path.join(root, "build/js/apps/web/src/guide.js"));
+  const voices = JSON.parse(readFileSync(path.join(root, "shared/voice_lines.json"), "utf8"));
+  const byId = Object.fromEntries(voices.lines.map((l) => [l.id, l.text]));
+  for (const [k, t] of Object.entries({ ...G.TUT_REACT, ...G.HESITATE })) assert.equal(byId[k], t, k);
+  assert.ok(byId.stage_goal.startsWith(G.GOAL));
+  // reactions follow the result actually received
+  assert.equal(G.reactionFor("listen", { kind: "listen", dial: 0, line: "static" }), "tut_listen_static");
+  assert.equal(G.reactionFor("interference", { kind: "listen", dial: 4, line: "static" }), "tut_dial4_static");
+  assert.equal(G.reactionFor("trace", { kind: "trace", dial: 0, line: "clear", door: "front" }), "tut_trace");
+  assert.equal(G.reactionFor("listen", { kind: "listen", dial: 3, line: "clear" }), null);
+  // status language: a probability is never stated as certainty; one-trace margins stay uncertain
+  assert.equal(G.caseStatus(0.85, 3, 1, 0, true, 3, [2, 6]).who, "Mira likely");
+  assert.equal(G.caseStatus(0.85, 3, 1, 0, true, 3, [2, 6]).where, "leans front, but still uncertain");
+  assert.equal(G.caseStatus(0.5, 2, 2, 2, true, 1, [2, 6]).where, "door uncertain (traces tied)");
+  assert.equal(G.caseStatus(null, 2, 0, 0, false, 1, [2, 6]).who, "WHO: read the voiceprint chart");
+  assert.deepEqual(G.caseStatus(0.6, 1, 0, 0, true, 0, [2]).options, ["Decide: the line is dead"]);
+  assert.match(G.lossAdvice("letIn", 0.7, 3, 0, 0, [2, 6], "front"), /hint, not proof/);
+  assert.match(G.lossAdvice("wrongDoor", 0.9, 3, 1, 2, [2, 6], "front"), /odd number/);
+});
+
 test("bonus eraser: TS simulator matches the Python reference to 1e-12; groups cancel; flow", async () => {
   const B = await J("bonus.js");
   for (const r of table.bonusEraserRows) {

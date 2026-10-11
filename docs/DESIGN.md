@@ -11,14 +11,52 @@ The player needs two answers and the two tools each give one:
 | Who is calling? | Listen at chosen dial settings | a traced call is 50/50 at every dial, for both callers |
 | Which door? | Trace | listening depends only on sin α, identical for both doors |
 
+## The objective, in one sentence
+
+> Someone is outside. Use the intercom to find out who it is and which door, then let Mira in
+> through the right door, or hang up on the mimic.
+
+The narrator says it at the start of the walkthrough and the Guide keeps WHO → WHERE → DECIDE in
+view on every call.
+
 ## The walkthrough (call 1)
 
-Seven gated steps in the Guide panel: How to win → Two doors (superposition) → Listen → Turn the
-dial (interference) → The voiceprint → Trace (measurement destroys interference) → Decide. Each
-step enables only the control it teaches, highlights it, then explains the actual result in game
-terms and quantum terms. The walkthrough never lets optional calls use up the calls later steps
-need, and jumps straight to the decision if the calls run out. From call 2 on, the Guide shows a
-WHO / WHERE / DECIDE checklist with a tip, and a "What just happened" explanation after each call.
+Seven gated, spoken steps: How to win → Two doors (superposition) → Listen → Turn the dial
+(interference) → The voiceprint → Trace (measurement destroys interference) → Decide. Each step
+enables only the control it teaches and highlights it. After each action the narrator reacts to
+the result the player actually got (for example "Static. Half a turn out of step, the two halves
+cancel each other out", or, after a rare noisy shot, that one listen is never the whole story).
+Every step has Replay; the whole walkthrough can be skipped. Equations stay in the optional
+"quantum" notes and How it works. The walkthrough never lets optional calls use up the calls
+later steps need, and jumps to the decision if the calls run out.
+
+## After the walkthrough: the player chooses
+
+From call 2 the Guide shows a plain status line and the options, without choosing for the player:
+
+> **Mira likely** · leans front, but still uncertain · 3 calls left
+> Your options: Listen (dial 2 or 6 tells you most) · Trace · Decide now
+
+The wording never claims more than the evidence: "almost certainly" only above 97%, one-trace
+margins stay "uncertain". A wrong decision explains what happened from the player's own evidence
+and suggests a better plan (e.g. "Your listens made Mira look 70% likely: a hint, not proof…").
+
+## Seeing the physics in the scene
+
+Under the door cameras, the two halves of the call travel from the doors to the handset; the dial
+visibly delays the side half. The handset shows how often the line would come through clear at
+this dial **for each hypothesis** (Mira, and the impostor's known offset), so it never reveals the
+real caller, and flashes with what was heard. After a trace the traced door's half carries a red
+record dot and both patterns go flat ("door recorded: pattern gone"); the next, fresh call
+interferes again.
+
+## Suspense
+
+The figure creeps closer as calls run out, footsteps on the porch get louder in the second half of
+each call's budget, and if the player hesitates (about 20 s) the caller speaks *through the door*
+("Are you still there?"), marked on screen as not on the line and not evidence; the same lines for
+Mira and the mimic. The strongest scare comes only after letting the mimic in (full-screen in AR).
+Gentle mode removes loud stingers and the quick scares.
 
 ## Bonus scene
 

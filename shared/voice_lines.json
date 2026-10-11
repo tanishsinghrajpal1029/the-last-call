@@ -1,5 +1,5 @@
 {
- "version": "voices-v2",
+ "version": "voices-v3",
  "model": "Piper en-us-libritts-high (LibriTTS, CC BY 4.0)",
  "voices": {
   "mira": {
@@ -184,7 +184,7 @@
   },
   {
    "id": "stage_goal",
-   "text": "Every call, two questions. Who is calling, and which door. Listen to learn who. Trace to learn where.",
+   "text": "Someone is outside. Use the intercom to find out who it is and which door, then let Mira in through the right door, or hang up on the mimic. Listen to learn who. Trace to learn where.",
    "voice": "narrator",
    "fx": "room"
   },
@@ -223,6 +223,54 @@
    "text": "Tonight, either door is safe. Open one.",
    "voice": "narrator",
    "fx": "room"
+  },
+  {
+   "id": "tut_listen_clear",
+   "voice": "narrator",
+   "fx": "room",
+   "text": "Clear. Her voice came through both doors in step, and the two halves added up."
+  },
+  {
+   "id": "tut_listen_static",
+   "voice": "narrator",
+   "fx": "room",
+   "text": "Static. At dial zero that's rare: one noisy shot. Each call is random, so one listen is never the whole story."
+  },
+  {
+   "id": "tut_dial4_static",
+   "voice": "narrator",
+   "fx": "room",
+   "text": "Static. Half a turn out of step, the two halves cancel each other out."
+  },
+  {
+   "id": "tut_dial4_clear",
+   "voice": "narrator",
+   "fx": "room",
+   "text": "Clear, by chance. Out of step, she should mostly cancel. Patterns show up over several listens."
+  },
+  {
+   "id": "tut_trace",
+   "voice": "narrator",
+   "fx": "room",
+   "text": "The trace found the door. But now the line is a coin flip, whoever is calling. Knowing where cost you who."
+  },
+  {
+   "id": "door_hello",
+   "voice": "mira",
+   "fx": "child_distant",
+   "text": "Hello?"
+  },
+  {
+   "id": "door_still",
+   "voice": "mira",
+   "fx": "child_distant",
+   "text": "Are you still there?"
+  },
+  {
+   "id": "door_light",
+   "voice": "mira",
+   "fx": "child_distant",
+   "text": "I can see your light on."
   }
  ]
 }
