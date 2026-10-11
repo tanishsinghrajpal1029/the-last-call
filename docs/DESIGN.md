@@ -20,6 +20,12 @@ terms and quantum terms. The walkthrough never lets optional calls use up the ca
 need, and jumps straight to the decision if the calls run out. From call 2 on, the Guide shows a
 WHO / WHERE / DECIDE checklist with a tip, and a "What just happened" explanation after each call.
 
+## Bonus scene
+
+After the ending: Sweep (8 traced calls at each of 8 dials, 3 sweeps) → Sort by the eraser's
+reading → Decide (open a door for Mira, hang up on the impostor). Decisions unlock only after
+sorting. Correct: +100 (+20 per unused sweep); letting the impostor in: −100.
+
 ## A night
 
 | Call | Calls | Lean (α) | Mimic offset | Caller |

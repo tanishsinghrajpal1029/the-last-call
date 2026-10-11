@@ -60,6 +60,18 @@ measurement basis and recombination; it is not a claim that every measurement gi
 The game's evidence meter uses the full likelihood of every call (including traces), and the tests
 check that traces leave it unchanged exactly.
 
+## Bonus: the quantum eraser
+
+Trace as before (CNOT onto q1), then apply H to q1 before measuring: the record is read in the X
+basis, which carries no door information. For α = 90°:
+
+  P(+, clear) = P(−, static) = (1 + cos(θ − φ)) / 4,  P(+, static) = P(−, clear) = (1 − cos(θ − φ)) / 4.
+
+Within the + group the clear rate is (1 + cos(θ − φ))/2, Mira's full voiceprint; the − group shows
+the opposite fringe; together they are flat (½ at every dial). Nothing is changed in the past: the
+patterns appear only when the shots are sorted by the eraser's result. Formula = density matrix
+(Python) = TypeScript simulator to 1e-12, ideal and noisy (`bonusEraserRows` in the reference table).
+
 ## Noise
 
 `shared/nights.json` defines an **illustrative** channel used by the web app's noise mode and by

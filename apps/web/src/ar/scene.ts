@@ -40,6 +40,31 @@ const BASE_WIDTH = 0.34;
 
 export class HousePainter {
   private figTex: WebGLTexture | null = null;
+  private plaques = new Map<string, WebGLTexture>();
+
+  /** "FRONT DOOR" / "SIDE DOOR" name plates, so AR players always know which is which. */
+  private plaque(text: string): WebGLTexture {
+    let t = this.plaques.get(text);
+    if (!t) {
+      const c = document.createElement("canvas");
+      c.width = 256;
+      c.height = 64;
+      const g = c.getContext("2d")!;
+      g.fillStyle = "rgba(20,16,10,0.92)";
+      g.fillRect(4, 8, 248, 48);
+      g.strokeStyle = "#c9a35a";
+      g.lineWidth = 3;
+      g.strokeRect(4, 8, 248, 48);
+      g.fillStyle = "#f3e2b8";
+      g.font = "700 30px Georgia, serif";
+      g.textAlign = "center";
+      g.textBaseline = "middle";
+      g.fillText(text, 128, 33);
+      t = this.r.texture(c);
+      this.plaques.set(text, t);
+    }
+    return t;
+  }
   constructor(private r: Renderer) {}
 
   draw(board: Mat4, c: Controller, width: number, now: number): void {
@@ -85,6 +110,8 @@ export class HousePainter {
       sphere([x, 0.1, -0.026], 0.012, withA(C.warm, 0.3 + 0.7 * lampOn), lampOn);
       // label on the step
       r.drawLabel(door === "front" ? "F" : "S", at(multiply(translation(x, 0.002, 0.0), scaling(0.022, 1, 0.022))), C.label);
+      r.drawTextured(this.plaque(door === "front" ? "FRONT DOOR" : "SIDE DOOR"),
+        at(multiply(translation(x, 0.128, -0.026), multiply(rotationX(Math.PI / 2), scaling(0.07, 1, 0.0175)))), [1, 1, 1, 1]);
       // figure: equal at both doors (one call, two entrances); a trace shows it at the traced door only
       let a = 0.55;
       if (traced) a = traced === door ? 0.95 : 0;

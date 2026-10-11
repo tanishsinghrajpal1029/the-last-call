@@ -1,7 +1,7 @@
 {
  "note": "Verbatim copies of the repository's canonical quantum modules.",
  "files": {
-  "circuits.py": "f38ad30101751e1c9e8391fef28b8f68595a9935c1eea75b4d3ae41d0eb77bbc",
-  "decode.py": "a80f201f1318b5f5fdf35bbce24fae1969f1042f5f4d450ef99ffa09dc54e838"
+  "circuits.py": "5b413c0a900af9e44c286de77a7b421b4aa0ce45ef26c55b5f4495d4250ba52d",
+  "decode.py": "00138f9363ccfb35b1406d98cd7abcd1196a48efbffb765a4ab7e03b5c966a80"
  }
 }

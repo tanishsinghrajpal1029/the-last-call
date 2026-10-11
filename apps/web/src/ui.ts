@@ -44,6 +44,10 @@ export class Ui {
   onExit: (() => void) | null = null;
   onRestart: (() => void) | null = null;
   onReposition: (() => void) | null = null;
+  /** set by the host to offer the bonus eraser scene after the ending */
+  onBonus: (() => void) | null = null;
+  /** the player chose to skip the walkthrough (call 1 is then played freely) */
+  private skipped = false;
   /** AR views may need to show/hide their own placement UI; called when the sheet state changes. */
   onSheet: ((open: boolean) => void) | null = null;
 
@@ -72,7 +76,7 @@ export class Ui {
   }
 
   private get tutorial(): boolean {
-    return this.c.view().night.tutorial && this.c.phase === "play" && !this.c.state.night.result;
+    return this.c.view().night.tutorial && !this.skipped && this.c.phase === "play" && !this.c.state.night.result;
   }
 
   private allowed(a: Action): boolean {
@@ -229,7 +233,7 @@ export class Ui {
       for (const b of this.root.querySelectorAll(".hl")) b.classList.remove("hl");
       if (id) this.q("#" + id)?.classList.add("hl");
     };
-    if (cfg.tutorial) {
+    if (cfg.tutorial && !this.skipped) {
       stepper.hidden = false;
       stepper.innerHTML = STAGES.map((s, i) => `<li class="${i < this.stage || (i === this.stage && n.result) ? "done" : i === this.stage ? "now" : ""}" ${i === this.stage ? 'aria-current="step"' : ""}><span class="num">${i < this.stage ? "✓" : i + 1}</span>${s.short}</li>`).join("");
     } else stepper.hidden = true;
@@ -238,7 +242,7 @@ export class Ui {
       const plan = c.state.plan[c.state.index]!;
       const leans = cfg.alphaChoicesDeg.some((a) => a !== 90);
       void plan;
-      card.innerHTML = cfg.tutorial
+      card.innerHTML = cfg.tutorial && !this.skipped && n.result
         ? `<h2>Walkthrough complete</h2><p>That's the whole game: <strong>listen</strong> to find out who, <strong>trace</strong> to find out where, then decide.</p>`
         : this.mode !== "screen"
         ? `<details class="why"><summary>Goal: find out WHO (listen) and WHERE (trace), then decide</summary>${guideForCase(cfg, leans)}</details>` +
@@ -425,9 +429,14 @@ export class Ui {
       <p class="story">${esc(INTRO[cfg.id] ?? "")}</p>
       <p class="intel"><strong>What you know:</strong> ${esc(cfg.intel)}</p>
       <p class="sub">${cfg.budget} calls before the line dies. Listening and tracing each use one call. Turning the dial is free.</p>
-      <div class="sheet-buttons"><button type="button" class="btn btn-ghost" id="hear">▶ Hear it read</button><button type="button" class="btn btn-primary" id="answer">${cfg.tutorial ? "Start the walkthrough" : "Answer the call"}</button></div>`, "#answer", () => this.showIntro());
+      <div class="sheet-buttons"><button type="button" class="btn btn-ghost" id="hear">▶ Hear it read</button><button type="button" class="btn btn-primary" id="answer">${cfg.tutorial ? "Start the walkthrough" : "Answer the call"}</button></div>
+      ${cfg.tutorial ? `<p class="sub skip-line"><button type="button" class="btn btn-ghost" id="skip">Skip the walkthrough</button> Play this first call freely, with no step-by-step guide.</p>` : ""}`, "#answer", () => this.showIntro());
     this.sheetButtons(this.q("#sheet"), {
       hear: () => void this.audio.voiceLine("intro_" + cfg.id, INTRO[cfg.id] ?? ""),
+      skip: () => {
+        this.skipped = true;
+        (this.q("#answer") as HTMLButtonElement).click();
+      },
       answer: () => {
         this.closeSheet();
         this.audio.stopVoice();
@@ -504,8 +513,8 @@ export class Ui {
       <table class="score-table"><thead><tr><th scope="col">Call</th><th scope="col">Caller</th><th scope="col">You</th><th scope="col">Points</th></tr></thead><tbody>${rows}</tbody>
       <tfoot><tr><th scope="row" colspan="3">Total</th><td><strong>${s.score}</strong></td></tr></tfoot></table>
       <p class="sub">Outcomes came from: ${esc(this.c.sourceLabel)}.</p>
-      <div class="sheet-buttons"><button type="button" class="btn btn-primary" id="again">Play again</button><button type="button" class="btn btn-ghost" id="how2">How it works</button><button type="button" class="btn btn-ghost" id="exit2">Exit</button></div>`, "#again", () => this.showEnding());
-    this.sheetButtons(this.q("#sheet"), { again: () => this.onRestart?.(), how2: () => this.showHow(), exit2: () => this.onExit?.() });
+      <div class="sheet-buttons">${this.onBonus ? `<button type="button" class="btn btn-trace" id="bonus">Bonus: The Eraser</button>` : ""}<button type="button" class="btn btn-primary" id="again">Play again</button><button type="button" class="btn btn-ghost" id="how2">How it works</button><button type="button" class="btn btn-ghost" id="exit2">Exit</button></div>`, "#again", () => this.showEnding());
+    this.sheetButtons(this.q("#sheet"), { again: () => this.onRestart?.(), how2: () => this.showHow(), exit2: () => this.onExit?.(), bonus: () => this.onBonus?.() });
     this.audio.stopAmbience();
   }
 

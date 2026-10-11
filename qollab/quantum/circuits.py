@@ -35,15 +35,17 @@ def call_width(trace):
     return 2 if trace else 1
 
 
-def call_gate_list(alpha, theta, phi, trace):
+def call_gate_list(alpha, theta, phi, trace, eraser=False):
     """Logical gate sequence (name, angle or None, qubits)."""
     for name, v in (("alpha", alpha), ("theta", theta), ("phi", phi)):
         if not isinstance(v, (int, float)) or isinstance(v, bool) or not math.isfinite(v):
             raise ValueError("%s must be a finite number" % name)
     gates = [("ry", float(alpha), (0,)), ("p", float(theta), (0,)), ("p", -float(phi), (0,))]
-    if trace:
+    if trace or eraser:
         gates.append(("cx", None, (0, 1)))
     gates.append(("h", None, (0,)))
+    if eraser:  # bonus scene: read the door record in the X basis
+        gates.append(("h", None, (1,)))
     return gates
 
 
@@ -54,13 +56,14 @@ def logical_gate_counts(trace):
     return counts
 
 
-def build_call(alpha, theta, phi, trace, name=None):
-    """Qiskit QuantumCircuit for one call. Classical bit i holds qubit i."""
+def build_call(alpha, theta, phi, trace, name=None, eraser=False):
+    """Qiskit QuantumCircuit for one call. Classical bit i holds qubit i.
+    eraser=True: the bonus scene (trace, then H on the record before measuring)."""
     from qiskit import QuantumCircuit
 
-    width = call_width(trace)
-    qc = QuantumCircuit(width, width, name=name or ("trace" if trace else "listen"))
-    for gate, angle, qubits in call_gate_list(alpha, theta, phi, trace):
+    width = call_width(trace or eraser)
+    qc = QuantumCircuit(width, width, name=name or ("eraser" if eraser else "trace" if trace else "listen"))
+    for gate, angle, qubits in call_gate_list(alpha, theta, phi, trace, eraser):
         if gate == "ry":
             qc.ry(angle, qubits[0])
         elif gate == "p":
@@ -68,6 +71,6 @@ def build_call(alpha, theta, phi, trace, name=None):
         elif gate == "cx":
             qc.cx(qubits[0], qubits[1])
         elif gate == "h":
-            qc.h(qubits[0])
+            qc.h(qubits[0])  # q0, or q1 for the eraser
     qc.measure(list(range(width)), list(range(width)))
     return qc

@@ -229,3 +229,12 @@ input[type="radio"], input[type="checkbox"] { width: 22px; height: 22px; accent-
 .ui-ar .col-left { align-items: stretch; }
 .ui-ar .body-ar { font-size: 0.86rem; line-height: 1.4; }
 
+/* bonus: eraser groups */
+.pt-all { fill: #9aa6a4; stroke: #000; }
+.pt-plus { fill: var(--teal); stroke: #000; }
+.pt-minus { fill: #b48cff; stroke: #000; }
+.legend .pt-plus-l { background: var(--teal) !important; }
+.legend .pt-minus-l { background: #b48cff !important; }
+.skip-line { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.bonus .chart { max-width: 560px; }
+

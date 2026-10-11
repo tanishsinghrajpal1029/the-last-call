@@ -136,6 +136,37 @@ try {
   const end = await page.textContent(".sheet-ending");
   check("ending sheet with score table and data source", /Total/.test(end) && /ideal model/.test(end));
   await page.screenshot({ path: path.join(root, "artifacts", "screen_ending.png") });
+  // bonus: the quantum eraser
+  check("ending offers the bonus eraser scene", !!(await page.$("#bonus")));
+  await page.click("#bonus");
+  await page.waitForSelector(".bonus #b-sweep");
+  check("bonus step 1 asks to sweep; decisions locked", /Sweep all dials/.test(await page.textContent("#b-card")) && await page.$eval("#b-front", (b) => b.disabled));
+  await page.click("#b-sweep");
+  check("after a traced sweep the guide explains it is flat and asks to sort", /Sort by the eraser/.test(await page.textContent("#b-card")));
+  await page.screenshot({ path: path.join(root, "artifacts", "bonus_flat.png") });
+  await page.click("#b-sort");
+  check("sorting reveals two groups and unlocks the decision", /\+ group/.test(await page.textContent("#b-chart")) && !(await page.$eval("#b-hang", (b) => b.disabled)));
+  check("meter uses the sorted groups", /Chance it's Mira from the sorted groups/.test(await page.textContent("#b-meter")));
+  await page.screenshot({ path: path.join(root, "artifacts", "bonus_sorted.png") });
+  const mira = /Chance it's Mira from the sorted groups: <strong>(over 99%|9\d%)/.test(await page.innerHTML("#b-meter"));
+  await page.click(mira ? "#b-front" : "#b-hang");
+  await page.waitForTimeout(300);
+  check("bonus decision resolves with a result", /You chose right|Wrong call/.test(await page.textContent("#b-card")));
+  await page.click("#b-done");
+  await page.waitForSelector("#start-form");
+  await page.goto(`http://localhost:${port}/?seed=4242`);
+  await page.waitForSelector("#start-form");
+  await page.click('button[data-mode="screen"]');
+  await page.waitForSelector(".sheet-intro");
+  await page.click("#skip");
+  await page.waitForSelector("#sheet-wrap", { state: "hidden" });
+  check("Skip walkthrough: no stepper, goal checklist, all controls free", await page.$eval("#stepper", (e) => e.hidden) && /WHO is calling\?/.test(await page.textContent("#guide-card")) && !(await page.$eval("#trace-btn", (b) => b.disabled)));
+  for (let i = 0; i < 1; i++) await page.click("#hangup");
+  await page.click("#yes");
+  await page.waitForSelector(".sheet-result");
+  for (let k = 2; k <= 4; k++) { await page.click("#next"); await page.waitForSelector(".sheet-intro"); await page.click("#answer"); await page.click("#hangup"); await page.click("#yes"); await page.waitForSelector(".sheet-result"); }
+  await page.click("#next");
+  await page.waitForSelector(".sheet-ending");
   await page.click("#how2");
   check("how-it-works explains trace vs listen", /destroys the interference/.test(await page.textContent(".sheet-how")));
   await page.click("#close");

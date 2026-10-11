@@ -101,6 +101,34 @@ class TestModel(unittest.TestCase):
                 self.assertAlmostEqual(v, r["noisy"][o], places=12)
 
 
+class TestEraser(unittest.TestCase):
+    """Bonus scene: trace, then read the record in the X basis."""
+
+    def test_formula_matches_density_matrix(self):
+        from quantum.model import ideal_eraser
+        for a, t, p in settings():
+            exact = density_matrix_probabilities(a, t, p, True, None, True)
+            for o, v in ideal_eraser(a, t, p).items():
+                self.assertAlmostEqual(v, exact[o], places=12)
+
+    def test_groups_show_opposite_fringes_that_cancel(self):
+        a = math.pi / 2
+        for t in (0, math.pi):
+            for k in range(8):
+                pr = density_matrix_probabilities(a, t, dial_angle(k), True, None, True)
+                plus = pr["plus|clear"] / (pr["plus|clear"] + pr["plus|static"])
+                minus = pr["minus|clear"] / (pr["minus|clear"] + pr["minus|static"])
+                self.assertAlmostEqual(plus, (1 + math.cos(t - dial_angle(k))) / 2, places=12)
+                self.assertAlmostEqual(plus + minus, 1.0, places=12)
+                self.assertAlmostEqual(pr["plus|clear"] + pr["minus|clear"], 0.5, places=12)  # combined: flat
+
+    def test_eraser_gate_list(self):
+        g = call_gate_list(1.0, 0.0, 0.0, False, eraser=True)
+        self.assertEqual([x[0] for x in g], ["ry", "p", "p", "cx", "h", "h"])
+        self.assertEqual(g[-1][2], (1,))
+        self.assertEqual(classify(0b10, False, True), "minus|clear")
+
+
 class TestCircuits(unittest.TestCase):
     def test_gate_list(self):
         g = call_gate_list(1.0, 0.5, 0.25, False)

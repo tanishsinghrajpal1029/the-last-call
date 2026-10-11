@@ -22,7 +22,8 @@ cpSync(path.join(root, "qollab"), dir, { recursive: true });
 const SEED = "04242";
 const N = await import(path.join(root, "build/js/packages/core/src/nights.js"));
 const nights = JSON.parse(readFileSync(path.join(root, "shared/nights.json"), "utf8"));
-const plan = N.planRun(nights, SEED);
+const B = await import(path.join(root, "build/js/packages/core/src/bonus.js"));
+const plan = { nights: N.planRun(nights, SEED), bonus: { alphaDeg: nights.bonus.alphaDeg, thetaDeg: B.createBonus(nights.bonus, SEED + ":bonus").thetaDeg } };
 const mode = process.argv[2] === "broken" ? "broken" : "ok";
 const py = `
 import sys, json, os
@@ -81,25 +82,34 @@ try {
     check("fallback outcomes are labelled as the ideal model, not quantum results", /ideal model/.test(await page.textContent("#caption")));
     check("spoiler data table stays hidden", await page.$eval("#raw-details", (d) => d.hidden));
   } else {
-    check("run status names backend, 64 circuits and job", /built-in simulator \(test double\).*64 circuits × 16 shots.*fake-job-1/.test(status), status);
+    check("run status names backend, 72 circuits and job", /built-in simulator \(test double\).*72 circuits × 24 shots.*fake-job-1/.test(status), status);
     check("circuit drawings shown", /stub drawing: 2 qubits/.test(await page.textContent("#circuit")));
     check("spoiler data table available but collapsed", !(await page.$eval("#raw-details", (d) => d.hidden || d.open)));
     await page.waitForSelector(".sheet-intro");
-    await page.click("#answer");
-    await page.click("#stage-next");
-    await page.click("#stage-next");
+    await page.click("#skip"); // free play: this test spends every call
+    await page.waitForSelector("#sheet-wrap", { state: "hidden" });
     await page.click("#listen-btn");
     const cap = await page.textContent("#caption");
     check("in-game call uses a measured shot from the backend", /measured shot from built-in simulator \(test double\)/.test(cap), cap);
     check("night 1 dial 0 is clear on the ideal fake backend", /Listened at dial 0: clear line/.test(cap));
-    // spend every call at dial 4: every shot comes from the 16-shot bag, all static
-    await page.click("#stage-next");
+    // spend every call at dial 4: every shot comes from the measured bag, all static
     for (let i = 0; i < 4; i++) await page.click("#dial-up");
     for (let i = 0; i < 7; i++) await page.click("#listen-btn");
     const log = await page.$$eval("#log li", (l) => l.map((x) => x.textContent));
     check("all 7 listens at dial 4 are static (destructive interference in measured data)", log.slice(0, 7).every((t) => /dial 4 → static/.test(t)), log.slice(0, 7).join(" | "));
     check("budget exhausted after 8 calls", (await page.$eval("#listen-btn", (b) => b.disabled)));
     await page.screenshot({ path: path.join(root, "artifacts", "qollab_mock.png"), fullPage: false });
+    // finish the night, then the bonus scene must play on this run's eraser shots
+    await page.click("#hangup"); await page.click("#yes"); await page.waitForSelector(".sheet-result");
+    for (let k = 2; k <= 4; k++) { await page.click("#next"); await page.waitForSelector(".sheet-intro"); await page.click("#answer"); await page.click("#hangup"); await page.click("#yes"); await page.waitForSelector(".sheet-result"); }
+    await page.click("#next");
+    await page.waitForSelector("#bonus");
+    await page.click("#bonus");
+    await page.waitForSelector(".bonus #b-sweep");
+    for (let i = 0; i < 3; i++) await page.click("#b-sweep");
+    check("bonus scene: 3 sweeps from the run's eraser shots (24 per dial)", (await page.textContent("#b-sweeps")) === "Sweeps left 0" && /fresh shots from/.test(await page.textContent(".bonus")));
+    await page.click("#b-sort");
+    check("bonus scene: ideal fake backend gives a near-certain verdict after sorting", /(over 99%|under 1%)/.test(await page.textContent("#b-meter")), await page.textContent("#b-meter"));
   }
   check("no page errors", errors.length === 0, errors.join(" | ").slice(0, 400));
 } finally {

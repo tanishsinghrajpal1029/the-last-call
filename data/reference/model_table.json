@@ -11,7 +11,7 @@
   "p2": 0.012,
   "readout": 0.01
  },
- "generatedAt": "2026-10-10T15:14:18+00:00",
+ "generatedAt": "2026-10-11T01:54:10+00:00",
  "rows": [
   {
    "night": 1,
@@ -4427,6 +4427,376 @@
     "front|static": 0.12969472860824,
     "side|clear": 0.37030527139175984,
     "side|static": 0.37030527139175984
+   }
+  }
+ ],
+ "bonusEraserRows": [
+  {
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 0,
+   "ideal": {
+    "plus|clear": 0.5,
+    "plus|static": 0.0,
+    "minus|clear": 0.0,
+    "minus|static": 0.5
+   },
+   "idealDensityMatrix": {
+    "plus|clear": 0.4999999999999998,
+    "plus|static": 5.748367925732731e-18,
+    "minus|clear": 5.748367925732731e-18,
+    "minus|static": 0.4999999999999998
+   },
+   "noisy": {
+    "plus|clear": 0.4848560817934657,
+    "plus|static": 0.015143918206534077,
+    "minus|clear": 0.015143918206534077,
+    "minus|static": 0.4848560817934657
+   }
+  },
+  {
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 1,
+   "ideal": {
+    "plus|clear": 0.42677669529663687,
+    "plus|static": 0.0732233047033631,
+    "minus|clear": 0.0732233047033631,
+    "minus|static": 0.42677669529663687
+   },
+   "idealDensityMatrix": {
+    "plus|clear": 0.42677669529663675,
+    "plus|static": 0.07322330470336308,
+    "minus|clear": 0.07322330470336308,
+    "minus|static": 0.42677669529663675
+   },
+   "noisy": {
+    "plus|clear": 0.416068328039062,
+    "plus|static": 0.08393167196093775,
+    "minus|clear": 0.08393167196093775,
+    "minus|static": 0.4160683280390621
+   }
+  },
+  {
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 2,
+   "ideal": {
+    "plus|clear": 0.25,
+    "plus|static": 0.24999999999999997,
+    "minus|clear": 0.24999999999999997,
+    "minus|static": 0.25
+   },
+   "idealDensityMatrix": {
+    "plus|clear": 0.24999999999999992,
+    "plus|static": 0.2499999999999999,
+    "minus|clear": 0.2499999999999999,
+    "minus|static": 0.24999999999999992
+   },
+   "noisy": {
+    "plus|clear": 0.24999999999999992,
+    "plus|static": 0.2499999999999999,
+    "minus|clear": 0.2499999999999999,
+    "minus|static": 0.24999999999999992
+   }
+  },
+  {
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 3,
+   "ideal": {
+    "plus|clear": 0.07322330470336313,
+    "plus|static": 0.42677669529663687,
+    "minus|clear": 0.42677669529663687,
+    "minus|static": 0.07322330470336313
+   },
+   "idealDensityMatrix": {
+    "plus|clear": 0.0732233047033631,
+    "plus|static": 0.4267766952966367,
+    "minus|clear": 0.4267766952966367,
+    "minus|static": 0.0732233047033631
+   },
+   "noisy": {
+    "plus|clear": 0.08393167196093777,
+    "plus|static": 0.41606832803906196,
+    "minus|clear": 0.416068328039062,
+    "minus|static": 0.08393167196093776
+   }
+  },
+  {
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 4,
+   "ideal": {
+    "plus|clear": 0.0,
+    "plus|static": 0.5,
+    "minus|clear": 0.5,
+    "minus|static": 0.0
+   },
+   "idealDensityMatrix": {
+    "plus|clear": 5.748367925732731e-18,
+    "plus|static": 0.4999999999999998,
+    "minus|clear": 0.4999999999999998,
+    "minus|static": 5.748367925732731e-18
+   },
+   "noisy": {
+    "plus|clear": 0.015143918206534079,
+    "plus|static": 0.4848560817934657,
+    "minus|clear": 0.4848560817934657,
+    "minus|static": 0.015143918206534077
+   }
+  },
+  {
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 5,
+   "ideal": {
+    "plus|clear": 0.07322330470336308,
+    "plus|static": 0.4267766952966369,
+    "minus|clear": 0.4267766952966369,
+    "minus|static": 0.07322330470336308
+   },
+   "idealDensityMatrix": {
+    "plus|clear": 0.07322330470336307,
+    "plus|static": 0.42677669529663675,
+    "minus|clear": 0.42677669529663675,
+    "minus|static": 0.07322330470336307
+   },
+   "noisy": {
+    "plus|clear": 0.08393167196093775,
+    "plus|static": 0.4160683280390621,
+    "minus|clear": 0.41606832803906213,
+    "minus|static": 0.08393167196093773
+   }
+  },
+  {
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 6,
+   "ideal": {
+    "plus|clear": 0.24999999999999994,
+    "plus|static": 0.25000000000000006,
+    "minus|clear": 0.25000000000000006,
+    "minus|static": 0.24999999999999994
+   },
+   "idealDensityMatrix": {
+    "plus|clear": 0.2499999999999999,
+    "plus|static": 0.24999999999999994,
+    "minus|clear": 0.24999999999999994,
+    "minus|static": 0.2499999999999999
+   },
+   "noisy": {
+    "plus|clear": 0.24999999999999986,
+    "plus|static": 0.24999999999999994,
+    "minus|clear": 0.24999999999999994,
+    "minus|static": 0.24999999999999986
+   }
+  },
+  {
+   "caller": "sister",
+   "thetaDeg": 0,
+   "dial": 7,
+   "ideal": {
+    "plus|clear": 0.42677669529663687,
+    "plus|static": 0.07322330470336316,
+    "minus|clear": 0.07322330470336316,
+    "minus|static": 0.42677669529663687
+   },
+   "idealDensityMatrix": {
+    "plus|clear": 0.4267766952966367,
+    "plus|static": 0.07322330470336313,
+    "minus|clear": 0.07322330470336313,
+    "minus|static": 0.4267766952966367
+   },
+   "noisy": {
+    "plus|clear": 0.4160683280390619,
+    "plus|static": 0.0839316719609378,
+    "minus|clear": 0.08393167196093779,
+    "minus|static": 0.41606832803906196
+   }
+  },
+  {
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 0,
+   "ideal": {
+    "plus|clear": 0.0,
+    "plus|static": 0.5,
+    "minus|clear": 0.5,
+    "minus|static": 0.0
+   },
+   "idealDensityMatrix": {
+    "plus|clear": 5.748367925732731e-18,
+    "plus|static": 0.4999999999999998,
+    "minus|clear": 0.4999999999999998,
+    "minus|static": 5.748367925732731e-18
+   },
+   "noisy": {
+    "plus|clear": 0.015143918206534079,
+    "plus|static": 0.4848560817934657,
+    "minus|clear": 0.4848560817934657,
+    "minus|static": 0.015143918206534077
+   }
+  },
+  {
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 1,
+   "ideal": {
+    "plus|clear": 0.07322330470336313,
+    "plus|static": 0.42677669529663687,
+    "minus|clear": 0.42677669529663687,
+    "minus|static": 0.07322330470336313
+   },
+   "idealDensityMatrix": {
+    "plus|clear": 0.0732233047033631,
+    "plus|static": 0.4267766952966367,
+    "minus|clear": 0.4267766952966367,
+    "minus|static": 0.0732233047033631
+   },
+   "noisy": {
+    "plus|clear": 0.08393167196093777,
+    "plus|static": 0.41606832803906196,
+    "minus|clear": 0.416068328039062,
+    "minus|static": 0.08393167196093776
+   }
+  },
+  {
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 2,
+   "ideal": {
+    "plus|clear": 0.25,
+    "plus|static": 0.24999999999999997,
+    "minus|clear": 0.24999999999999997,
+    "minus|static": 0.25
+   },
+   "idealDensityMatrix": {
+    "plus|clear": 0.24999999999999992,
+    "plus|static": 0.2499999999999999,
+    "minus|clear": 0.2499999999999999,
+    "minus|static": 0.24999999999999992
+   },
+   "noisy": {
+    "plus|clear": 0.24999999999999992,
+    "plus|static": 0.2499999999999999,
+    "minus|clear": 0.2499999999999999,
+    "minus|static": 0.24999999999999992
+   }
+  },
+  {
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 3,
+   "ideal": {
+    "plus|clear": 0.42677669529663687,
+    "plus|static": 0.0732233047033631,
+    "minus|clear": 0.0732233047033631,
+    "minus|static": 0.42677669529663687
+   },
+   "idealDensityMatrix": {
+    "plus|clear": 0.42677669529663675,
+    "plus|static": 0.07322330470336308,
+    "minus|clear": 0.07322330470336308,
+    "minus|static": 0.42677669529663675
+   },
+   "noisy": {
+    "plus|clear": 0.416068328039062,
+    "plus|static": 0.08393167196093775,
+    "minus|clear": 0.08393167196093775,
+    "minus|static": 0.4160683280390621
+   }
+  },
+  {
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 4,
+   "ideal": {
+    "plus|clear": 0.5,
+    "plus|static": 0.0,
+    "minus|clear": 0.0,
+    "minus|static": 0.5
+   },
+   "idealDensityMatrix": {
+    "plus|clear": 0.4999999999999998,
+    "plus|static": 5.748367925732731e-18,
+    "minus|clear": 5.748367925732731e-18,
+    "minus|static": 0.4999999999999998
+   },
+   "noisy": {
+    "plus|clear": 0.4848560817934657,
+    "plus|static": 0.015143918206534077,
+    "minus|clear": 0.015143918206534077,
+    "minus|static": 0.4848560817934657
+   }
+  },
+  {
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 5,
+   "ideal": {
+    "plus|clear": 0.42677669529663687,
+    "plus|static": 0.0732233047033631,
+    "minus|clear": 0.0732233047033631,
+    "minus|static": 0.42677669529663687
+   },
+   "idealDensityMatrix": {
+    "plus|clear": 0.42677669529663675,
+    "plus|static": 0.07322330470336309,
+    "minus|clear": 0.07322330470336309,
+    "minus|static": 0.42677669529663675
+   },
+   "noisy": {
+    "plus|clear": 0.416068328039062,
+    "plus|static": 0.08393167196093777,
+    "minus|clear": 0.08393167196093777,
+    "minus|static": 0.4160683280390621
+   }
+  },
+  {
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 6,
+   "ideal": {
+    "plus|clear": 0.25,
+    "plus|static": 0.24999999999999997,
+    "minus|clear": 0.24999999999999997,
+    "minus|static": 0.25
+   },
+   "idealDensityMatrix": {
+    "plus|clear": 0.24999999999999992,
+    "plus|static": 0.2499999999999999,
+    "minus|clear": 0.2499999999999999,
+    "minus|static": 0.24999999999999992
+   },
+   "noisy": {
+    "plus|clear": 0.24999999999999992,
+    "plus|static": 0.2499999999999999,
+    "minus|clear": 0.2499999999999999,
+    "minus|static": 0.24999999999999992
+   }
+  },
+  {
+   "caller": "mimic",
+   "thetaDeg": 180,
+   "dial": 7,
+   "ideal": {
+    "plus|clear": 0.07322330470336313,
+    "plus|static": 0.42677669529663687,
+    "minus|clear": 0.42677669529663687,
+    "minus|static": 0.07322330470336313
+   },
+   "idealDensityMatrix": {
+    "plus|clear": 0.0732233047033631,
+    "plus|static": 0.4267766952966367,
+    "minus|clear": 0.4267766952966367,
+    "minus|static": 0.0732233047033631
+   },
+   "noisy": {
+    "plus|clear": 0.08393167196093777,
+    "plus|static": 0.41606832803906196,
+    "minus|clear": 0.416068328039062,
+    "minus|static": 0.08393167196093776
    }
   }
  ]

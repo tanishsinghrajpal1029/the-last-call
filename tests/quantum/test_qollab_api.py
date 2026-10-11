@@ -182,26 +182,26 @@ class TestQollabApi(unittest.TestCase):
         self.assertEqual(run["jobId"], "fake-job-1")
         self.assertFalse(run["sampledFromProbabilities"])
         # night 1 (Mira, balanced): dial 0 always clear, dial 4 always static (ideal fake backend)
-        self.assertEqual(run["bags"]["1|0|listen"]["totals"], {"clear": 16, "static": 0})
-        self.assertEqual(run["bags"]["1|4|listen"]["totals"], {"clear": 0, "static": 16})
+        self.assertEqual(run["bags"]["1|0|listen"]["totals"], {"clear": 24, "static": 0})
+        self.assertEqual(run["bags"]["1|4|listen"]["totals"], {"clear": 0, "static": 24})
         # night 2 (mimic, 180 deg): reversed
-        self.assertEqual(run["bags"]["2|0|listen"]["totals"]["static"], 16)
+        self.assertEqual(run["bags"]["2|0|listen"]["totals"]["static"], 24)
         # traces: four door|line outcomes summing to the shots
         t = run["bags"]["3|2|trace"]["totals"]
         self.assertEqual(sorted(t), ["front|clear", "front|static", "side|clear", "side|static"])
-        self.assertEqual(sum(t.values()), 16)
+        self.assertEqual(sum(t.values()), 24)
         # night 4 leans to the side door: no front-door traces for alpha = 120? (P(front) = 0.25)
         fronts = sum(run["bags"]["4|%d|trace" % k]["totals"]["front|clear"] + run["bags"]["4|%d|trace" % k]["totals"]["front|static"] for k in range(8))
-        self.assertTrue(10 < fronts < 55, fronts)  # 128 shots at p = 0.25
+        self.assertTrue(20 < fronts < 75, fronts)  # 192 shots at p = 0.25
 
     def test_probability_backend_is_sampled_and_labelled(self):
         run = json.loads(self.api.run_calls(FakeBackend(probabilities=True), json.dumps(plan()), "s"))
         self.assertTrue(run["ok"], run["error"])
         self.assertTrue(run["sampledFromProbabilities"])
         for v in run["bags"].values():
-            self.assertEqual(sum(v["totals"].values()), 16)
+            self.assertEqual(sum(v["totals"].values()), 24)
             self.assertTrue(all(isinstance(x, int) for x in v["totals"].values()))
-        self.assertEqual(run["bags"]["1|0|listen"]["totals"]["clear"], 16)
+        self.assertEqual(run["bags"]["1|0|listen"]["totals"]["clear"], 24)
 
     def test_errors_are_reported_not_hidden(self):
         run = json.loads(self.api.run_calls(BrokenBackend(), json.dumps(plan()), "s"))
@@ -209,6 +209,21 @@ class TestQollabApi(unittest.TestCase):
         self.assertIn("batch rejected", run["error"])
         self.assertEqual(run["bags"], {})
         self.assertEqual(run["backendKind"], "ionq_noise")
+
+    def test_bonus_eraser_circuits_in_the_same_job(self):
+        b = FakeBackend()
+        full = {"nights": plan(), "bonus": {"alphaDeg": 90, "thetaDeg": 0}}
+        run = json.loads(self.api.run_calls(b, json.dumps(full), "s"))
+        self.assertTrue(run["ok"], run["error"])
+        self.assertEqual(b.calls, 1)
+        self.assertEqual(run["circuits"], 72)
+        t0 = run["bags"]["bonus|0|eraser"]["totals"]
+        t4 = run["bags"]["bonus|4|eraser"]["totals"]
+        # Mira: + group clear at dial 0, static at dial 4; never "plus|static" at 0 on an ideal backend
+        self.assertEqual(t0["plus|static"], 0)
+        self.assertEqual(t4["plus|clear"], 0)
+        # combined over both groups: roughly flat
+        self.assertTrue(4 < t0["plus|clear"] + t0["minus|clear"] < 20)
 
     def test_circuit_text(self):
         self.assertIn("2 qubits", self.api.circuit_text(True))

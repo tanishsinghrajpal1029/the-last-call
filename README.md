@@ -56,6 +56,14 @@ setting once the mimic is only 45° off, and calls spent on traces are calls not
 listening. On the last call, listening at Mira's dial wins 64% of the time; listening at the
 most informative dial wins 78% ([artifacts/strategy_ideal.md](artifacts/strategy_ideal.md)).
 
+## Bonus: The Eraser
+
+After the four calls, the ending offers a bonus scene. Every call is traced, so the voiceprint is
+flat. The **eraser** reads the door record in a way that can't tell front from side (the X basis)
+and gives each call a + or −. Sorting the calls you already have into those two groups brings back
+two opposite voiceprints; the + group's pattern says who is calling. Three guided steps: Sweep →
+Sort → Decide. On Qollab the bonus uses 8 extra eraser circuits from the same job (72 circuits).
+
 ## Look and sound
 
 Night-vision door cameras with rain, flicker and lightning; an original creature (a hooded figure

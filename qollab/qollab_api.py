@@ -43,7 +43,9 @@ def _kind(name):
     return "ideal"
 
 
-def _key(night, dial, trace):
+def _key(night, dial, trace, eraser=False):
+    if eraser:
+        return "bonus|%d|eraser" % dial
     return "%d|%d|%s" % (night, dial, "trace" if trace else "listen")
 
 
@@ -81,17 +83,28 @@ def run_calls(backend, plan_json, seed):
            "bags": {}, "sampledFromProbabilities": False, "jobId": None, "error": None}
     try:
         plan = json.loads(str(plan_json))
+        bonus = None
+        if isinstance(plan, dict):
+            bonus = plan.get("bonus")
+            plan = plan["nights"]
         with open("data/nights.json") as f:
-            steps = json.load(f)["dialSteps"]
-        if config.SHOTS < 12:
-            raise ValueError("SHOTS must be at least 12 (the largest call budget)")
+            nights_cfg = json.load(f)
+        steps = nights_cfg["dialSteps"]
+        need = max(12, nights_cfg["bonus"]["sweeps"] * nights_cfg["bonus"]["shotsPerDial"]) if bonus else 12
+        if config.SHOTS < need:
+            raise ValueError("SHOTS must be at least %d" % need)
         specs, circuits = [], []
         for p in plan:
             for k in range(steps):
                 for trace in (False, True):
-                    specs.append((int(p["nightId"]), k, trace))
+                    specs.append((int(p["nightId"]), k, trace, False))
                     circuits.append(build_call(math.radians(float(p["alphaDeg"])), math.radians(float(p["thetaDeg"])),
                                                dial_angle(k, steps), trace, name="n%d-d%d-%s" % (p["nightId"], k, "t" if trace else "l")))
+        if bonus:
+            for k in range(steps):
+                specs.append((0, k, True, True))
+                circuits.append(build_call(math.radians(float(bonus["alphaDeg"])), math.radians(float(bonus["thetaDeg"])),
+                                           dial_angle(k, steps), True, name="bonus-d%d-eraser" % k, eraser=True))
         # Map to the backend's gate set when possible (needed for device-noise
         # backends, whose noise is attached to native gates). If the backend
         # cannot be targeted by transpile, submit the circuits as built.
@@ -109,12 +122,12 @@ def run_calls(backend, plan_json, seed):
             pass
         result = job.result()
         rng = random.Random(str(seed))
-        for i, (night, k, trace) in enumerate(specs):
+        for i, (night, k, trace, eraser) in enumerate(specs):
             raw = {str(key): float(v) for key, v in dict(result.get_counts(i)).items()}
-            totals = decode_counts(raw, trace)
+            totals = decode_counts(raw, trace, eraser)
             counts, sampled = _integer_counts(totals, config.SHOTS, rng)
             out["sampledFromProbabilities"] = out["sampledFromProbabilities"] or sampled
-            out["bags"][_key(night, k, trace)] = {"raw": raw, "totals": counts}
+            out["bags"][_key(night, k, trace, eraser)] = {"raw": raw, "totals": counts}
         out["circuits"] = len(circuits)
         out["ok"] = True
     except Exception as e:  # report; never substitute other data

@@ -21,7 +21,7 @@ PY_MODULES = ["circuits.py", "decode.py"]
 JS = [
     "apps/web/src/app.js", "apps/web/src/audio.js", "apps/web/src/chart.js", "apps/web/src/controller.js",
     "apps/web/src/feed.js", "apps/web/src/ui.js", "apps/web/src/art.js", "apps/web/src/guide.js",
-    "apps/web/src/voicedata.js",
+    "apps/web/src/voicedata.js", "apps/web/src/bonus.js", "packages/core/src/bonus.js",
     "packages/core/src/evidence.js", "packages/core/src/game.js", "packages/core/src/lines.js",
     "packages/core/src/nights.js", "packages/core/src/physics.js", "packages/core/src/providers.js",
     "packages/core/src/rng.js",

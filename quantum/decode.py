@@ -8,6 +8,7 @@ Keys may be bitstrings (Qiskit order: rightmost = bit 0, spaces allowed),
 OUTCOME_MAPPING_VERSION = "last-call-outcomes-v1"
 LISTEN_OUTCOMES = ("clear", "static")
 TRACE_OUTCOMES = ("front|clear", "front|static", "side|clear", "side|static")
+ERASER_OUTCOMES = ("plus|clear", "plus|static", "minus|clear", "minus|static")
 
 
 def key_to_int(key, width):
@@ -30,23 +31,25 @@ def key_to_int(key, width):
     return v
 
 
-def classify(v, trace):
+def classify(v, trace, eraser=False):
     line = "static" if v & 1 else "clear"
+    if eraser:
+        return ("minus" if (v >> 1) & 1 else "plus") + "|" + line
     if not trace:
         return line
     door = "side" if (v >> 1) & 1 else "front"
     return door + "|" + line
 
 
-def decode_counts(counts, trace):
+def decode_counts(counts, trace, eraser=False):
     """counts: {key: count or probability}. Returns {outcome: total}."""
-    width = 2 if trace else 1
-    out = {o: 0 for o in (TRACE_OUTCOMES if trace else LISTEN_OUTCOMES)}
+    width = 2 if (trace or eraser) else 1
+    out = {o: 0 for o in (ERASER_OUTCOMES if eraser else TRACE_OUTCOMES if trace else LISTEN_OUTCOMES)}
     for k, c in counts.items():
         c = float(c)
         if c < 0:
             raise ValueError("negative count")
-        out[classify(key_to_int(k, width), trace)] += c
+        out[classify(key_to_int(k, width), trace, eraser)] += c
     if sum(out.values()) <= 0:
         raise ValueError("empty result")
     return out

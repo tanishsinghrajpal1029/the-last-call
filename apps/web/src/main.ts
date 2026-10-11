@@ -10,6 +10,8 @@ import { MarkerView } from "./ar/marker.js";
 import { XrView, xrSupported } from "./ar/xr.js";
 import { GyroView, gyroCapable, requestMotionPermission } from "./ar/gyro.js";
 import { Ui } from "./ui.js";
+import { BonusView } from "./bonus.js";
+import { BonusConfig, modelBonusProvider } from "../../../packages/core/src/bonus.js";
 
 type Mode = "screen" | "xr" | "marker" | "gyro";
 type Source = "ideal" | "noisy";
@@ -112,6 +114,25 @@ function showStart(message = ""): void {
   });
 }
 
+/** Bonus scene: the quantum eraser (screen mode, after the ending). */
+function startBonus(source: Source, seed: string): void {
+  running?.dispose();
+  running = null;
+  app.innerHTML = "";
+  const cfg = (nights as unknown as { bonus: BonusConfig }).bonus;
+  const noise = source === "noisy" ? nights.noise : null;
+  const audio = new Audio();
+  audio.voice = settings.voice;
+  audio.sound = settings.sound;
+  audio.gentle = settings.gentle;
+  audio.unlock();
+  const view = new BonusView(app, cfg, seed + ":bonus", (state) => modelBonusProvider(cfg, state, noise, rngFromSeed("bonus-calls:" + seed + ":" + Date.now())),
+    SOURCE_LABEL[source], noise, audio, settings.gentle, settings.reducedMotion);
+  view.onExit = () => showStart();
+  running = { dispose: () => { view.dispose(); audio.dispose(); } };
+  (window as any).__lastCall = { bonus: view };
+}
+
 function launch(mode: Mode, source: Source, seed: string): void {
   running?.dispose();
   running = null;
@@ -121,6 +142,7 @@ function launch(mode: Mode, source: Source, seed: string): void {
     r.audio.unlock();
     r.ui.onExit = () => showStart();
     r.ui.onRestart = () => launch(mode, source, randomSeed());
+    r.ui.onBonus = () => startBonus(source, seed);
     running = r;
     (window as any).__lastCall = r; // test hook
     return;

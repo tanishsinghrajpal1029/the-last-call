@@ -201,3 +201,37 @@ test("every spoken game line has a recorded clip with the same text", async () =
   assert.equal(manifest.version, voices.version);
   for (const l of voices.lines) assert.ok(manifest.files[l.id] && manifest.files[l.id].text === l.text, "clip for " + l.id + " is current");
 });
+
+test("bonus eraser: TS simulator matches the Python reference to 1e-12; groups cancel; flow", async () => {
+  const B = await J("bonus.js");
+  for (const r of table.bonusEraserRows) {
+    const got = P.simulateEraser(rad(nights.bonus.alphaDeg), rad(r.thetaDeg), P.dialAngle(r.dial), null);
+    const noisy = P.simulateEraser(rad(nights.bonus.alphaDeg), rad(r.thetaDeg), P.dialAngle(r.dial), nights.noise);
+    for (const k of Object.keys(r.ideal)) {
+      assert.ok(Math.abs(got[k] - r.ideal[k]) < 1e-12, k);
+      assert.ok(Math.abs(noisy[k] - r.noisy[k]) < 1e-12, "noisy " + k);
+    }
+    assert.ok(Math.abs(got["plus|clear"] + got["minus|clear"] - 0.5) < 1e-12, "combined is flat");
+  }
+  // flow: decide is refused until sorted (UI), sweeps are limited, shots are used once
+  let s = B.createBonus(nights.bonus, "x");
+  const bags = {};
+  for (let k = 0; k < 8; k++) bags[k] = Array(24).fill("plus|clear");
+  const prov = B.bagBonusProvider(bags, R.rngFromSeed("b"));
+  for (let i = 0; i < 3; i++) s = B.sweep(s, nights.bonus, prov).state;
+  assert.equal(s.sweepsLeft, 0);
+  assert.equal(s.shots[0].length, 24);
+  assert.ok(B.sweep(s, nights.bonus, prov).error);
+  s = B.sortGroups(s);
+  assert.ok(s.sorted);
+  const rows = B.eraserRows(s);
+  assert.deepEqual(rows[0].plus, { clear: 24, total: 24 });
+  const truth = s.caller;
+  const d = B.decideBonus(s, truth === "sister" ? "front" : "hangup", nights.bonus);
+  assert.ok(d.result === "saved" || d.result === "refused");
+  // posterior: + group clear at dial 0 favours Mira
+  const m = { ...s, shots: s.shots.map((x, k) => (k === 0 ? Array(8).fill("plus|clear") : [])) };
+  assert.ok(B.bonusPosterior(m, nights.bonus, nights.noise) > 0.99);
+  const unsorted = B.createBonus(nights.bonus, "y");
+  assert.equal(B.bonusPosterior(unsorted, nights.bonus, null), 0.5);
+});

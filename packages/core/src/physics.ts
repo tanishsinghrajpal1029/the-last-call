@@ -110,16 +110,32 @@ export function simulate(alpha: number, theta: number, phi: number, trace: boole
   return { ...out };
 }
 
-function simulateUncached(alpha: number, theta: number, phi: number, trace: boolean, noise: Noise | null): Record<string, number> {
+/**
+ * The eraser (bonus scene): trace (CNOT onto q1), then read the record q1 in
+ * the X basis (a Hadamard on q1) instead of asking "which door". Outcomes are
+ * "plus|clear", "plus|static", "minus|clear", "minus|static".
+ * Ideal, alpha = 90°: P(plus, clear) = (1 + cos(theta - phi)) / 4; the minus
+ * group shows the opposite fringe; both groups together stay flat.
+ */
+export function simulateEraser(alpha: number, theta: number, phi: number, noise: Noise | null): Record<string, number> {
+  const key = ["E", alpha, theta, phi, noise ? [noise.p1, noise.p2, noise.readout].join() : "-"].join("|");
+  const hit = memo.get(key);
+  if (hit) return { ...hit };
+  const out = simulateUncached(alpha, theta, phi, true, noise, true);
+  memo.set(key, out);
+  return { ...out };
+}
+
+function simulateUncached(alpha: number, theta: number, phi: number, trace: boolean, noise: Noise | null, eraser = false): Record<string, number> {
   const n = trace ? 2 : 1, d = 1 << n;
   let rho = zeros(d);
   rho[0]![0] = [1, 0];
   const p1 = noise ? noise.p1 : 0, p2 = noise ? noise.p2 : 0, r = noise ? noise.readout : 0;
-  const one = (name: string, angle: number) => {
-    rho = conjugate(embed(gate1(name, angle), 0, n), rho);
+  const one = (name: string, angle: number, q = 0) => {
+    rho = conjugate(embed(gate1(name, angle), q, n), rho);
     if (p1) {
       let tw = rho;
-      for (const P of PAULI) tw = scaleAdd(tw, 1, conjugate(embed(P, 0, n), rho), 1);
+      for (const P of PAULI) tw = scaleAdd(tw, 1, conjugate(embed(P, q, n), rho), 1);
       rho = scaleAdd(rho, 1 - p1, tw, p1 / 4);
     }
   };
@@ -137,6 +153,7 @@ function simulateUncached(alpha: number, theta: number, phi: number, trace: bool
     }
   }
   one("h", 0);
+  if (eraser) one("h", 0, 1);
   const probs = new Array<number>(d).fill(0);
   for (let i = 0; i < d; i++) {
     const p = rho[i]![i]![0];
@@ -149,7 +166,8 @@ function simulateUncached(alpha: number, theta: number, phi: number, trace: bool
   const out: Record<string, number> = {};
   for (let j = 0; j < d; j++) {
     const line = j & 1 ? "static" : "clear";
-    const key = trace ? ((j >> 1) & 1 ? "side|" : "front|") + line : line;
+    const rec = (j >> 1) & 1;
+    const key = !trace ? line : eraser ? (rec ? "minus|" : "plus|") + line : (rec ? "side|" : "front|") + line;
     out[key] = (out[key] ?? 0) + probs[j]!;
   }
   return out;

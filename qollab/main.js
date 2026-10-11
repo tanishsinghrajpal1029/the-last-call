@@ -9,6 +9,9 @@ import { planRun, validateNights } from "./js/packages/core/src/nights.js";
 import { shotBagProvider, expandCounts, modelProvider } from "./js/packages/core/src/providers.js";
 import { rngFromSeed } from "./js/packages/core/src/rng.js";
 import { simulate, rad, dialAngle } from "./js/packages/core/src/physics.js";
+import { createBonus, bagBonusProvider, modelBonusProvider } from "./js/packages/core/src/bonus.js";
+import { BonusView } from "./js/apps/web/src/bonus.js";
+import { Audio } from "./js/apps/web/src/audio.js";
 
 // Set this to the public HTTPS address of the AR app once it is deployed.
 const AR_APP_URL = "";
@@ -64,13 +67,17 @@ async function main() {
   }
   const seed = randomSeed();
   const plan = planRun(nights, seed);
-  $("run-status").textContent = "Submitting one batched job (64 circuits) to the selected backend…";
-  const run = JSON.parse(String(await run_calls.callPromising(backend, JSON.stringify(plan), seed)));
+  $("run-status").textContent = "Submitting one batched job (72 circuits) to the selected backend…";
+  const bonusSeed = seed + ":bonus";
+  const bonusState = createBonus(nights.bonus, bonusSeed);
+  const fullPlan = { nights: plan, bonus: { alphaDeg: nights.bonus.alphaDeg, thetaDeg: bonusState.thetaDeg } };
+  const run = JSON.parse(String(await run_calls.callPromising(backend, JSON.stringify(fullPlan), seed)));
   const settings = defaultSettings();
   let provider, label;
   if (run.ok) {
     const bags = {};
     for (const [k, v] of Object.entries(run.bags)) {
+      if (k.startsWith("bonus|")) continue; // the eraser shots belong to the bonus scene
       const t = v.totals;
       bags[k] = expandCounts(k.endsWith("trace") ? t : { clear: t.clear, static: t.static });
     }
@@ -86,8 +93,23 @@ async function main() {
     label = "the ideal model sampled in your browser, because the backend run failed (not a quantum result)";
     $("run-status").textContent = "The run did not complete: " + run.error + ". You can still play on the ideal model (clearly labelled), or fix the problem and press Run again.";
   }
+  // bonus scene provider: this run's eraser shots (or the labelled ideal model if the run failed)
+  let bonusProvider;
+  if (run.ok) {
+    const bb = {};
+    for (let k = 0; k < nights.dialSteps; k++) bb[k] = expandCounts(run.bags[`bonus|${k}|eraser`].totals);
+    bonusProvider = () => bagBonusProvider(bb, rngFromSeed("bonus-shots:" + seed));
+  } else bonusProvider = (state) => modelBonusProvider(nights.bonus, state, null, rngFromSeed("bonus-fallback:" + seed));
+  const startBonus = () => {
+    $("game").innerHTML = "";
+    const audio = new Audio();
+    audio.unlock();
+    const view = new BonusView($("game"), nights.bonus, bonusSeed, bonusProvider, label, null, audio, settings.gentle, settings.reducedMotion);
+    view.onExit = () => { view.dispose(); audio.dispose(); $("game").innerHTML = `<p>Press Run again for a fresh job and a new night.</p>`; };
+  };
   const start = () => {
     const r = startRun($("game"), nights, seed, provider, label, settings, "screen");
+    r.ui.onBonus = () => { r.dispose(); startBonus(); };
     r.ui.onExit = () => { r.dispose(); $("game").innerHTML = `<p>Run ended. Press Run again for a fresh job and a new night.</p>`; };
     r.ui.onRestart = () => { r.dispose(); $("game").innerHTML = `<p>Each Run measures fresh shots for one night of calls. Press Run again to play another.</p>`; };
   };

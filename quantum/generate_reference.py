@@ -16,7 +16,7 @@ sys.path.insert(0, ROOT)
 
 from quantum.circuits import CIRCUIT_VERSION, dial_angle  # noqa: E402
 from quantum.decode import OUTCOME_MAPPING_VERSION  # noqa: E402
-from quantum.model import density_matrix_probabilities, ideal  # noqa: E402
+from quantum.model import density_matrix_probabilities, ideal, ideal_eraser  # noqa: E402
 
 
 def main():
@@ -37,6 +37,15 @@ def main():
                             "idealDensityMatrix": density_matrix_probabilities(a, t, p, trace),
                             "noisy": density_matrix_probabilities(a, t, p, trace, noise),
                         })
+    b = cfg["bonus"]
+    bonus_rows = []
+    for who, t_deg in (("sister", cfg["sisterPhaseDeg"]), ("mimic", b["mimicPhaseDeg"])):
+        for k in range(cfg["dialSteps"]):
+            a, t, p = math.radians(b["alphaDeg"]), math.radians(t_deg), dial_angle(k, cfg["dialSteps"])
+            bonus_rows.append({"caller": who, "thetaDeg": t_deg, "dial": k,
+                               "ideal": ideal_eraser(a, t, p),
+                               "idealDensityMatrix": density_matrix_probabilities(a, t, p, True, None, True),
+                               "noisy": density_matrix_probabilities(a, t, p, True, noise, True)})
     out = {
         "schemaVersion": 1,
         "sourceMode": "local_reference_model",
@@ -47,6 +56,7 @@ def main():
         "noise": noise,
         "generatedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         "rows": rows,
+        "bonusEraserRows": bonus_rows,
     }
     os.makedirs(os.path.join(ROOT, "data", "reference"), exist_ok=True)
     path = os.path.join(ROOT, "data", "reference", "model_table.json")
