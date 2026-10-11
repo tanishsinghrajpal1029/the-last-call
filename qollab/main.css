@@ -245,4 +245,13 @@ input[type="radio"], input[type="checkbox"] { width: 22px; height: 22px; accent-
 .narr { font-style: italic; border-left: 3px solid var(--line); padding-left: 8px; }
 .goal-line { display: block; margin-bottom: 6px; }
 .advice { margin-top: 6px; }
+.guide-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -2px 0 6px; }
+.guide-name { color: var(--amber); font-weight: 700; font-size: 0.78rem; letter-spacing: 0.1em; text-transform: uppercase; }
+.btn-toggle { min-height: 32px; padding: 2px 10px; font-size: 0.82rem; }
+.guide.compact .guide-bar { margin-bottom: 2px; }
+.guide .mini { display: flex; align-items: center; gap: 8px; justify-content: space-between; margin: 0; }
+.guide .mini p, p.mini { margin: 0; font-size: 0.95rem; }
+.guide .mini-buttons { display: flex; gap: 6px; flex: none; }
+.guide .mini-step { display: inline-block; background: var(--amber); color: var(--amber-ink); border-radius: 999px; padding: 0 7px; font-weight: 700; font-size: 0.75rem; margin-right: 4px; }
+.ui-ar .guide.compact { max-height: none; }
 

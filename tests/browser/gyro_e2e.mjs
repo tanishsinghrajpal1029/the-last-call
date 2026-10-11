@@ -56,6 +56,12 @@ try {
   for (let i = 0; i < 5; i++) { await orient(page, 0, 90, 0); await page.waitForTimeout(50); }
   await page.waitForTimeout(300);
   check("turning back brings it back", (await centreDrawn(page)) > ahead * 0.6);
+  check("AR guide starts compact (one line + Next)", !!(await page.$(".gyro-view .guide.compact #stage-next")));
+  await page.screenshot({ path: path.join(root, "artifacts", "gyro_guide_compact.png") });
+  await page.click("#guide-toggle");
+  await page.screenshot({ path: path.join(root, "artifacts", "gyro_guide_full.png") });
+  check("AR guide expands on the toggle", !(await page.$(".gyro-view .guide.compact")) && /How to win/.test(await page.textContent("#guide-card")));
+  await page.click("#guide-toggle");
   await page.click("#stage-next"); await page.click("#stage-next");
   await page.click("#listen-btn");
   await page.waitForTimeout(200);

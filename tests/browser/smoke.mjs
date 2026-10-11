@@ -42,6 +42,12 @@ try {
   const guide = () => page.textContent("#guide-card");
   check("walkthrough step 1 explains how to win (WHO and WHERE)", /WHO/.test(await guide()) && /WHERE/.test(await guide()));
   check("stepper shows 7 stages", (await page.$$("#stepper li")).length === 7);
+  // Guide toggle: compact one-liner keeps the instruction and Next; expanding restores everything
+  check("guide toggle starts expanded on screen", /Show less/.test(await page.textContent("#guide-toggle")));
+  await page.click("#guide-toggle");
+  check("compact guide: one line with step, instruction and Next; stepper hidden", /1\/7/.test(await page.textContent("#guide-card .mini")) && !!(await page.$("#guide-card #stage-next")) && await page.$eval("#stepper", (e) => e.hidden) && !/Quantum/.test(await page.textContent("#guide-card")));
+  await page.click("#guide-toggle");
+  check("expanding the guide restores the full step", /WHO/.test(await guide()) && (await page.$$("#stepper li")).length === 7 && !(await page.$eval("#stepper", (e) => e.hidden)));
   check("step 1 gates the controls (listen disabled)", await page.$eval("#listen-btn", (b) => b.disabled));
   await page.click("#stage-next");
   check("step 2 explains superposition", /Superposition/.test(await guide()));

@@ -26,6 +26,19 @@ const pct = (x: number) => Math.round(100 * x) + "%";
 /** Never show 0% or 100% for a statistical judgement. */
 const pctMeter = (x: number) => (x > 0.99 ? "over 99%" : x < 0.01 ? "under 1%" : Math.round(100 * x) + "%");
 
+const COMPACT_KEY = (mode: UiMode) => "lastcall.guideCompact." + (mode === "screen" ? "screen" : "ar");
+/** Default: full Guide on screen, compact in AR (the scene needs the room). */
+function loadCompact(mode: UiMode): boolean {
+  try {
+    const v = localStorage.getItem(COMPACT_KEY(mode));
+    if (v === "1" || v === "0") return v === "1";
+  } catch { /* storage unavailable: use the default */ }
+  return mode !== "screen";
+}
+function saveCompact(mode: UiMode, on: boolean): void {
+  try { localStorage.setItem(COMPACT_KEY(mode), on ? "1" : "0"); } catch { /* ignore */ }
+}
+
 export class Ui {
   readonly root: HTMLElement;
   private feed: Feed | null = null;
@@ -47,6 +60,8 @@ export class Ui {
   private lastActive = performance.now();
   private lastHesitate = -1e9;
   private idleTimer = 0;
+  /** Guide shown in full, or as one compact line (remembered per screen/AR, per browser) */
+  private guideCompact = false;
   onExit: (() => void) | null = null;
   onRestart: (() => void) | null = null;
   onReposition: (() => void) | null = null;
@@ -61,6 +76,7 @@ export class Ui {
     this.root = document.createElement("div");
     this.root.className = "ui ui-" + mode + (mode === "screen" ? "" : " ui-ar");
     parent.appendChild(this.root);
+    this.guideCompact = loadCompact(mode);
     this.root.innerHTML = this.skeleton();
     if (mode === "screen") this.feed = new Feed(this.q("#feed-slot"), c);
     this.bind();
@@ -129,6 +145,7 @@ export class Ui {
       </header>
       <div class="col-left">
       <aside class="guide" id="guide" aria-label="Guide">
+        <div class="guide-bar"><span class="guide-name">Guide</span><button type="button" class="btn btn-ghost btn-toggle" id="guide-toggle" aria-controls="guide-card"></button></div>
         <ol class="stepper" id="stepper" aria-label="Walkthrough steps"></ol>
         <div class="guide-card" id="guide-card" aria-live="polite"></div>
       </aside>
@@ -187,6 +204,11 @@ export class Ui {
     click("open-side", () => { if (this.allowed("side")) this.askDecide("side"); });
     click("hangup", () => { if (this.allowed("hangup")) this.askDecide("hangup"); });
     click("how-btn", () => this.showHow());
+    click("guide-toggle", () => {
+      this.guideCompact = !this.guideCompact;
+      saveCompact(this.mode, this.guideCompact);
+      this.renderGuide();
+    });
     if (this.mode === "xr" || this.mode === "gyro") click("move-btn", () => this.onReposition?.());
     click("settings-btn", () => this.showSettings());
     click("exit-btn", () => this.onExit?.());
@@ -256,6 +278,11 @@ export class Ui {
   private renderGuide(): void {
     const c = this.c, v = c.view(), n = v.state, cfg = v.night;
     const stepper = this.q("#stepper"), card = this.q("#guide-card");
+    const tg = this.q("#guide-toggle");
+    tg.textContent = this.guideCompact ? "Show more ▾" : "Show less ▴";
+    tg.setAttribute("aria-expanded", String(!this.guideCompact));
+    this.q("#guide").classList.toggle("compact", this.guideCompact);
+    if (this.guideCompact) { this.renderCompact(); return; }
     const hl = (id: string | null) => {
       for (const b of this.root.querySelectorAll(".hl")) b.classList.remove("hl");
       if (id) this.q("#" + id)?.classList.add("hl");
@@ -299,6 +326,35 @@ export class Ui {
       this.stageSpoken = this.stage;
       void this.audio.voiceLine(st.voice, "");
     }
+  }
+
+  /** One line: what to do now (walkthrough) or where the case stands; Next stays reachable. */
+  private renderCompact(): void {
+    const c = this.c, n = c.state.night, cfg = c.view().night;
+    const stepper = this.q("#stepper"), card = this.q("#guide-card");
+    stepper.hidden = true;
+    for (const b of this.root.querySelectorAll(".hl")) b.classList.remove("hl");
+    if (this.tutorial) {
+      const st = STAGES[this.stage]!, complete = this.stageComplete();
+      const showNext = (st.next || complete) && this.stage < STAGES.length - 1;
+      const line = complete ? (this.reaction ? `“${TUT_REACT[this.reaction]}”` : "Done.") : st.doThis;
+      card.innerHTML = `<div class="mini"><p><span class="mini-step">${this.stage + 1}/${STAGES.length}</span> ${line}</p>
+        <span class="mini-buttons">${showNext ? `<button type="button" class="btn btn-primary" id="stage-next">Next</button>` : ""}<button type="button" class="btn btn-ghost" id="stage-replay" aria-label="Replay the narrator">▶</button></span></div>`;
+      const target = complete ? "stage-next" : st.target ? st.target(n.dial) : null;
+      if (target) this.q("#" + target)?.classList.add("hl");
+      if (this.stageSpoken !== this.stage && c.phase === "play") {
+        this.stageSpoken = this.stage;
+        void this.audio.voiceLine(st.voice, "");
+      }
+      return;
+    }
+    if (n.result || c.phase !== "play") { card.innerHTML = `<p class="mini">Listen → WHO · Trace → WHERE · then decide.</p>`; return; }
+    const leans = cfg.alphaChoicesDeg.some((a) => a !== 90);
+    const alpha = c.meterAlphaDeg(), t = doorTally(n.log), listens = n.log.filter((r) => r.kind === "listen").length;
+    const info = dialInformation(c.nights, cfg, alpha);
+    const best = info.map((x, k) => [x, k] as const).sort((a, b) => b[0] - a[0]).slice(0, 2).map(([, k]) => k).sort((a, b) => a - b);
+    const st = caseStatus(c.settings.meter ? posteriorSister(c.nights, cfg, alpha, n.log) : null, listens, t.front, t.side, leans, n.callsLeft, best);
+    card.innerHTML = `<p class="mini" id="case-status"><strong>${esc(st.who)}</strong> · ${esc(st.where)} · ${n.callsLeft} call${n.callsLeft === 1 ? "" : "s"} left</p>`;
   }
 
   // ---------- rendering ----------
